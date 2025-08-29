@@ -245,9 +245,12 @@ export default function RentalPage() {
             >
               Rent Now
             </Link>
-            <button className="bg-white text-primary-500 hover:bg-secondary-100 font-medium py-3 px-8 rounded-lg transition-colors duration-200 border border-primary-200">
+            <Link 
+              href="/contact"
+              className="bg-white text-primary-500 hover:bg-secondary-100 font-medium py-3 px-8 rounded-lg transition-colors duration-200 border border-primary-200"
+            >
               Get Quote
-            </button>
+            </Link>
           </motion.div>
         </div>
       </section>
