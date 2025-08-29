@@ -258,7 +258,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 For support and questions:
 - **Email**: info@valleycontainers.co.za
-- **Phone**: +27 86 187 8487
+- **Phone**: [\+27 86 187 8487](tel:+27 86 187 8487)
 - **Documentation**: [docs.valleycontainers.co.za](https://docs.valleycontainers.co.za)
 
 ## 🙏 Acknowledgments

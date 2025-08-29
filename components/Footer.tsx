@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { Truck, Phone, Mail, MapPin } from 'lucide-react'
 
@@ -54,7 +56,13 @@ const Footer = () => {
             <div className="space-y-3">
                           <div className="flex items-center space-x-3">
               <Phone className="w-4 h-4 text-[#F2F2F2]" />
-              <span className="text-[#F2F2F2]">+27 86 187 8487</span>
+              <a 
+                href="tel:+27 86 187 8487"
+                className="text-[#F2F2F2] hover:text-white transition-colors duration-200"
+                title="Call +27 86 187 8487"
+              >
+                +27 86 187 8487
+              </a>
             </div>
             <div className="flex items-center space-x-3">
               <Mail className="w-4 h-4 text-[#F2F2F2]" />
@@ -140,7 +148,15 @@ const Footer = () => {
             <div className="text-center md:text-left">
               <h4 className="text-white font-semibold mb-2">George Branch (Main)</h4>
               <div className="text-[#F2F2F2] text-sm space-y-1">
-                <p>+27 44 878 0878</p>
+                <p>
+                  <a 
+                    href="tel:+27 44 878 0878"
+                    className="hover:text-white transition-colors duration-200"
+                    title="Call +27 44 878 0878"
+                  >
+                    +27 44 878 0878
+                  </a>
+                </p>
                 <p>info@valleycontainers.co.za</p>
                 <p>Western Cape, South Africa</p>
               </div>
@@ -150,7 +166,15 @@ const Footer = () => {
             <div className="text-center md:text-left">
               <h4 className="text-white font-semibold mb-2">Cape Town Branch</h4>
               <div className="text-[#F2F2F2] text-sm space-y-1">
-                <p>+27 72 211 1052</p>
+                <p>
+                  <a 
+                    href="tel:+27 72 211 1052"
+                    className="hover:text-white transition-colors duration-200"
+                    title="Call +27 72 211 1052"
+                  >
+                    +27 72 211 1052
+                  </a>
+                </p>
                 <p>cpt@valleycontainers.co.za</p>
                 <p>Cape Town Metro, South Africa</p>
               </div>
@@ -160,7 +184,15 @@ const Footer = () => {
             <div className="text-center md:text-left">
               <h4 className="text-white font-semibold mb-2">Johannesburg Branch</h4>
               <div className="text-[#F2F2F2] text-sm space-y-1">
-                <p>+27 71 371 2972</p>
+                <p>
+                  <a 
+                    href="tel:+27 71 371 2972"
+                    className="hover:text-white transition-colors duration-200"
+                    title="Call +27 71 371 2972"
+                  >
+                    +27 71 371 2972
+                  </a>
+                </p>
                 <p>jhb@valleycontainers.co.za</p>
                 <p>Gauteng, South Africa</p>
               </div>

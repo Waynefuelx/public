@@ -233,25 +233,6 @@ export default function RentalPage() {
           >
             Flexible, reliable container rentals for every need. From storage to luxury offices, we have the perfect solution.
           </motion.p>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <Link 
-              href="/booking"
-              className="btn-primary text-lg px-8 py-3 bg-white text-primary-500 hover:bg-secondary-100"
-            >
-              Rent Now
-            </Link>
-            <Link 
-              href="/contact"
-              className="bg-white text-primary-500 hover:bg-secondary-100 font-medium py-3 px-8 rounded-lg transition-colors duration-200 border border-primary-200"
-            >
-              Get Quote
-            </Link>
-          </motion.div>
         </div>
       </section>
 

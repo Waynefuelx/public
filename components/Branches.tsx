@@ -141,7 +141,13 @@ const Branches = () => {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                   <div className="flex items-center gap-2">
                     <Phone className="w-5 h-5" />
-                    <span>+27 44 878 0878</span>
+                    <a 
+                      href="tel:+27 44 878 0878"
+                      className="hover:text-primary-200 transition-colors duration-200"
+                      title="Call +27 44 878 0878"
+                    >
+                      +27 44 878 0878
+                    </a>
                   </div>
                   <div className="flex items-center gap-2">
                     <Mail className="w-5 h-5" />
@@ -211,12 +217,24 @@ const Branches = () => {
                       <div className="space-y-2 mb-4">
                         <div className="flex items-center gap-2 text-sm">
                           <Phone className="w-4 h-4 text-primary-600" />
-                          <span className="text-gray-700">{branch.phone}</span>
+                          <a 
+                            href={`tel:${branch.phone}`}
+                            className="text-gray-700 hover:text-primary-600 transition-colors duration-200"
+                            title={`Call ${branch.phone}`}
+                          >
+                            {branch.phone}
+                          </a>
                         </div>
                         {branch.phone2 && (
                           <div className="flex items-center gap-2 text-sm">
                             <Phone className="w-4 h-4 text-primary-600" />
-                            <span className="text-gray-700">{branch.phone2}</span>
+                                                        <a 
+                              href={`tel:${branch.phone2}`}
+                              className="text-gray-700 hover:text-primary-600 transition-colors duration-200"
+                              title={`Call ${branch.phone2}`}
+                            >
+                              {branch.phone2}
+                            </a>
                           </div>
                         )}
                         <div className="flex items-center gap-2 text-sm">

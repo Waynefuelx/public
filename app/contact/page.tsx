@@ -142,7 +142,17 @@ const ContactPage = () => {
                 <div className="space-y-2">
                   {info.details.map((detail, detailIndex) => (
                     <p key={detailIndex} className="text-gray-600">
-                      {detail}
+                      {info.title === 'Phone' ? (
+                        <a 
+                          href={`tel:${detail}`}
+                          className="hover:text-primary-600 transition-colors duration-200"
+                          title={`Call ${detail}`}
+                        >
+                          {detail}
+                        </a>
+                      ) : (
+                        detail
+                      )}
                     </p>
                   ))}
                 </div>
@@ -358,7 +368,13 @@ const ContactPage = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <Phone className="w-5 h-5 text-primary-600" />
-                    <p className="text-gray-600 text-sm">{branch.phone}</p>
+                    <a 
+                      href={`tel:${branch.phone}`}
+                      className="text-gray-600 text-sm hover:text-primary-600 transition-colors duration-200"
+                      title={`Call ${branch.phone}`}
+                    >
+                      {branch.phone}
+                    </a>
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-primary-600" />
