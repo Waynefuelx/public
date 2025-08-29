@@ -91,13 +91,13 @@ export default function Home() {
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
             >
               <Link 
-                href="/booking"
+                href="/rental"
                 className="bg-white text-primary-500 hover:bg-secondary-100 font-semibold py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 border border-primary-200 text-base sm:text-lg w-full sm:w-auto inline-flex items-center justify-center"
               >
                 Rent Now
               </Link>
               <Link 
-                href="/services/sales"
+                href="/pricing"
                 className="bg-white text-primary-500 hover:bg-secondary-100 font-semibold py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 border border-primary-200 text-base sm:text-lg w-full sm:w-auto inline-flex items-center justify-center"
               >
                 Buy Now
