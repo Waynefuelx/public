@@ -1,11 +1,16 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { MapPin, Phone, Mail, Clock, Star, Navigation, Globe } from 'lucide-react'
+import { useState } from 'react'
+import { MapPin, Phone, Mail, Clock, Star, Navigation, Globe, MapPinOff, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import Branches from '@/components/Branches'
 
 const BranchesPage = () => {
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
+  const [nearestBranch, setNearestBranch] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const branches = [
     {
       id: 'george',
@@ -117,6 +122,80 @@ const BranchesPage = () => {
     }
   ]
 
+  // Function to calculate distance between two coordinates using Haversine formula
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371 // Radius of the Earth in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180
+    const dLon = (lon2 - lon1) * Math.PI / 180
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+    return R * c
+  }
+
+  // Function to find nearest branch
+  const findNearestBranch = (userLat: number, userLng: number) => {
+    let nearest = branches[0]
+    let shortestDistance = calculateDistance(userLat, userLng, nearest.coordinates.lat, nearest.coordinates.lng)
+    
+    branches.forEach(branch => {
+      const distance = calculateDistance(userLat, userLng, branch.coordinates.lat, branch.coordinates.lng)
+      if (distance < shortestDistance) {
+        shortestDistance = distance
+        nearest = branch
+      }
+    })
+    
+    return { branch: nearest, distance: shortestDistance }
+  }
+
+  // Function to get user location and find nearest branch
+  const handleFindNearestBranch = () => {
+    setIsLoading(true)
+    setError(null)
+    setNearestBranch(null)
+    
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser')
+      setIsLoading(false)
+      return
+    }
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords
+        setUserLocation({ lat: latitude, lng: longitude })
+        
+        const result = findNearestBranch(latitude, longitude)
+        setNearestBranch(result)
+        setIsLoading(false)
+      },
+      (error) => {
+        let errorMessage = 'Unable to retrieve your location'
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Location access denied. Please enable location services.'
+            break
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Location information unavailable.'
+            break
+          case error.TIMEOUT:
+            errorMessage = 'Location request timed out.'
+            break
+        }
+        setError(errorMessage)
+        setIsLoading(false)
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -148,12 +227,23 @@ const BranchesPage = () => {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
             >
-              <Link 
-                href="/contact"
-                className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-100 w-full sm:w-auto"
+              <button 
+                onClick={handleFindNearestBranch}
+                disabled={isLoading}
+                className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-100 w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Find Nearest Branch
-              </Link>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Finding...
+                  </>
+                ) : (
+                  <>
+                    <MapPin className="w-5 h-5" />
+                    Find Nearest Branch
+                  </>
+                )}
+              </button>
               <Link 
                 href="/rental"
                 className="bg-white text-primary-500 hover:bg-secondary-100 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto border border-primary-200 inline-flex items-center justify-center"
@@ -164,6 +254,98 @@ const BranchesPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Nearest Branch Result */}
+      {(nearestBranch || error) && (
+        <motion.section 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="py-8 bg-white border-b border-gray-200"
+        >
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            {error ? (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                <MapPinOff className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-red-800 mb-2">Location Error</h3>
+                <p className="text-red-700 mb-4">{error}</p>
+                <button 
+                  onClick={handleFindNearestBranch}
+                  className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : nearestBranch && (
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-6">
+                <div className="text-center mb-6">
+                  <MapPin className="w-12 h-12 text-green-600 mx-auto mb-4" />
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Nearest Branch Found!</h3>
+                  <p className="text-gray-600">Based on your current location</p>
+                </div>
+                
+                <div className="bg-white rounded-lg p-6 shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-xl font-bold text-gray-900">{nearestBranch.branch.name}</h4>
+                    <span className="text-sm bg-primary-100 text-primary-800 px-3 py-1 rounded-full">
+                      {nearestBranch.branch.region}
+                    </span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <MapPin className="w-4 h-4 text-primary-600" />
+                        <span>{nearestBranch.branch.address}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Phone className="w-4 h-4 text-primary-600" />
+                        <a 
+                          href={`tel:${nearestBranch.branch.phone}`}
+                          className="hover:text-primary-600 transition-colors duration-200"
+                        >
+                          {nearestBranch.branch.phone}
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Mail className="w-4 h-4 text-primary-600" />
+                        <span>{nearestBranch.branch.email}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Clock className="w-4 h-4 text-primary-600" />
+                        <span>{nearestBranch.branch.hours}</span>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary-600">
+                          {nearestBranch.distance.toFixed(1)} km
+                        </div>
+                        <div className="text-sm text-gray-500">Distance from you</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <a 
+                      href={`tel:${nearestBranch.branch.phone}`}
+                      className="btn-primary text-center"
+                    >
+                      Call Branch
+                    </a>
+                    <Link 
+                      href="/contact"
+                      className="btn-secondary text-center"
+                    >
+                      Get Directions
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.section>
+      )}
 
       {/* Stats Section */}
       <section className="py-12 sm:py-16 bg-white">
@@ -236,12 +418,23 @@ const BranchesPage = () => {
             >
               Contact Us
             </Link>
-            <Link 
-              href="/contact"
-              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto"
+            <button 
+              onClick={handleFindNearestBranch}
+              disabled={isLoading}
+              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Get Directions
-            </Link>
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Finding...
+                </>
+              ) : (
+                <>
+                  <MapPin className="w-5 h-5" />
+                  Get Directions
+                </>
+              )}
+            </button>
           </div>
         </div>
       </section>
