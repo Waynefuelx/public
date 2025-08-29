@@ -191,18 +191,19 @@ const AdminPage = () => {
 
   return (
     <div className="min-h-screen bg-secondary-200">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      {/* Admin Header - Fixed positioning to avoid conflicts with main nav */}
+      <div className="bg-white shadow-sm border-b border-gray-200 sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
-              <p className="text-sm text-gray-600">Valley Containers Staff Portal</p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:h-16 gap-4 sm:gap-0">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">Admin Panel</h1>
+              <p className="text-sm text-gray-600 truncate">Valley Containers Staff Portal</p>
             </div>
-            <div className="flex items-center space-x-4">
-              <button className="btn-primary">
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+              <button className="btn-primary text-sm">
                 <Plus className="w-4 h-4 mr-2" />
-                New Lead
+                <span className="hidden sm:inline">New Lead</span>
+                <span className="sm:hidden">New</span>
               </button>
               <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
                 <Users className="w-4 h-4 text-primary-600" />
@@ -213,21 +214,22 @@ const AdminPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Navigation Tabs */}
+        {/* Navigation Tabs - Responsive with horizontal scroll on small screens */}
         <div className="border-b border-gray-200 mb-8">
-          <nav className="flex space-x-8">
+          <nav className="flex space-x-4 sm:space-x-6 lg:space-x-8 overflow-x-auto pb-2 scrollbar-hide">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`flex items-center space-x-1 sm:space-x-2 py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap min-w-fit ${
                   activeTab === tab.id
                     ? 'border-primary-500 text-primary-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <tab.icon className="w-4 h-4" />
-                <span>{tab.label}</span>
+                <tab.icon className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden xs:inline">{tab.label}</span>
+                <span className="xs:hidden">{tab.label.charAt(0)}</span>
               </button>
             ))}
           </nav>
