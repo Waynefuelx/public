@@ -92,13 +92,13 @@ export default function Home() {
             >
               <Link 
                 href="/booking"
-                className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-100 w-full sm:w-auto"
+                className="bg-white text-primary-500 hover:bg-secondary-100 font-semibold py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 border border-primary-200 text-base sm:text-lg w-full sm:w-auto inline-flex items-center justify-center"
               >
                 Rent Now
               </Link>
               <Link 
                 href="/services/sales"
-                className="bg-white text-primary-500 hover:bg-secondary-100 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 border border-primary-200 w-full sm:w-auto"
+                className="bg-white text-primary-500 hover:bg-secondary-100 font-semibold py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 border border-primary-200 text-base sm:text-lg w-full sm:w-auto inline-flex items-center justify-center"
               >
                 Buy Now
               </Link>
