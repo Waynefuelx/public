@@ -21,8 +21,8 @@ interface BookingFormData {
   deliveryDate: string
   deliveryAddress: string
   city: string
-  state: string
-  zipCode: string
+  province: string
+  postalCode: string
   contactName: string
   email: string
   phone: string
@@ -296,28 +296,28 @@ const BookingForm = ({ onSuccess }: { onSuccess: () => void }) => {
           </div>
           
           <div>
-            <label className="form-label">State</label>
+            <label className="form-label">Province</label>
             <input
               type="text"
-              {...register('state', { required: 'State is required' })}
+              {...register('province', { required: 'Province is required' })}
               className="input-field"
-              placeholder="State"
+              placeholder="Province"
             />
-            {errors.state && (
-              <p className="text-error-600 text-sm mt-2">{errors.state.message}</p>
+            {errors.province && (
+              <p className="text-error-600 text-sm mt-2">{errors.province.message}</p>
             )}
           </div>
           
           <div>
-            <label className="form-label">ZIP Code</label>
+            <label className="form-label">Postal Code</label>
             <input
               type="text"
-              {...register('zipCode', { required: 'ZIP code is required' })}
+              {...register('postalCode', { required: 'Postal code is required' })}
               className="input-field"
-              placeholder="ZIP code"
+              placeholder="Postal code"
             />
-            {errors.zipCode && (
-              <p className="text-error-600 text-sm mt-2">{errors.zipCode.message}</p>
+            {errors.postalCode && (
+              <p className="text-error-600 text-sm mt-2">{errors.postalCode.message}</p>
             )}
           </div>
         </div>
@@ -370,12 +370,12 @@ const BookingForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
         <div className="mt-4">
           <label className="form-label">Phone Number</label>
-          <input
-            type="tel"
-            {...register('phone', { required: 'Phone number is required' })}
-            className="input-field"
-            placeholder="(555) 123-4567"
-          />
+                      <input
+              type="tel"
+              {...register('phone', { required: 'Phone number is required' })}
+              className="input-field"
+              placeholder="+27 82 123 4567"
+            />
           {errors.phone && (
             <p className="text-error-600 text-sm mt-2">{errors.phone.message}</p>
           )}
