@@ -517,6 +517,7 @@ const ConversionsPage = () => {
                         <a 
                           href={`mailto:${branch.email}`}
                           className="text-primary-600 hover:text-primary-800 transition-colors"
+                          title={`Click to email ${branch.email}`}
                         >
                           {branch.email}
                         </a>

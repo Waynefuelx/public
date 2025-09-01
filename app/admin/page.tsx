@@ -1013,7 +1013,15 @@ const AdminPage = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
                             <div className="text-sm font-medium text-gray-900">{container.customerName}</div>
-                            <div className="text-sm text-gray-500">{container.customerEmail}</div>
+                            <div className="text-sm text-gray-500">
+                              <a 
+                                href={`mailto:${container.customerEmail}`}
+                                className="hover:text-primary-600 transition-colors duration-200"
+                                title={`Click to email ${container.customerEmail}`}
+                              >
+                                {container.customerEmail}
+                              </a>
+                            </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -1525,7 +1533,13 @@ const AdminPage = () => {
                       </div>
                       <div>
                         <p className="text-sm text-gray-600">Email</p>
-                        <p className="font-medium text-gray-900">{selectedDelivery.customerEmail}</p>
+                        <a 
+                          href={`mailto:${selectedDelivery.customerEmail}`}
+                          className="font-medium text-primary-600 hover:text-primary-700 transition-colors duration-200"
+                          title={`Click to email ${selectedDelivery.customerEmail}`}
+                        >
+                          {selectedDelivery.customerEmail}
+                        </a>
                       </div>
                       <div>
                         <p className="text-sm text-gray-600">Phone</p>
@@ -1750,7 +1764,13 @@ const AdminPage = () => {
                       </div>
                       <div>
                         <p className="text-sm text-gray-600">Email</p>
-                        <p className="font-medium text-gray-900">{selectedContainer.customerEmail}</p>
+                        <a 
+                          href={`mailto:${selectedContainer.customerEmail}`}
+                          className="font-medium text-primary-600 hover:text-primary-700 transition-colors duration-200"
+                          title={`Click to email ${selectedContainer.customerEmail}`}
+                        >
+                          {selectedContainer.customerEmail}
+                        </a>
                       </div>
                       <div>
                         <p className="text-sm text-gray-600">Phone</p>
