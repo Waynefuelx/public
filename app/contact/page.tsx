@@ -389,7 +389,13 @@ const ContactPage = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-primary-600" />
-                    <p className="text-gray-600 text-sm">{branch.email}</p>
+                    <a 
+                      href={`mailto:${branch.email}`}
+                      className="text-gray-600 text-sm hover:text-primary-600 transition-colors duration-200"
+                      title={`Click to email ${branch.email}`}
+                    >
+                      {branch.email}
+                    </a>
                   </div>
                 </div>
               </motion.div>
