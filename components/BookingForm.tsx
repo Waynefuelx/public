@@ -264,7 +264,10 @@ const BookingForm = ({
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
-                      e.currentTarget.nextElementSibling.style.display = 'flex';
+                      const nextSibling = e.currentTarget.nextElementSibling;
+                      if (nextSibling) {
+                        (nextSibling as HTMLElement).style.display = 'flex';
+                      }
                     }}
                   />
                   <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
@@ -308,7 +311,10 @@ const BookingForm = ({
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
-                          e.currentTarget.nextElementSibling.style.display = 'flex';
+                          const nextSibling = e.currentTarget.nextElementSibling;
+                          if (nextSibling) {
+                            (nextSibling as HTMLElement).style.display = 'flex';
+                          }
                         }}
                       />
                       <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">

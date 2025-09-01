@@ -310,7 +310,7 @@ const BranchesPage = () => {
                         <Mail className="w-4 h-4 text-primary-600" />
                         <a 
                           href={`mailto:${nearestBranch.branch.email}`}
-                          className="hover:text-primary-600 transition-colors duration-200"
+                          className="hover:text-primary-800 transition-colors duration-200"
                           title={`Click to email ${nearestBranch.branch.email}`}
                         >
                           {nearestBranch.branch.email}

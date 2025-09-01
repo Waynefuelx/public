@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Calendar, Truck, CreditCard } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import BookingForm from '@/components/BookingForm'
 
-export default function BookingPage() {
+function BookingPageContent() {
   const [showBookingForm, setShowBookingForm] = useState(true)
   const searchParams = useSearchParams()
   
@@ -153,5 +153,20 @@ export default function BookingPage() {
         </div>
       </section>
     </div>
+  )
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-secondary-200 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-lg text-gray-600">Loading booking form...</p>
+        </div>
+      </div>
+    }>
+      <BookingPageContent />
+    </Suspense>
   )
 }

@@ -147,22 +147,22 @@ const ContactPage = () => {
                     <p key={detailIndex} className="text-gray-600">
                       {info.title === 'Phone' ? (
                         <a 
-                          href={`tel:${detail}`}
+                          href={`tel:${typeof detail === 'string' ? detail : ''}`}
                           className="hover:text-primary-600 transition-colors duration-200"
-                          title={`Call ${detail}`}
+                          title={`Call ${typeof detail === 'string' ? detail : ''}`}
                         >
-                          {detail}
+                          {typeof detail === 'string' ? detail : ''}
                         </a>
-                      ) : info.title === 'Email' ? (
+                      ) : info.title === 'Email' && typeof detail === 'object' && 'email' in detail ? (
                         <a 
                           href={`mailto:${detail.email}`}
-                          className="hover:text-primary-600 transition-colors duration-200"
+                          className="hover:text-primary-700 transition-colors duration-200"
                           title={`Click to email ${detail.email}`}
                         >
                           {detail.label}
                         </a>
                       ) : (
-                        detail
+                        typeof detail === 'string' ? detail : ''
                       )}
                     </p>
                   ))}
@@ -389,11 +389,11 @@ const ContactPage = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-primary-600" />
-                    <a 
-                      href={`mailto:${branch.email}`}
-                      className="text-gray-600 text-sm hover:text-primary-600 transition-colors duration-200"
-                      title={`Click to email ${branch.email}`}
-                    >
+                                            <a 
+                          href={`mailto:${branch.email}`}
+                          className="text-gray-600 text-sm hover:text-primary-700 transition-colors duration-200"
+                          title={`Click to email ${branch.email}`}
+                        >
                       {branch.email}
                     </a>
                   </div>

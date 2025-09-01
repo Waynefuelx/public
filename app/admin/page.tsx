@@ -1016,7 +1016,7 @@ const AdminPage = () => {
                             <div className="text-sm text-gray-500">
                               <a 
                                 href={`mailto:${container.customerEmail}`}
-                                className="hover:text-primary-600 transition-colors duration-200"
+                                className="hover:text-primary-700 transition-colors duration-200"
                                 title={`Click to email ${container.customerEmail}`}
                               >
                                 {container.customerEmail}
@@ -1535,7 +1535,7 @@ const AdminPage = () => {
                         <p className="text-sm text-gray-600">Email</p>
                         <a 
                           href={`mailto:${selectedDelivery.customerEmail}`}
-                          className="font-medium text-primary-600 hover:text-primary-700 transition-colors duration-200"
+                          className="font-medium text-primary-600 hover:text-primary-800 transition-colors duration-200"
                           title={`Click to email ${selectedDelivery.customerEmail}`}
                         >
                           {selectedDelivery.customerEmail}
@@ -1766,7 +1766,7 @@ const AdminPage = () => {
                         <p className="text-sm text-gray-600">Email</p>
                         <a 
                           href={`mailto:${selectedContainer.customerEmail}`}
-                          className="font-medium text-primary-600 hover:text-primary-700 transition-colors duration-200"
+                          className="font-medium text-primary-600 hover:text-primary-800 transition-colors duration-200"
                           title={`Click to email ${selectedContainer.customerEmail}`}
                         >
                           {selectedContainer.customerEmail}

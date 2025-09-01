@@ -151,11 +151,11 @@ const Branches = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Mail className="w-5 h-5" />
-                    <a 
-                  href="mailto:info@valleycontainers.co.za"
-                  className="hover:text-primary-600 transition-colors duration-200"
-                  title="Click to email info@valleycontainers.co.za"
-                >
+                                      <a 
+                    href="mailto:info@valleycontainers.co.za"
+                    className="hover:text-primary-700 transition-colors duration-200"
+                    title="Click to email info@valleycontainers.co.za"
+                  >
                   info@valleycontainers.co.za
                 </a>
                   </div>
@@ -242,7 +242,13 @@ const Branches = () => {
                         )}
                         <div className="flex items-center gap-2 text-sm">
                           <Mail className="w-4 h-4 text-primary-600" />
-                          <span className="text-gray-700 break-all">{branch.email}</span>
+                          <a 
+                            href={`mailto:${branch.email}`}
+                            className="text-gray-700 hover:text-primary-700 transition-colors duration-200 break-all"
+                            title={`Click to email ${branch.email}`}
+                          >
+                            {branch.email}
+                          </a>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           <Clock className="w-4 h-4 text-primary-600" />

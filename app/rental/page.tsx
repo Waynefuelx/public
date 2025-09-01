@@ -286,7 +286,8 @@ export default function RentalPage() {
                 rental: true,
                 purchase: true,
                 icon: Package,
-                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png'
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png',
+                category: 'Storage'
               },
               {
                 id: '6m-office',
@@ -297,6 +298,7 @@ export default function RentalPage() {
                 weight: '2,800 kg',
                 features: ['Insulated walls', 'Electrical fittings', 'Windows & doors', 'Office ready'],
                 price: 450,
+                category: 'Office',
                 rental: true,
                 purchase: true,
                 icon: Package,
@@ -314,7 +316,8 @@ export default function RentalPage() {
                 rental: true,
                 purchase: true,
                 icon: Package,
-                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png'
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png',
+                category: 'Office'
               },
               {
                 id: '6m-refrigeration',
@@ -328,7 +331,8 @@ export default function RentalPage() {
                 rental: true,
                 purchase: false,
                 icon: Thermometer,
-                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png'
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png',
+                category: 'Specialized'
               },
               {
                 id: '3m-storage',
@@ -342,7 +346,8 @@ export default function RentalPage() {
                 rental: true,
                 purchase: true,
                 icon: Package,
-                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/3m-storage-container.png'
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/3m-storage-container.png',
+                category: 'Storage'
               },
               {
                 id: '6m-split',
@@ -356,7 +361,8 @@ export default function RentalPage() {
                 rental: true,
                 purchase: true,
                 icon: Package,
-                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png'
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png',
+                category: 'Storage'
               },
               {
                 id: 'elite-mobile-office',
@@ -370,7 +376,8 @@ export default function RentalPage() {
                 rental: true,
                 purchase: true,
                 icon: Package,
-                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png'
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png',
+                category: 'Office'
               },
               {
                 id: '3m-ablution',
@@ -384,7 +391,8 @@ export default function RentalPage() {
                 rental: true,
                 purchase: false,
                 icon: Package,
-                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png'
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png',
+                category: 'Facilities'
               },
               {
                 id: '6m-pavilion',
@@ -398,7 +406,8 @@ export default function RentalPage() {
                 rental: true,
                 purchase: true,
                 icon: Package,
-                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png'
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png',
+                category: 'Events'
               },
               {
                 id: '6m-sleeper',
@@ -412,7 +421,8 @@ export default function RentalPage() {
                 rental: true,
                 purchase: false,
                 icon: Package,
-                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png'
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png',
+                category: 'Accommodation'
               }
             ].map((container, index) => (
               <div

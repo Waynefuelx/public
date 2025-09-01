@@ -393,7 +393,10 @@ const ConversionsPage = () => {
                     className="w-full h-full object-contain scale-110 group-hover:scale-115 transition-transform duration-300"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
-                      e.currentTarget.nextElementSibling.style.display = 'flex';
+                      const nextSibling = e.currentTarget.nextElementSibling;
+                      if (nextSibling) {
+                        (nextSibling as HTMLElement).style.display = 'flex';
+                      }
                     }}
                   />
                   <div className="w-full h-full bg-gray-200 flex items-center justify-center">

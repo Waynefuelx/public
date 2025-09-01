@@ -568,11 +568,11 @@ const DriverPage = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Email</p>
-                      <a 
-                        href={`mailto:${selectedDelivery.customerEmail}`}
-                        className="font-medium text-primary-600 hover:text-primary-700 transition-colors duration-200"
-                        title={`Click to email ${selectedDelivery.customerEmail}`}
-                      >
+                                        <a 
+                    href={`mailto:${selectedDelivery.customerEmail}`}
+                    className="font-medium text-primary-600 hover:text-primary-800 transition-colors duration-200"
+                    title={`Click to email ${selectedDelivery.customerEmail}`}
+                  >
                         {selectedDelivery.customerEmail}
                       </a>
                     </div>
