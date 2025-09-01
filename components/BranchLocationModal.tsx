@@ -241,6 +241,7 @@ export default function BranchLocationModal({ isOpen, onClose }: BranchLocationM
                         <a 
                           href={`mailto:${closestBranch.email}`}
                           className="text-primary-600 hover:text-primary-800 transition-colors"
+                          title={`Click to email ${closestBranch.email}`}
                         >
                           {closestBranch.email}
                         </a>

@@ -57,7 +57,10 @@ const ContactPage = () => {
     {
       icon: Mail,
       title: 'Email',
-      details: ['info@valleycontainers.co.za', 'sales@valleycontainers.co.za'],
+              details: [
+          { email: 'info@valleycontainers.co.za', label: 'info@valleycontainers.co.za' },
+          { email: 'sales@valleycontainers.co.za', label: 'sales@valleycontainers.co.za' }
+        ],
       color: 'text-green-600'
     },
     {
@@ -149,6 +152,14 @@ const ContactPage = () => {
                           title={`Call ${detail}`}
                         >
                           {detail}
+                        </a>
+                      ) : info.title === 'Email' ? (
+                        <a 
+                          href={`mailto:${detail.email}`}
+                          className="hover:text-primary-600 transition-colors duration-200"
+                          title={`Click to email ${detail.email}`}
+                        >
+                          {detail.label}
                         </a>
                       ) : (
                         detail

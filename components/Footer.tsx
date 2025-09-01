@@ -66,7 +66,12 @@ const Footer = () => {
             </div>
             <div className="flex items-center space-x-3">
               <Mail className="w-4 h-4 text-[#F2F2F2]" />
-              <span className="text-[#F2F2F2]">info@valleycontainers.co.za</span>
+              <a 
+                href="mailto:info@valleycontainers.co.za"
+                className="text-[#F2F2F2] hover:text-white transition-colors duration-200"
+              >
+                info@valleycontainers.co.za
+              </a>
             </div>
             <div className="flex items-center space-x-3">
               <MapPin className="w-4 h-4 text-[#F2F2F2]" />
@@ -157,7 +162,12 @@ const Footer = () => {
                     +27 44 878 0878
                   </a>
                 </p>
-                <p>info@valleycontainers.co.za</p>
+                <a 
+                  href="mailto:info@valleycontainers.co.za"
+                  className="hover:text-white transition-colors duration-200"
+                >
+                  info@valleycontainers.co.za
+                </a>
                 <p>Western Cape, South Africa</p>
               </div>
             </div>
@@ -175,7 +185,12 @@ const Footer = () => {
                     +27 72 211 1052
                   </a>
                 </p>
-                <p>cpt@valleycontainers.co.za</p>
+                <a 
+                  href="mailto:cpt@valleycontainers.co.za"
+                  className="hover:text-white transition-colors duration-200"
+                >
+                  cpt@valleycontainers.co.za
+                </a>
                 <p>Cape Town Metro, South Africa</p>
               </div>
             </div>
@@ -193,7 +208,12 @@ const Footer = () => {
                     +27 71 371 2972
                   </a>
                 </p>
-                <p>jhb@valleycontainers.co.za</p>
+                <a 
+                  href="mailto:jhb@valleycontainers.co.za"
+                  className="hover:text-white transition-colors duration-200"
+                >
+                  jhb@valleycontainers.co.za
+                </a>
                 <p>Gauteng, South Africa</p>
               </div>
             </div>

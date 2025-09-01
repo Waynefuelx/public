@@ -151,7 +151,13 @@ const Branches = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Mail className="w-5 h-5" />
-                    <span>info@valleycontainers.co.za</span>
+                    <a 
+                  href="mailto:info@valleycontainers.co.za"
+                  className="hover:text-primary-600 transition-colors duration-200"
+                  title="Click to email info@valleycontainers.co.za"
+                >
+                  info@valleycontainers.co.za
+                </a>
                   </div>
                 </div>
               </div>
