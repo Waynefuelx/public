@@ -1,13 +1,35 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Calendar, Truck, CreditCard } from 'lucide-react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import BookingForm from '@/components/BookingForm'
 
 export default function BookingPage() {
   const [showBookingForm, setShowBookingForm] = useState(true)
+  const searchParams = useSearchParams()
+  
+  // Extract container information from URL parameters
+  const containerId = searchParams.get('container')
+  const containerType = searchParams.get('type')
+  const containerCategory = searchParams.get('category')
+  const containerDimensions = searchParams.get('dimensions')
+  const containerCapacity = searchParams.get('capacity')
+  const containerPrice = searchParams.get('price')
+  
+  // Container data to pass to the form
+  const selectedContainerData = containerId && containerType ? {
+    id: containerId,
+    name: containerType,
+    category: containerCategory || '',
+    description: `${containerType} container for ${containerCategory || 'general use'}`,
+    dimensions: containerDimensions || '6m × 2.4m × 2.6m',
+    capacity: containerCapacity || '37.4 cu m',
+    price: containerPrice ? parseInt(containerPrice) : 150,
+    image: '/api/placeholder/300/200'
+  } : null
 
   const bookingSteps = [
     {
@@ -102,7 +124,10 @@ export default function BookingPage() {
               <p className="text-secondary-600">Fill out the form below to secure your container rental</p>
             </div>
             
-            <BookingForm onSuccess={() => console.log('Booking successful!')} />
+            <BookingForm 
+              onSuccess={() => console.log('Booking successful!')} 
+              selectedContainer={selectedContainerData}
+            />
           </div>
         </div>
       </section>

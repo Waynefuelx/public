@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import BranchLocationModal from '@/components/BranchLocationModal'
 
 import { 
   Package, 
@@ -207,6 +208,7 @@ const categories = ['All', 'Storage', 'Office', 'Specialized', 'Premium', 'Facil
 export default function RentalPage() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [selectedContainer, setSelectedContainer] = useState<ContainerType | null>(null)
+  const [isBranchModalOpen, setIsBranchModalOpen] = useState(false)
 
   const filteredContainers = selectedCategory === 'All' 
     ? containerTypes 
@@ -487,7 +489,7 @@ export default function RentalPage() {
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   {container.rental && (
                     <Link
-                      href="/booking"
+                      href={`/booking?container=${container.id}&type=${container.name}&category=${container.category}&dimensions=${encodeURIComponent(container.dimensions)}&capacity=${encodeURIComponent(container.capacity)}&price=${container.price}`}
                       className="btn-primary flex-1 text-sm w-full text-center"
                     >
                       Rent Now
@@ -593,7 +595,10 @@ export default function RentalPage() {
             >
               Start Renting
             </Link>
-            <button className="btn-secondary text-lg px-8 py-3 border-white text-white hover:bg-white hover:text-primary-500">
+            <button 
+              onClick={() => setIsBranchModalOpen(true)}
+              className="btn-secondary text-lg px-8 py-3 border-white text-primary-500 hover:bg-white hover:text-primary-500"
+            >
               Contact Sales
             </button>
           </div>
@@ -689,6 +694,12 @@ export default function RentalPage() {
           </div>
         </div>
       )}
+
+      {/* Branch Location Modal */}
+      <BranchLocationModal 
+        isOpen={isBranchModalOpen}
+        onClose={() => setIsBranchModalOpen(false)}
+      />
     </div>
   )
 }

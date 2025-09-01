@@ -7,11 +7,11 @@ const Footer = () => {
   const currentYear = new Date().getFullYear()
 
   const footerLinks = {
-    services: [
-      { name: 'Container Rental', href: '/services/rental' },
-      { name: 'Container Sales', href: '/services/sales' },
-      { name: 'Logistics', href: '/services/logistics' },
-      { name: 'Custom Solutions', href: '/services/custom' },
+    conversions: [
+      { name: 'Site Offices', href: '/services' },
+      { name: 'Office Units', href: '/services' },
+      { name: 'Storage Solutions', href: '/services' },
+      { name: 'Custom Conversions', href: '/services' },
     ],
     company: [
       { name: 'About Us', href: '/about' },
@@ -75,11 +75,11 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Services */}
+          {/* Conversions */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Services</h3>
+            <h3 className="text-lg font-semibold mb-4">Conversions</h3>
             <ul className="space-y-2">
-              {footerLinks.services.map((link) => (
+              {footerLinks.conversions.map((link) => (
                 <li key={link.name}>
                   <Link 
                     href={link.href}

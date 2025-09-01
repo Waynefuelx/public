@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { 
@@ -10,7 +10,8 @@ import {
   CreditCard, 
   FileText,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Package
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -41,50 +42,119 @@ interface ContainerType {
   image: string
 }
 
-const BookingForm = ({ onSuccess }: { onSuccess: () => void }) => {
+const BookingForm = ({ 
+  onSuccess, 
+  selectedContainer: initialSelectedContainer 
+}: { 
+  onSuccess: () => void
+  selectedContainer?: ContainerType | null
+}) => {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [selectedContainer, setSelectedContainer] = useState<ContainerType | null>(null)
+  const [selectedContainer, setSelectedContainer] = useState<ContainerType | null>(initialSelectedContainer || null)
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<BookingFormData>()
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<BookingFormData>()
   const watchServiceType = watch('serviceType')
+  
+  // Pre-fill form when selectedContainer changes
+  useEffect(() => {
+    if (selectedContainer) {
+      setValue('containerType', selectedContainer.id)
+      setValue('serviceType', 'rental')
+    }
+  }, [selectedContainer, setValue])
 
+  // Container types that match the rental page data
   const containerTypes: ContainerType[] = [
     {
-      id: '20ft-standard',
-      name: '20ft Standard Container',
-      description: 'Standard shipping container, perfect for general cargo',
-      dimensions: '20\' × 8\' × 8.5\'',
-      capacity: '1,170 cu ft',
-      price: 150,
-      image: '/api/placeholder/300/200'
+      id: '6m-storage',
+      name: '6m Storage Container',
+      description: 'Versatile storage container perfect for secure storage, moving, and general cargo.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      price: 125,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png'
     },
     {
-      id: '40ft-standard',
-      name: '40ft Standard Container',
-      description: 'Large capacity container for bulk shipments',
-      dimensions: '40\' × 8\' × 8.5\'',
-      capacity: '2,390 cu ft',
-      price: 250,
-      image: '/api/placeholder/300/200'
+      id: '6m-office',
+      name: '6m Office Container',
+      description: 'Professional office space container, perfect for construction sites, events, and temporary workspaces.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      price: 450,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png'
     },
     {
-      id: '40ft-high-cube',
-      name: '40ft High Cube',
-      description: 'Extra height container for oversized items',
-      dimensions: '40\' × 8\' × 9.5\'',
-      capacity: '2,694 cu ft',
-      price: 275,
-      image: '/api/placeholder/300/200'
+      id: '6m-vip-office',
+      name: '6m VIP Container Office',
+      description: 'Premium office container with enhanced amenities and professional finish.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      price: 550,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png'
     },
     {
-      id: '20ft-reefer',
-      name: '20ft Refrigerated',
-      description: 'Temperature controlled container for perishables',
-      dimensions: '20\' × 8\' × 8.5\'',
-      capacity: '1,170 cu ft',
+      id: '6m-refrigeration',
+      name: '6m Refrigeration Container',
+      description: 'Temperature controlled container for perishable goods, food, and pharmaceuticals.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '33.1 cu m',
       price: 200,
-      image: '/api/placeholder/300/200'
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png'
+    },
+    {
+      id: '3m-storage',
+      name: '3m Storage Container',
+      description: 'Compact storage container perfect for small spaces and limited storage needs.',
+      dimensions: '3m × 2.4m × 2.6m',
+      capacity: '18.7 cu m',
+      price: 75,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/3m-storage-container.png'
+    },
+    {
+      id: '6m-split',
+      name: '6m Split Container',
+      description: 'Divided container offering multiple compartments for organized storage.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      price: 175,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png'
+    },
+    {
+      id: 'elite-mobile-office',
+      name: 'Elite Mobile Site Office',
+      description: 'Premium mobile office solution with advanced features and professional finish.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      price: 600,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png'
+    },
+    {
+      id: '3m-ablution',
+      name: '3m Ablution Container',
+      description: 'Sanitation container with bathroom and shower facilities for construction sites and events.',
+      dimensions: '3m × 2.4m × 2.6m',
+      capacity: '18.7 cu m',
+      price: 100,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png'
+    },
+    {
+      id: '6m-pavilion',
+      name: '6m Pavilion Container',
+      description: 'Open-sided container perfect for events, exhibitions, and temporary structures.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      price: 150,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png'
+    },
+    {
+      id: '6m-sleeper',
+      name: '6m Sleeper Container',
+      description: 'Sleeping accommodation container with beds and basic amenities for workers.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      price: 200,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png'
     }
   ]
 
@@ -179,35 +249,88 @@ const BookingForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
       {watchServiceType && (
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Container Selection</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            {containerTypes.map((container) => (
-              <div
-                key={container.id}
-                onClick={() => setSelectedContainer(container)}
-                className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                  selectedContainer?.id === container.id
-                    ? 'border-primary-600 bg-primary-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-start space-x-3">
-                  <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0"></div>
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{container.name}</h4>
-                    <p className="text-sm text-gray-500 mb-2">{container.description}</p>
-                    <div className="text-sm text-gray-600">
-                      <div>Dimensions: {container.dimensions}</div>
-                      <div>Capacity: {container.capacity}</div>
-                      <div className="font-medium text-primary-600">
-                        R{container.price}/month
-                      </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            {selectedContainer ? 'Selected Container' : 'Container Selection'}
+          </h3>
+          
+          {selectedContainer ? (
+            // Show selected container
+            <div className="p-4 border-2 border-primary-600 bg-primary-50 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
+                  <img 
+                    src={selectedContainer.image} 
+                    alt={selectedContainer.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                    <Package className="w-6 h-6 text-gray-400" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-gray-900">{selectedContainer.name}</h4>
+                  <p className="text-sm text-gray-500 mb-2">{selectedContainer.description}</p>
+                  <div className="text-sm text-gray-600">
+                    <div>Dimensions: {selectedContainer.dimensions}</div>
+                    <div>Capacity: {selectedContainer.capacity}</div>
+                    <div className="font-medium text-primary-600">
+                      R{selectedContainer.price}/month
                     </div>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+              <button
+                type="button"
+                onClick={() => setSelectedContainer(null)}
+                className="mt-3 text-sm text-primary-600 hover:text-primary-800 underline"
+              >
+                Change container
+              </button>
+            </div>
+          ) : (
+            // Show container selection options
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {containerTypes.map((container) => (
+                <div
+                  key={container.id}
+                  onClick={() => setSelectedContainer(container)}
+                  className="p-4 border-2 border-gray-200 hover:border-gray-300 rounded-lg cursor-pointer transition-all duration-200"
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
+                      <img 
+                        src={container.image} 
+                        alt={container.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling.style.display = 'flex';
+                        }}
+                      />
+                      <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                        <Package className="w-6 h-6 text-gray-400" />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900">{container.name}</h4>
+                      <p className="text-sm text-gray-500 mb-2">{container.description}</p>
+                      <div className="text-sm text-gray-600">
+                        <div>Dimensions: {container.dimensions}</div>
+                        <div>Capacity: {container.capacity}</div>
+                        <div className="font-medium text-primary-600">
+                          R{container.price}/month
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
