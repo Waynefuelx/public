@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Users, 
@@ -21,7 +21,8 @@ import {
   Eye,
   Edit,
   Trash2,
-  MoreVertical
+  MoreVertical,
+  Navigation
 } from 'lucide-react'
 
 interface Lead {
@@ -50,10 +51,113 @@ interface Order {
   assignedDriver: string
 }
 
+interface Container {
+  id: string
+  containerNumber: string
+  containerType: string
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  location: {
+    lat: number
+    lng: number
+    address: string
+    city: string
+    province: string
+  }
+  deliveryDate: string
+  rentalDuration: number // in days
+  paymentStatus: 'paid' | 'overdue' | 'pending'
+  lastPaymentDate: string
+  nextPaymentDate: string
+  monthlyRate: number
+  totalOwed: number
+  notes: string
+}
+
+interface Delivery {
+  id: string
+  containerNumber: string
+  containerType: string
+  customerName: string
+  customerPhone: string
+  customerEmail: string
+  deliveryAddress: string
+  deliveryCity: string
+  deliveryProvince: string
+  coordinates: {
+    lat: number
+    lng: number
+  }
+  scheduledDate: string
+  status: 'pending' | 'in-transit' | 'delivered' | 'completed'
+  driverName: string
+  driverPhone: string
+  notes: string
+  serialNumber?: string
+  qrCode?: string
+}
+
+// Leaflet types
+declare global {
+  interface Window {
+    L: any
+    selectContainer: (containerId: string) => void
+  }
+}
+
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [selectedContainer, setSelectedContainer] = useState<Container | null>(null)
+  const [map, setMap] = useState<any>(null)
+  const [markers, setMarkers] = useState<any[]>([])
+  const [isMapLoaded, setIsMapLoaded] = useState(false)
+  const [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null)
+  const [showQRScanner, setShowQRScanner] = useState(false)
+  const [scannedSerialNumber, setScannedSerialNumber] = useState('')
+
+  // Add Leaflet CSS styles
+  useEffect(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      .leaflet-container {
+        height: 100% !important;
+        width: 100% !important;
+        z-index: 1 !important;
+        font-family: inherit !important;
+      }
+      .leaflet-control-container {
+        z-index: 1000 !important;
+      }
+      .custom-marker {
+        background: transparent !important;
+        border: none !important;
+      }
+      #leaflet-map {
+        height: 384px !important;
+        width: 100% !important;
+        position: relative !important;
+        z-index: 1 !important;
+      }
+      .leaflet-popup-content-wrapper {
+        border-radius: 8px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+      }
+      .leaflet-popup-content {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+    `
+    document.head.appendChild(style)
+    
+    return () => {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style)
+      }
+    }
+  }, [])
 
   // Mock data - in real app this would come from API
   const leads: Lead[] = [
@@ -134,6 +238,215 @@ const AdminPage = () => {
     }
   ]
 
+  const containers: Container[] = [
+    {
+      id: 'C001',
+      containerNumber: 'VC-20-001',
+      containerType: '20ft Standard',
+      customerName: 'Construction Plus Inc.',
+      customerEmail: 'john.smith@constructionplus.co.za',
+      customerPhone: '+27 82 123 4567',
+      location: {
+        lat: -33.9715,
+        lng: 22.4617,
+        address: '123 Main Street',
+        city: 'George',
+        province: 'Western Cape'
+      },
+      deliveryDate: '2024-01-10T08:00:00Z',
+      rentalDuration: 45,
+      paymentStatus: 'paid',
+      lastPaymentDate: '2024-01-15T10:30:00Z',
+      nextPaymentDate: '2024-02-15T10:30:00Z',
+      monthlyRate: 2500,
+      totalOwed: 0,
+      notes: 'Construction site storage - long term rental'
+    },
+    {
+      id: 'C002',
+      containerNumber: 'VC-40-002',
+      containerType: '40ft High Cube',
+      customerName: 'Global Logistics Solutions',
+      customerEmail: 'maria.garcia@globallogistics.co.za',
+      customerPhone: '+27 82 234 5678',
+      location: {
+        lat: -33.9249,
+        lng: 18.4241,
+        address: '456 Harbour Road',
+        city: 'Cape Town',
+        province: 'Western Cape'
+      },
+      deliveryDate: '2024-01-05T14:00:00Z',
+      rentalDuration: 30,
+      paymentStatus: 'overdue',
+      lastPaymentDate: '2024-01-01T09:00:00Z',
+      nextPaymentDate: '2024-02-01T09:00:00Z',
+      monthlyRate: 3500,
+      totalOwed: 3500,
+      notes: 'Port storage - payment overdue by 15 days'
+    },
+    {
+      id: 'C003',
+      containerNumber: 'VC-20-003',
+      containerType: '20ft Refrigerated',
+      customerName: 'Fresh Foods Ltd',
+      customerEmail: 'info@freshfoods.co.za',
+      customerPhone: '+27 82 345 6789',
+      location: {
+        lat: -26.2041,
+        lng: 28.0473,
+        address: '789 Industrial Park',
+        city: 'Johannesburg',
+        province: 'Gauteng'
+      },
+      deliveryDate: '2024-01-12T11:00:00Z',
+      rentalDuration: 20,
+      paymentStatus: 'pending',
+      lastPaymentDate: '2024-01-12T11:00:00Z',
+      nextPaymentDate: '2024-02-12T11:00:00Z',
+      monthlyRate: 4000,
+      totalOwed: 0,
+      notes: 'Food storage - new customer'
+    },
+    {
+      id: 'C004',
+      containerNumber: 'VC-40-004',
+      containerType: '40ft Standard',
+      customerName: 'Mining Solutions Corp',
+      customerEmail: 'contact@miningsolutions.co.za',
+      customerPhone: '+27 82 456 7890',
+      location: {
+        lat: -28.7282,
+        lng: 24.7499,
+        address: 'Mining Site A',
+        city: 'Kimberley',
+        province: 'Northern Cape'
+      },
+      deliveryDate: '2023-12-20T07:00:00Z',
+      rentalDuration: 60,
+      paymentStatus: 'paid',
+      lastPaymentDate: '2024-01-20T08:00:00Z',
+      nextPaymentDate: '2024-02-20T08:00:00Z',
+      monthlyRate: 3000,
+      totalOwed: 0,
+      notes: 'Mining equipment storage - reliable customer'
+    },
+    {
+      id: 'C005',
+      containerNumber: 'VC-20-005',
+      containerType: '20ft Standard',
+      customerName: 'Event Productions LLC',
+      customerEmail: 'david.wilson@eventproductions.co.za',
+      customerPhone: '+27 82 567 8901',
+      location: {
+        lat: -34.1833,
+        lng: 22.1333,
+        address: 'Beachfront Event Space',
+        city: 'Mossel Bay',
+        province: 'Western Cape'
+      },
+      deliveryDate: '2024-01-08T16:00:00Z',
+      rentalDuration: 15,
+      paymentStatus: 'overdue',
+      lastPaymentDate: '2024-01-08T16:00:00Z',
+      nextPaymentDate: '2024-02-08T16:00:00Z',
+      monthlyRate: 2000,
+      totalOwed: 2000,
+      notes: 'Event storage - payment overdue by 8 days'
+    }
+  ]
+
+  const deliveries: Delivery[] = [
+    {
+      id: 'D001',
+      containerNumber: 'VC-20-001',
+      containerType: '20ft Standard',
+      customerName: 'Construction Plus Inc.',
+      customerPhone: '+27 82 123 4567',
+      customerEmail: 'john.smith@constructionplus.co.za',
+      deliveryAddress: '123 Main Street, Industrial Area',
+      deliveryCity: 'George',
+      deliveryProvince: 'Western Cape',
+      coordinates: {
+        lat: -33.9715,
+        lng: 22.4617
+      },
+      scheduledDate: '2024-01-20T08:00:00Z',
+      status: 'pending',
+      driverName: 'Mike Johnson',
+      driverPhone: '+27 82 555 1234',
+      notes: 'Deliver to construction site - contact John Smith on arrival',
+      serialNumber: 'VC20001-2024',
+      qrCode: 'VC20001-2024-QR'
+    },
+    {
+      id: 'D002',
+      containerNumber: 'VC-40-002',
+      containerType: '40ft High Cube',
+      customerName: 'Global Logistics Solutions',
+      customerPhone: '+27 82 234 5678',
+      customerEmail: 'maria.garcia@globallogistics.co.za',
+      deliveryAddress: '456 Harbour Road, Port Area',
+      deliveryCity: 'Cape Town',
+      deliveryProvince: 'Western Cape',
+      coordinates: {
+        lat: -33.9249,
+        lng: 18.4241
+      },
+      scheduledDate: '2024-01-21T10:00:00Z',
+      status: 'in-transit',
+      driverName: 'Tom Davis',
+      driverPhone: '+27 82 555 2345',
+      notes: 'Port delivery - security clearance required',
+      serialNumber: 'VC40002-2024',
+      qrCode: 'VC40002-2024-QR'
+    },
+    {
+      id: 'D003',
+      containerNumber: 'VC-20-003',
+      containerType: '20ft Refrigerated',
+      customerName: 'Fresh Foods Ltd',
+      customerPhone: '+27 82 345 6789',
+      customerEmail: 'info@freshfoods.co.za',
+      deliveryAddress: '789 Industrial Park, Food Zone',
+      deliveryCity: 'Johannesburg',
+      deliveryProvince: 'Gauteng',
+      coordinates: {
+        lat: -26.2041,
+        lng: 28.0473
+      },
+      scheduledDate: '2024-01-22T14:00:00Z',
+      status: 'pending',
+      driverName: 'Sarah Wilson',
+      driverPhone: '+27 82 555 3456',
+      notes: 'Refrigerated container - maintain temperature during transport',
+      serialNumber: 'VC20003-2024',
+      qrCode: 'VC20003-2024-QR'
+    },
+    {
+      id: 'D004',
+      containerNumber: 'VC-40-004',
+      containerType: '40ft Standard',
+      customerName: 'Mining Solutions Corp',
+      customerPhone: '+27 82 456 7890',
+      customerEmail: 'contact@miningsolutions.co.za',
+      deliveryAddress: 'Mining Site A, Northern Cape',
+      deliveryCity: 'Kimberley',
+      deliveryProvince: 'Northern Cape',
+      coordinates: {
+        lat: -28.7282,
+        lng: 24.7499
+      },
+      scheduledDate: '2024-01-23T07:00:00Z',
+      status: 'pending',
+      driverName: 'David Brown',
+      driverPhone: '+27 82 555 4567',
+      notes: 'Mining site delivery - safety equipment required',
+      serialNumber: 'VC40004-2024',
+      qrCode: 'VC40004-2024-QR'
+    }
+  ]
+
   const stats = [
     { label: 'Total Leads', value: '156', change: '+12%', changeType: 'positive' },
     { label: 'Active Orders', value: '89', change: '+5%', changeType: 'positive' },
@@ -172,6 +485,228 @@ const AdminPage = () => {
     }
   }
 
+  const getPaymentStatusColor = (status: string) => {
+    switch (status) {
+      case 'paid': return 'bg-green-100 text-green-800'
+      case 'overdue': return 'bg-red-100 text-red-800'
+      case 'pending': return 'bg-yellow-100 text-yellow-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const getPaymentStatusIcon = (status: string) => {
+    switch (status) {
+      case 'paid': return '🟢'
+      case 'overdue': return '🔴'
+      case 'pending': return '🟡'
+      default: return '⚪'
+    }
+  }
+
+  const formatDuration = (days: number) => {
+    if (days < 30) return `${days} days`
+    const months = Math.floor(days / 30)
+    const remainingDays = days % 30
+    if (remainingDays === 0) return `${months} month${months > 1 ? 's' : ''}`
+    return `${months} month${months > 1 ? 's' : ''} ${remainingDays} days`
+  }
+
+  const calculateDaysSinceDelivery = (deliveryDate: string) => {
+    const delivery = new Date(deliveryDate)
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - delivery.getTime())
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  }
+
+  const getDeliveryStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800'
+      case 'in-transit': return 'bg-blue-100 text-blue-800'
+      case 'delivered': return 'bg-green-100 text-green-800'
+      case 'completed': return 'bg-gray-100 text-gray-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const openGoogleMapsNavigation = (lat: number, lng: number, address: string) => {
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`
+    window.open(url, '_blank')
+  }
+
+  const handleSerialNumberSubmit = (deliveryId: string, serialNumber: string) => {
+    // In a real app, this would update the delivery status
+    console.log(`Delivery ${deliveryId} serial number: ${serialNumber}`)
+    setScannedSerialNumber('')
+    // Update delivery status to delivered
+    const updatedDeliveries = deliveries.map(delivery => 
+      delivery.id === deliveryId 
+        ? { ...delivery, status: 'delivered' as const }
+        : delivery
+    )
+    // In real app, you'd update the state or make an API call
+  }
+
+  // Load Leaflet (OpenStreetMap) script and CSS
+  useEffect(() => {
+    if (activeTab === 'containers' && !isMapLoaded) {
+      // Check if Leaflet is already loaded
+      if (typeof window !== 'undefined' && (window as any).L) {
+        setIsMapLoaded(true)
+        setTimeout(() => initializeMap(), 100)
+        return
+      }
+
+      // Load Leaflet CSS
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='
+      link.crossOrigin = ''
+      document.head.appendChild(link)
+
+      // Load Leaflet JS
+      const script = document.createElement('script')
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='
+      script.crossOrigin = ''
+      script.onload = () => {
+        setIsMapLoaded(true)
+        setTimeout(() => initializeMap(), 100)
+      }
+      document.head.appendChild(script)
+    }
+  }, [activeTab, isMapLoaded])
+
+  // Initialize Leaflet Map
+  const initializeMap = () => {
+    if (typeof window !== 'undefined' && (window as any).L) {
+      const mapElement = document.getElementById('leaflet-map')
+      if (mapElement && !map) {
+        const L = (window as any).L
+        
+        // Clear any existing map
+        if (map) {
+          map.remove()
+        }
+        
+        const newMap: any = L.map('leaflet-map', {
+          center: [-30.5595, 22.9375], // Center of South Africa
+          zoom: 6,
+          zoomControl: true,
+          scrollWheelZoom: true,
+          doubleClickZoom: true,
+          boxZoom: true,
+          keyboard: true,
+          dragging: true,
+          touchZoom: true,
+          attributionControl: false
+        })
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(newMap)
+        
+        // Force map to resize after initialization
+        setTimeout(() => {
+          newMap.invalidateSize()
+        }, 200)
+        
+        setMap(newMap)
+        addContainerMarkers(newMap)
+      }
+    }
+  }
+
+  // Add container markers to map
+  const addContainerMarkers = (mapInstance: any) => {
+    const newMarkers: any[] = []
+    
+    containers.forEach((container) => {
+      // Create custom icon
+      const customIcon = (window as any).L.divIcon({
+        className: 'custom-marker',
+        html: `
+          <div class="w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs" 
+               style="background-color: ${
+                 container.paymentStatus === 'paid' ? '#10B981' : 
+                 container.paymentStatus === 'overdue' ? '#EF4444' : '#F59E0B'
+               }">
+            ${container.containerNumber.slice(-3)}
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16]
+      })
+
+      const marker = (window as any).L.marker([container.location.lat, container.location.lng], {
+        icon: customIcon
+      }).addTo(mapInstance)
+
+      // Create popup content
+      const popupContent = `
+        <div class="p-3 max-w-xs">
+          <h3 class="font-semibold text-gray-900 mb-2">${container.containerNumber}</h3>
+          <div class="space-y-1 text-sm">
+            <p><strong>Customer:</strong> ${container.customerName}</p>
+            <p><strong>Type:</strong> ${container.containerType}</p>
+            <p><strong>Location:</strong> ${container.location.city}, ${container.location.province}</p>
+            <p><strong>Duration:</strong> ${formatDuration(calculateDaysSinceDelivery(container.deliveryDate))}</p>
+            <p><strong>Status:</strong> <span class="px-2 py-1 rounded-full text-xs font-medium ${
+              container.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
+              container.paymentStatus === 'overdue' ? 'bg-red-100 text-red-800' :
+              'bg-yellow-100 text-yellow-800'
+            }">${container.paymentStatus}</span></p>
+            ${container.totalOwed > 0 ? `<p class="text-red-600 font-medium">Outstanding: R${container.totalOwed.toLocaleString()}</p>` : ''}
+          </div>
+          <button onclick="window.selectContainer('${container.id}')" class="mt-3 w-full bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+            View Details
+          </button>
+        </div>
+      `
+
+      marker.bindPopup(popupContent)
+      newMarkers.push(marker)
+    })
+
+    setMarkers(newMarkers)
+  }
+
+  // Global function for info window button
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).selectContainer = (containerId: string) => {
+        const container = containers.find(c => c.id === containerId)
+        if (container) {
+          setSelectedContainer(container)
+        }
+      }
+    }
+  }, [containers])
+
+  // Cleanup markers when tab changes
+  useEffect(() => {
+    if (activeTab !== 'containers') {
+      // Clear markers
+      markers.forEach(marker => {
+        if (marker && marker.remove) {
+          marker.remove()
+        }
+      })
+      setMarkers([])
+      
+      // Clear map
+      if (map && map.remove) {
+        map.remove()
+        setMap(null)
+      }
+      
+      // Reset map loaded state
+      setIsMapLoaded(false)
+    }
+  }, [activeTab])
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -183,6 +718,8 @@ const AdminPage = () => {
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'containers', label: 'View All Containers', icon: Navigation },
+    { id: 'drivers', label: 'Drivers', icon: Truck },
     { id: 'leads', label: 'Lead Management', icon: Users },
     { id: 'orders', label: 'Orders', icon: Truck },
     { id: 'calendar', label: 'Calendar', icon: Calendar },
@@ -294,6 +831,398 @@ const AdminPage = () => {
                      </div>
                    ))}
                 </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Containers Tab */}
+        {activeTab === 'containers' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            {/* Header */}
+            <div className="card">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Container Locations</h3>
+                  <p className="text-sm text-gray-600">Track all Valley Containers across South Africa</p>
+                </div>
+                <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Paid</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Overdue</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Pending</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Google Maps Container */}
+            <div className="card">
+              <div className="relative h-96 rounded-lg overflow-hidden">
+                {/* Leaflet Map */}
+                <div 
+                  id="leaflet-map" 
+                  className="w-full h-full"
+                  style={{
+                    height: '384px',
+                    width: '100%',
+                    position: 'relative',
+                    zIndex: 1
+                  }}
+                ></div>
+                
+                {/* Map Controls Overlay */}
+                <div className="absolute top-4 left-4 bg-white bg-opacity-95 rounded-lg px-3 py-2 shadow-lg">
+                  <h3 className="text-sm font-semibold text-gray-900">South Africa</h3>
+                  <p className="text-xs text-gray-600">Container Locations</p>
+                </div>
+                
+                {/* Map Legend */}
+                <div className="absolute bottom-4 left-4 bg-white bg-opacity-95 rounded-lg p-3 shadow-lg max-w-xs">
+                  <h4 className="text-sm font-semibold text-gray-900 mb-2">Container Status</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-green-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                      <span className="text-xs text-gray-700">Paid - No outstanding balance</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                      <span className="text-xs text-gray-700">Overdue - Payment required</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-yellow-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                      <span className="text-xs text-gray-700">Pending - New rental</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Container Count */}
+                <div className="absolute top-4 right-4 bg-white bg-opacity-95 rounded-lg px-3 py-2 shadow-lg">
+                  <div className="text-sm font-semibold text-gray-900">{containers.length}</div>
+                  <div className="text-xs text-gray-600">Containers</div>
+                </div>
+                
+                {/* Loading State */}
+                {!isMapLoaded && (
+                  <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-2"></div>
+                      <p className="text-sm text-gray-600">Loading map...</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Container List */}
+            <div className="card">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">All Containers</h3>
+              
+              {/* Mobile View - Cards */}
+              <div className="block lg:hidden space-y-4">
+                {containers.map((container) => (
+                  <div key={container.id} className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">{container.containerNumber}</h4>
+                        <p className="text-sm text-gray-500">{container.containerType}</p>
+                      </div>
+                      <button 
+                        onClick={() => setSelectedContainer(container)}
+                        className="text-primary-600 hover:text-primary-900 p-2"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-gray-600">Customer</p>
+                        <p className="font-medium text-gray-900">{container.customerName}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Location</p>
+                        <p className="font-medium text-gray-900">{container.location.city}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Duration</p>
+                        <p className="font-medium text-gray-900">{formatDuration(calculateDaysSinceDelivery(container.deliveryDate))}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Status</p>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(container.paymentStatus)}`}>
+                          {container.paymentStatus}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {container.totalOwed > 0 && (
+                      <div className="text-xs text-red-600 font-medium">
+                        Outstanding: R{container.totalOwed.toLocaleString()}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop View - Table */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-secondary-200">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Container
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Customer
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Location
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Duration
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Payment Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {containers.map((container) => (
+                      <tr key={container.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{container.containerNumber}</div>
+                            <div className="text-sm text-gray-500">{container.containerType}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{container.customerName}</div>
+                            <div className="text-sm text-gray-500">{container.customerEmail}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{container.location.city}</div>
+                            <div className="text-sm text-gray-500">{container.location.province}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {formatDuration(calculateDaysSinceDelivery(container.deliveryDate))}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(container.paymentStatus)}`}>
+                            {container.paymentStatus}
+                          </span>
+                          {container.totalOwed > 0 && (
+                            <div className="text-xs text-red-600 mt-1">
+                              R{container.totalOwed.toLocaleString()} owed
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <button 
+                            onClick={() => setSelectedContainer(container)}
+                            className="text-primary-600 hover:text-primary-900"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Drivers Tab */}
+        {activeTab === 'drivers' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            {/* Header */}
+            <div className="card">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Driver Deliveries</h3>
+                  <p className="text-sm text-gray-600">Manage container deliveries and track driver progress</p>
+                </div>
+                <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Pending</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">In Transit</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Delivered</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Deliveries List */}
+            <div className="card">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Active Deliveries</h3>
+              
+              {/* Mobile View - Cards */}
+              <div className="block lg:hidden space-y-4">
+                {deliveries.map((delivery) => (
+                  <div key={delivery.id} className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-gray-900">{delivery.containerNumber}</h4>
+                        <p className="text-sm text-gray-500">{delivery.containerType}</p>
+                      </div>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDeliveryStatusColor(delivery.status)}`}>
+                        {delivery.status}
+                      </span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-gray-600">Customer</p>
+                        <p className="font-medium text-gray-900">{delivery.customerName}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Driver</p>
+                        <p className="font-medium text-gray-900">{delivery.driverName}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Location</p>
+                        <p className="font-medium text-gray-900">{delivery.deliveryCity}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Scheduled</p>
+                        <p className="font-medium text-gray-900">{formatDate(delivery.scheduledDate)}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => openGoogleMapsNavigation(delivery.coordinates.lat, delivery.coordinates.lng, delivery.deliveryAddress)}
+                        className="btn-primary text-sm flex-1"
+                      >
+                        Navigate
+                      </button>
+                      <button
+                        onClick={() => setSelectedDelivery(delivery)}
+                        className="btn-secondary text-sm flex-1"
+                      >
+                        Details
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop View - Table */}
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-secondary-200">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Container
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Customer
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Driver
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Location
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Scheduled
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {deliveries.map((delivery) => (
+                      <tr key={delivery.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{delivery.containerNumber}</div>
+                            <div className="text-sm text-gray-500">{delivery.containerType}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{delivery.customerName}</div>
+                            <div className="text-sm text-gray-500">{delivery.customerPhone}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{delivery.driverName}</div>
+                            <div className="text-sm text-gray-500">{delivery.driverPhone}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{delivery.deliveryCity}</div>
+                            <div className="text-sm text-gray-500">{delivery.deliveryProvince}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {formatDate(delivery.scheduledDate)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDeliveryStatusColor(delivery.status)}`}>
+                            {delivery.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => openGoogleMapsNavigation(delivery.coordinates.lat, delivery.coordinates.lng, delivery.deliveryAddress)}
+                              className="text-primary-600 hover:text-primary-900"
+                              title="Navigate to location"
+                            >
+                              <MapPin className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => setSelectedDelivery(delivery)}
+                              className="text-primary-600 hover:text-primary-900"
+                              title="View details"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </motion.div>
@@ -537,6 +1466,378 @@ const AdminPage = () => {
               </div>
             </div>
           </motion.div>
+        )}
+
+        {/* Delivery Detail Modal */}
+        {selectedDelivery && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Delivery Details</h2>
+                  <button
+                    onClick={() => setSelectedDelivery(null)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Delivery Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Delivery Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Container Number</p>
+                        <p className="font-medium text-gray-900">{selectedDelivery.containerNumber}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Container Type</p>
+                        <p className="font-medium text-gray-900">{selectedDelivery.containerType}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Scheduled Date</p>
+                        <p className="font-medium text-gray-900">{formatDate(selectedDelivery.scheduledDate)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Status</p>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDeliveryStatusColor(selectedDelivery.status)}`}>
+                          {selectedDelivery.status}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Customer Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Customer Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Customer Name</p>
+                        <p className="font-medium text-gray-900">{selectedDelivery.customerName}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Email</p>
+                        <p className="font-medium text-gray-900">{selectedDelivery.customerEmail}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Phone</p>
+                        <a 
+                          href={`tel:${selectedDelivery.customerPhone}`}
+                          className="font-medium text-primary-600 hover:text-primary-700"
+                        >
+                          {selectedDelivery.customerPhone}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Driver Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Driver Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Driver Name</p>
+                        <p className="font-medium text-gray-900">{selectedDelivery.driverName}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Driver Phone</p>
+                        <a 
+                          href={`tel:${selectedDelivery.driverPhone}`}
+                          className="font-medium text-primary-600 hover:text-primary-700"
+                        >
+                          {selectedDelivery.driverPhone}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Location Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Delivery Location</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Address</p>
+                        <p className="font-medium text-gray-900">{selectedDelivery.deliveryAddress}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">City & Province</p>
+                        <p className="font-medium text-gray-900">{selectedDelivery.deliveryCity}, {selectedDelivery.deliveryProvince}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Serial Number Verification */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Container Verification</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2">Expected Serial Number</p>
+                        <p className="font-medium text-gray-900 bg-gray-50 p-2 rounded">{selectedDelivery.serialNumber}</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2">Enter or Scan Serial Number</p>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={scannedSerialNumber}
+                            onChange={(e) => setScannedSerialNumber(e.target.value)}
+                            placeholder="Enter serial number or scan QR code"
+                            className="input-field flex-1"
+                          />
+                          <button
+                            onClick={() => setShowQRScanner(true)}
+                            className="btn-secondary"
+                          >
+                            Scan QR
+                          </button>
+                        </div>
+                      </div>
+
+                      {scannedSerialNumber && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleSerialNumberSubmit(selectedDelivery.id, scannedSerialNumber)}
+                            className="btn-primary flex-1"
+                          >
+                            Verify & Complete Delivery
+                          </button>
+                          <button
+                            onClick={() => setScannedSerialNumber('')}
+                            className="btn-secondary"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Notes */}
+                  {selectedDelivery.notes && (
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Delivery Notes</h3>
+                      <p className="text-gray-700 bg-gray-50 p-3 rounded">{selectedDelivery.notes}</p>
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
+                    <a 
+                      href={`tel:${selectedDelivery.customerPhone}`}
+                      className="btn-primary flex-1 text-center"
+                    >
+                      Call Customer
+                    </a>
+                    <button
+                      onClick={() => openGoogleMapsNavigation(selectedDelivery.coordinates.lat, selectedDelivery.coordinates.lng, selectedDelivery.deliveryAddress)}
+                      className="btn-secondary flex-1"
+                    >
+                      Navigate to Location
+                    </button>
+                    <button
+                      onClick={() => setSelectedDelivery(null)}
+                      className="btn-secondary flex-1"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* QR Scanner Modal */}
+        {showQRScanner && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl max-w-md w-full p-6"
+            >
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Scan QR Code</h3>
+                <div className="bg-gray-100 rounded-lg p-8 mb-4">
+                  <div className="text-gray-500 text-sm">
+                    QR Scanner Placeholder
+                    <br />
+                    (In real app, integrate with camera API)
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowQRScanner(false)}
+                    className="btn-secondary flex-1"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      setScannedSerialNumber('VC20001-2024-QR')
+                      setShowQRScanner(false)
+                    }}
+                    className="btn-primary flex-1"
+                  >
+                    Simulate Scan
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Container Detail Modal */}
+        {selectedContainer && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Container Details</h2>
+                  <button
+                    onClick={() => setSelectedContainer(null)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Container Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Container Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Container Number</p>
+                        <p className="font-medium text-gray-900">{selectedContainer.containerNumber}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Container Type</p>
+                        <p className="font-medium text-gray-900">{selectedContainer.containerType}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Delivery Date</p>
+                        <p className="font-medium text-gray-900">{formatDate(selectedContainer.deliveryDate)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Duration at Location</p>
+                        <p className="font-medium text-gray-900">{formatDuration(calculateDaysSinceDelivery(selectedContainer.deliveryDate))}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Customer Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Customer Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Customer Name</p>
+                        <p className="font-medium text-gray-900">{selectedContainer.customerName}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Email</p>
+                        <p className="font-medium text-gray-900">{selectedContainer.customerEmail}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Phone</p>
+                        <a 
+                          href={`tel:${selectedContainer.customerPhone}`}
+                          className="font-medium text-primary-600 hover:text-primary-700"
+                        >
+                          {selectedContainer.customerPhone}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Location Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Location</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Address</p>
+                        <p className="font-medium text-gray-900">{selectedContainer.location.address}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">City & Province</p>
+                        <p className="font-medium text-gray-900">{selectedContainer.location.city}, {selectedContainer.location.province}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Payment Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Payment Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Payment Status</p>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(selectedContainer.paymentStatus)}`}>
+                          {selectedContainer.paymentStatus}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Monthly Rate</p>
+                        <p className="font-medium text-gray-900">R{selectedContainer.monthlyRate.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Last Payment</p>
+                        <p className="font-medium text-gray-900">{formatDate(selectedContainer.lastPaymentDate)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Next Payment Due</p>
+                        <p className="font-medium text-gray-900">{formatDate(selectedContainer.nextPaymentDate)}</p>
+                      </div>
+                      {selectedContainer.totalOwed > 0 && (
+                        <div className="md:col-span-2">
+                          <p className="text-sm text-red-600 font-medium">
+                            Outstanding Balance: R{selectedContainer.totalOwed.toLocaleString()}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Notes */}
+                  {selectedContainer.notes && (
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Notes</h3>
+                      <p className="text-gray-700">{selectedContainer.notes}</p>
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
+                    <a 
+                      href={`tel:${selectedContainer.customerPhone}`}
+                      className="btn-primary flex-1 text-center"
+                    >
+                      Call Customer
+                    </a>
+                    <button className="btn-secondary flex-1">
+                      Send Reminder
+                    </button>
+                    <button className="btn-secondary flex-1">
+                      Update Status
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
       </div>
     </div>

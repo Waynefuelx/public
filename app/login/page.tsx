@@ -56,6 +56,13 @@ const LoginPage = () => {
     { role: 'Finance Manager', email: 'lisa.wang@valleycontainers.co.za', password: 'demo123' }
   ]
 
+  const driverCredentials = [
+    { name: 'Mike Johnson', phone: '+27 82 555 1234', vehicle: 'CA 123-456' },
+    { name: 'Tom Davis', phone: '+27 82 555 2345', vehicle: 'CA 234-567' },
+    { name: 'Sarah Wilson', phone: '+27 82 555 3456', vehicle: 'CA 345-678' },
+    { name: 'David Brown', phone: '+27 82 555 4567', vehicle: 'CA 456-789' }
+  ]
+
   return (
     <div className="min-h-screen bg-secondary-200 flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -185,21 +192,49 @@ const LoginPage = () => {
               </div>
             </div>
 
-            <div className="mt-4 space-y-3">
-              {demoCredentials.map((credential, index) => (
-                <div
-                  key={index}
-                  className="bg-secondary-200 rounded-lg p-3 text-xs sm:text-sm"
-                >
-                  <div className="font-medium text-secondary-900">{credential.role}</div>
-                  <div className="text-secondary-600 break-all">
-                    <span className="font-medium">Email:</span> {credential.email}
+            {/* Admin Credentials */}
+            <div className="mt-4">
+              <h4 className="text-sm font-medium text-gray-900 mb-3">Admin Portal Access</h4>
+              <div className="space-y-3">
+                {demoCredentials.map((credential, index) => (
+                  <div
+                    key={index}
+                    className="bg-secondary-200 rounded-lg p-3 text-xs sm:text-sm"
+                  >
+                    <div className="font-medium text-secondary-900">{credential.role}</div>
+                    <div className="text-secondary-600 break-all">
+                      <span className="font-medium">Email:</span> {credential.email}
+                    </div>
+                    <div className="text-secondary-600">
+                      <span className="font-medium">Password:</span> {credential.password}
+                    </div>
                   </div>
-                  <div className="text-secondary-600">
-                    <span className="font-medium">Password:</span> {credential.password}
+                ))}
+              </div>
+            </div>
+
+            {/* Driver Credentials */}
+            <div className="mt-6">
+              <h4 className="text-sm font-medium text-gray-900 mb-3">Driver Portal Access</h4>
+              <div className="space-y-3">
+                {driverCredentials.map((driver, index) => (
+                  <div
+                    key={index}
+                    className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs sm:text-sm"
+                  >
+                    <div className="font-medium text-blue-900">{driver.name}</div>
+                    <div className="text-blue-700">
+                      <span className="font-medium">Phone:</span> {driver.phone}
+                    </div>
+                    <div className="text-blue-700">
+                      <span className="font-medium">Vehicle:</span> {driver.vehicle}
+                    </div>
+                    <div className="text-blue-600 text-xs mt-1">
+                      Access driver portal at: <a href="/driver" className="underline font-medium">/driver</a>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
@@ -210,8 +245,12 @@ const LoginPage = () => {
               <div className="text-sm text-blue-800">
                 <p className="font-medium">Demo Mode</p>
                 <p className="mt-1">
-                  This is a demonstration application. Use any of the demo credentials above to access the admin panel.
+                  This is a demonstration application. Use any of the demo credentials above to access the admin panel or driver portal.
                   All data is simulated for presentation purposes.
+                </p>
+                <p className="mt-2">
+                  <strong>Admin Portal:</strong> Full management interface for staff<br/>
+                  <strong>Driver Portal:</strong> Mobile-optimized delivery management for drivers
                 </p>
               </div>
             </div>

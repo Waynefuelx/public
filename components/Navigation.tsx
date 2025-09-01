@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+
 import { 
   Menu, 
   X, 
@@ -90,10 +90,7 @@ const Navigation = () => {
 
               {/* User Dropdown */}
               {isUserMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
+                <div
                   className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200"
                 >
                   {userMenuItems.map((item) => (
@@ -112,7 +109,7 @@ const Navigation = () => {
                     <LogOut className="w-4 h-4 mr-3" />
                     Sign Out
                   </button>
-                </motion.div>
+                </div>
               )}
             </div>
           </div>
@@ -135,10 +132,7 @@ const Navigation = () => {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
+        <div
           className="lg:hidden border-t border-gray-200 bg-white shadow-lg"
         >
           <div className="px-4 pt-4 pb-6 space-y-2">
@@ -168,7 +162,7 @@ const Navigation = () => {
               Sign In
             </Link>
           </div>
-        </motion.div>
+        </div>
       )}
     </nav>
   )

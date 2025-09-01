@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+
 import { Star, Quote } from 'lucide-react'
 
 const Testimonials = () => {
@@ -87,11 +87,8 @@ const Testimonials = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {testimonials.map((testimonial, index) => (
-            <motion.div
+            <div
               key={testimonial.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
               className="card hover:shadow-soft transition-all duration-300"
             >
               {/* Quote Icon */}
@@ -123,7 +120,7 @@ const Testimonials = () => {
                   <div className="text-sm text-primary-600">{testimonial.company}</div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
@@ -135,11 +132,8 @@ const Testimonials = () => {
             { number: '98%', label: 'On-Time Delivery', subtitle: 'tracking accuracy' },
             { number: '24/7', label: 'Customer Support', subtitle: 'always available' }
           ].map((stat, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
               className="text-center"
             >
               <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">
@@ -151,7 +145,7 @@ const Testimonials = () => {
               <div className="text-sm text-gray-600">
                 {stat.subtitle}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 

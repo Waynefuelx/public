@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+
 import { MapPin, Phone, Mail, Clock, Star } from 'lucide-react'
 import Link from 'next/link'
 
@@ -177,11 +177,8 @@ const Branches = () => {
                 {branches
                   .filter(branch => region.branches.includes(branch.id))
                   .map((branch, index) => (
-                    <motion.div
+                    <div
                       key={branch.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
                       className="card hover:shadow-soft transition-all duration-300 group"
                     >
                       {/* Branch Header */}
@@ -251,7 +248,7 @@ const Branches = () => {
                       <button className="btn-primary w-full text-sm">
                         Contact Branch
                       </button>
-                    </motion.div>
+                    </div>
                   ))}
               </div>
             </div>

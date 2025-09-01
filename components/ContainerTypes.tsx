@@ -1,88 +1,162 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Truck, Package, Thermometer, Ruler } from 'lucide-react'
 
 const ContainerTypes = () => {
-  const containerTypes = [
+  const containerTypes: Array<{
+    id: string
+    name: string
+    description: string
+    dimensions: string
+    capacity: string
+    weight: string
+    features: string[]
+    price: number
+    rental: boolean
+    purchase: boolean
+    icon: any
+    image?: string
+  }> = [
     {
-      id: '20ft-standard',
-      name: '20ft Standard Container',
-      description: 'The most popular container size, perfect for general cargo, storage, and shipping.',
-      dimensions: '20\' × 8\' × 8.5\'',
-      capacity: '1,170 cu ft',
-      weight: '5,000 lbs',
-      features: ['Weather resistant', 'Stackable', 'ISO certified', 'Easy transport'],
-      price: 150,
+      id: '6m-storage',
+      name: '6m Storage Container',
+      description: 'Versatile storage container perfect for secure storage, moving, and general cargo.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      weight: '2,268 kg',
+      features: ['Weather resistant', 'Secure locking', 'Stackable', 'Easy access'],
+      price: 125,
       rental: true,
       purchase: true,
-      icon: Package
+      icon: Package,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png'
     },
     {
-      id: '40ft-standard',
-      name: '40ft Standard Container',
-      description: 'Large capacity container ideal for bulk shipments, construction projects, and storage.',
-      dimensions: '40\' × 8\' × 8.5\'',
-      capacity: '2,390 cu ft',
-      weight: '8,000 lbs',
-      features: ['High capacity', 'Cost effective', 'Versatile use', 'Strong construction'],
-      price: 250,
+      id: '6m-office',
+      name: '6m Office Container',
+      description: 'Professional office space container, perfect for construction sites, events, and temporary workspaces.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      weight: '2,800 kg',
+      features: ['Insulated walls', 'Electrical fittings', 'Windows & doors', 'Office ready'],
+      price: 450,
       rental: true,
       purchase: true,
-      icon: Package
+      icon: Package,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png'
     },
     {
-      id: '40ft-high-cube',
-      name: '40ft High Cube',
-      description: 'Extra height container for oversized items, machinery, and tall equipment.',
-      dimensions: '40\' × 8\' × 9.5\'',
-      capacity: '2,694 cu ft',
-      weight: '8,500 lbs',
-      features: ['Extra height', 'Oversized cargo', 'Machinery storage', 'Flexible loading'],
-      price: 275,
+      id: '6m-vip-office',
+      name: '6m VIP Container Office',
+      description: 'Premium office container with enhanced amenities and professional finish.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      weight: '2,800 kg',
+      features: ['Premium finish', 'Enhanced amenities', 'Professional design', 'VIP experience'],
+      price: 550,
       rental: true,
       purchase: true,
-      icon: Ruler
+      icon: Package,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png'
     },
     {
-      id: '20ft-reefer',
-      name: '20ft Refrigerated',
+      id: '6m-refrigeration',
+      name: '6m Refrigeration Container',
       description: 'Temperature controlled container for perishable goods, food, and pharmaceuticals.',
-      dimensions: '20\' × 8\' × 8.5\'',
-      capacity: '1,170 cu ft',
-      weight: '6,000 lbs',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '33.1 cu m',
+      weight: '2,722 kg',
       features: ['Temperature control', 'Insulated walls', 'Fresh air vents', 'Monitoring system'],
       price: 200,
       rental: true,
       purchase: false,
-      icon: Thermometer
+      icon: Thermometer,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png'
     },
     {
-      id: '40ft-open-top',
-      name: '40ft Open Top',
-      description: 'Open top container for easy loading of tall or heavy items from above.',
-      dimensions: '40\' × 8\' × 8.5\'',
-      capacity: '2,390 cu ft',
-      weight: '8,000 lbs',
-      features: ['Open top loading', 'Crane accessible', 'Heavy machinery', 'Flexible loading'],
-      price: 300,
+      id: '3m-storage',
+      name: '3m Storage Container',
+      description: 'Compact storage container perfect for small spaces and limited storage needs.',
+      dimensions: '3m × 2.4m × 2.6m',
+      capacity: '18.7 cu m',
+      weight: '1,134 kg',
+      features: ['Compact size', 'Easy transport', 'Versatile use', 'Cost effective'],
+      price: 75,
       rental: true,
       purchase: true,
-      icon: Package
+      icon: Package,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/3m-storage-container.png'
     },
     {
-      id: '20ft-flat-rack',
-      name: '20ft Flat Rack',
-      description: 'Flat rack container for oversized, heavy, or awkwardly shaped cargo.',
-      dimensions: '20\' × 8\' × 8.5\'',
-      capacity: '1,170 cu ft',
-      weight: '5,000 lbs',
-      features: ['Open sides', 'Heavy duty', 'Oversized cargo', 'Easy loading'],
+      id: '6m-split',
+      name: '6m Split Container',
+      description: 'Divided container offering multiple compartments for organized storage.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      weight: '2,268 kg',
+      features: ['Multiple compartments', 'Organized storage', 'Flexible layout', 'Efficient use'],
       price: 175,
       rental: true,
+      purchase: true,
+      icon: Package,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png'
+    },
+    {
+      id: 'elite-mobile-office',
+      name: 'Elite Mobile Site Office',
+      description: 'Premium mobile office solution with advanced features and professional finish.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      weight: '2,800 kg',
+      features: ['Premium features', 'Mobile design', 'Professional finish', 'Advanced amenities'],
+      price: 600,
+      rental: true,
+      purchase: true,
+      icon: Package,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png'
+    },
+    {
+      id: '3m-ablution',
+      name: '3m Ablution Container',
+      description: 'Sanitation container with bathroom and shower facilities for construction sites and events.',
+      dimensions: '3m × 2.4m × 2.6m',
+      capacity: '18.7 cu m',
+      weight: '1,134 kg',
+      features: ['Bathroom facilities', 'Shower unit', 'Sanitation', 'Event ready'],
+      price: 100,
+      rental: true,
       purchase: false,
-      icon: Package
+      icon: Package,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png'
+    },
+    {
+      id: '6m-pavilion',
+      name: '6m Pavilion Container',
+      description: 'Open-sided container perfect for events, exhibitions, and temporary structures.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      weight: '2,268 kg',
+      features: ['Open sides', 'Event ready', 'Exhibition space', 'Temporary structures'],
+      price: 200,
+      rental: true,
+      purchase: true,
+      icon: Package,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png'
+    },
+    {
+      id: '6m-sleeper',
+      name: '6m Sleeper Container',
+      description: 'Sleeping accommodation container with beds and basic amenities for workers.',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      weight: '2,268 kg',
+      features: ['Sleeping quarters', 'Basic amenities', 'Worker accommodation', 'Comfortable rest'],
+      price: 150,
+      rental: true,
+      purchase: false,
+      icon: Package,
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png'
     }
   ]
 
@@ -99,15 +173,12 @@ const ContainerTypes = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8">
-          {containerTypes.map((container, index) => (
-            <motion.div
-              key={container.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="card hover:shadow-soft transition-all duration-300 group"
-            >
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8">
+            {containerTypes.map((container, index) => (
+              <div
+                key={container.id}
+                className="card hover:shadow-soft transition-all duration-300 group"
+              >
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-200 transition-colors duration-200">
@@ -120,6 +191,18 @@ const ContainerTypes = () => {
                   <div className="text-sm text-gray-500">per month</div>
                 </div>
               </div>
+
+              {/* Container Image */}
+              {container.image && (
+                <div className="mb-4">
+                  <img
+                    src={container.image}
+                    alt={container.name}
+                    className="w-full h-auto max-h-64 object-contain rounded-lg shadow-sm"
+                    loading="lazy"
+                  />
+                </div>
+              )}
 
               {/* Content */}
               <div className="mb-6">
@@ -184,10 +267,10 @@ const ContainerTypes = () => {
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800">
                   Available
                 </span>
+                              </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
 
         {/* Additional Info */}
         <div className="mt-12 sm:mt-16 text-center">

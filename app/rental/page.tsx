@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+
 import { 
   Package, 
   Building2, 
@@ -17,7 +17,8 @@ import {
   Phone,
   Mail,
   CheckCircle,
-  Star
+  Star,
+  Thermometer
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -216,23 +217,17 @@ export default function RentalPage() {
       {/* Header */}
       <section className="bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+          <h1 
             className="text-4xl md:text-6xl font-bold mb-6"
           >
             Container Rental
             <span className="block text-primary-100">Solutions</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+          </h1>
+          <p 
             className="text-xl md:text-2xl text-primary-50 mb-8 max-w-3xl mx-auto"
           >
             Flexible, reliable container rentals for every need. From storage to luxury offices, we have the perfect solution.
-          </motion.p>
+          </p>
         </div>
       </section>
 
@@ -262,106 +257,276 @@ export default function RentalPage() {
         </div>
       </section>
 
-      {/* Container Grid */}
-      <section className="py-16 bg-secondary-200">
+      {/* Container Types Section */}
+      <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredContainers.map((container, index) => (
-              <motion.div
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Container Types & Specifications
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
+              Choose from our wide range of container types, each designed for specific use cases 
+              and cargo requirements. All containers meet international standards and are regularly inspected.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8">
+            {[
+              {
+                id: '6m-storage',
+                name: '6m Storage Container',
+                description: 'Versatile storage container perfect for secure storage, moving, and general cargo.',
+                dimensions: '6m × 2.4m × 2.6m',
+                capacity: '37.4 cu m',
+                weight: '2,268 kg',
+                features: ['Weather resistant', 'Secure locking', 'Stackable', 'Easy access'],
+                price: 125,
+                rental: true,
+                purchase: true,
+                icon: Package,
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png'
+              },
+              {
+                id: '6m-office',
+                name: '6m Office Container',
+                description: 'Professional office space container, perfect for construction sites, events, and temporary workspaces.',
+                dimensions: '6m × 2.4m × 2.6m',
+                capacity: '37.4 cu m',
+                weight: '2,800 kg',
+                features: ['Insulated walls', 'Electrical fittings', 'Windows & doors', 'Office ready'],
+                price: 450,
+                rental: true,
+                purchase: true,
+                icon: Package,
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png'
+              },
+              {
+                id: '6m-vip-office',
+                name: '6m VIP Container Office',
+                description: 'Premium office container with enhanced amenities and professional finish.',
+                dimensions: '6m × 2.4m × 2.6m',
+                capacity: '37.4 cu m',
+                weight: '2,800 kg',
+                features: ['Premium finish', 'Enhanced amenities', 'Professional design', 'VIP experience'],
+                price: 550,
+                rental: true,
+                purchase: true,
+                icon: Package,
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png'
+              },
+              {
+                id: '6m-refrigeration',
+                name: '6m Refrigeration Container',
+                description: 'Temperature controlled container for perishable goods, food, and pharmaceuticals.',
+                dimensions: '6m × 2.4m × 2.6m',
+                capacity: '33.1 cu m',
+                weight: '2,722 kg',
+                features: ['Temperature control', 'Insulated walls', 'Fresh air vents', 'Monitoring system'],
+                price: 200,
+                rental: true,
+                purchase: false,
+                icon: Thermometer,
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png'
+              },
+              {
+                id: '3m-storage',
+                name: '3m Storage Container',
+                description: 'Compact storage container perfect for small spaces and limited storage needs.',
+                dimensions: '3m × 2.4m × 2.6m',
+                capacity: '18.7 cu m',
+                weight: '1,134 kg',
+                features: ['Compact size', 'Easy transport', 'Versatile use', 'Cost effective'],
+                price: 75,
+                rental: true,
+                purchase: true,
+                icon: Package,
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/3m-storage-container.png'
+              },
+              {
+                id: '6m-split',
+                name: '6m Split Container',
+                description: 'Divided container offering multiple compartments for organized storage.',
+                dimensions: '6m × 2.4m × 2.6m',
+                capacity: '37.4 cu m',
+                weight: '2,268 kg',
+                features: ['Multiple compartments', 'Organized storage', 'Flexible layout', 'Efficient use'],
+                price: 175,
+                rental: true,
+                purchase: true,
+                icon: Package,
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png'
+              },
+              {
+                id: 'elite-mobile-office',
+                name: 'Elite Mobile Site Office',
+                description: 'Premium mobile office solution with advanced features and professional finish.',
+                dimensions: '6m × 2.4m × 2.6m',
+                capacity: '37.4 cu m',
+                weight: '2,800 kg',
+                features: ['Premium features', 'Mobile design', 'Professional finish', 'Advanced amenities'],
+                price: 600,
+                rental: true,
+                purchase: true,
+                icon: Package,
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png'
+              },
+              {
+                id: '3m-ablution',
+                name: '3m Ablution Container',
+                description: 'Sanitation container with bathroom and shower facilities for construction sites and events.',
+                dimensions: '3m × 2.4m × 2.6m',
+                capacity: '18.7 cu m',
+                weight: '1,134 kg',
+                features: ['Bathroom facilities', 'Shower unit', 'Sanitation', 'Event ready'],
+                price: 100,
+                rental: true,
+                purchase: false,
+                icon: Package,
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png'
+              },
+              {
+                id: '6m-pavilion',
+                name: '6m Pavilion Container',
+                description: 'Open-sided container perfect for events, exhibitions, and temporary structures.',
+                dimensions: '6m × 2.4m × 2.6m',
+                capacity: '37.4 cu m',
+                weight: '2,268 kg',
+                features: ['Open sides', 'Event ready', 'Exhibition space', 'Temporary structures'],
+                price: 200,
+                rental: true,
+                purchase: true,
+                icon: Package,
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png'
+              },
+              {
+                id: '6m-sleeper',
+                name: '6m Sleeper Container',
+                description: 'Sleeping accommodation container with beds and basic amenities for workers.',
+                dimensions: '6m × 2.4m × 2.6m',
+                capacity: '37.4 cu m',
+                weight: '2,268 kg',
+                features: ['Sleeping quarters', 'Basic amenities', 'Worker accommodation', 'Comfortable rest'],
+                price: 150,
+                rental: true,
+                purchase: false,
+                icon: Package,
+                image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png'
+              }
+            ].map((container, index) => (
+              <div
                 key={container.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                className="card hover:shadow-soft transition-all duration-300 group"
               >
-                {/* Popular Badge */}
-                {container.popular && (
-                  <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-                    <Star className="w-4 h-4" />
-                    Popular
+                {/* Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-200 transition-colors duration-200">
+                    <container.icon className="w-6 h-6 text-primary-600" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-primary-600">
+                      R {container.price}
+                    </div>
+                    <div className="text-sm text-gray-500">per month</div>
+                  </div>
+                </div>
+
+                {/* Container Image */}
+                {container.image && (
+                  <div className="mb-4">
+                    <img
+                      src={container.image}
+                      alt={container.name}
+                      className="w-full h-auto max-h-64 object-contain rounded-lg shadow-sm"
+                      loading="lazy"
+                    />
                   </div>
                 )}
 
-                {/* Container Image Placeholder */}
-                <div className="h-48 bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
-                  <container.icon className="w-20 h-20 text-primary-500" />
-                </div>
+                {/* Content */}
+                <div className="mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {container.name}
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    {container.description}
+                  </p>
 
-                {/* Container Info */}
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <h3 className="text-xl font-bold text-secondary-900">{container.name}</h3>
-                    <span className="text-sm text-secondary-500 bg-secondary-100 px-2 py-1 rounded">
-                      {container.category}
-                    </span>
+                  {/* Specifications */}
+                  <div className="space-y-3 mb-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Dimensions:</span>
+                      <span className="font-medium">{container.dimensions}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Capacity:</span>
+                      <span className="font-medium">{container.capacity}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Weight Limit:</span>
+                      <span className="font-medium">{container.weight}</span>
+                    </div>
                   </div>
-
-                  <p className="text-secondary-600 mb-4">{container.description}</p>
 
                   {/* Features */}
                   <div className="mb-4">
-                    <h4 className="font-semibold text-secondary-900 mb-2">Key Features:</h4>
-                    <ul className="space-y-1">
-                      {container.features.slice(0, 3).map((feature, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-sm text-secondary-600">
-                          <CheckCircle className="w-4 h-4 text-success-500 flex-shrink-0" />
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Key Features:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {container.features.map((feature, featureIndex) => (
+                        <span
+                          key={featureIndex}
+                          className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
+                        >
                           {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Sizes */}
-                  <div className="mb-4">
-                    <h4 className="font-semibold text-secondary-900 mb-2">Available Sizes:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {container.sizes.map((size, idx) => (
-                        <span key={idx} className="text-xs bg-secondary-100 text-secondary-700 px-2 py-1 rounded">
-                          {size}
                         </span>
                       ))}
-                    </div>
-                  </div>
-
-                  {/* Rental Periods */}
-                  <div className="mb-4">
-                    <h4 className="font-semibold text-secondary-900 mb-2">Rental Periods:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {container.rentalPeriods.map((period, idx) => (
-                        <span key={idx} className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded">
-                          {period}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Price and CTA */}
-                  <div className="border-t border-secondary-200 pt-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <span className="text-sm text-secondary-500">Starting from</span>
-                        <div className="text-2xl font-bold text-primary-500">{container.startingPrice}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <button 
-                        onClick={() => setSelectedContainer(container)}
-                        className="flex-1 bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-                      >
-                        View Details
-                      </button>
-                      <Link 
-                        href="/booking"
-                        className="flex-1 bg-white border border-primary-500 text-primary-500 hover:bg-primary-50 font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-center"
-                      >
-                        Rent Now
-                      </Link>
                     </div>
                   </div>
                 </div>
-              </motion.div>
+
+                {/* Actions */}
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                  {container.rental && (
+                    <Link
+                      href="/booking"
+                      className="btn-primary flex-1 text-sm w-full text-center"
+                    >
+                      Rent Now
+                    </Link>
+                  )}
+                </div>
+
+                {/* Availability Badge */}
+                <div className="mt-4 text-center">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800">
+                    Available
+                  </span>
+                </div>
+              </div>
             ))}
+          </div>
+
+          {/* Additional Info */}
+          <div className="mt-12 sm:mt-16 text-center">
+            <div className="bg-secondary-200 rounded-xl p-6 sm:p-8 max-w-4xl mx-auto">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+                Need a Custom Solution?
+              </h3>
+              <p className="text-base sm:text-lg text-gray-600 mb-6 px-4">
+                We offer custom container modifications, specialized equipment, and tailored solutions 
+                for unique requirements. Our engineering team can design containers to meet your specific needs.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
+                <Link 
+                  href="/rental"
+                  className="btn-primary"
+                >
+                  View All Rentals
+                </Link>
+                <button className="btn-secondary">
+                  Request Custom Quote
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -397,11 +562,8 @@ export default function RentalPage() {
                 description: 'All containers meet international standards and safety requirements'
               }
             ].map((feature, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
                 <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -409,7 +571,7 @@ export default function RentalPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-secondary-900 mb-2">{feature.title}</h3>
                 <p className="text-secondary-600">{feature.description}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -441,10 +603,7 @@ export default function RentalPage() {
       {/* Container Details Modal */}
       {selectedContainer && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
+          <div
             className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
           >
             <div className="p-6">
@@ -527,7 +686,7 @@ export default function RentalPage() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
     </div>

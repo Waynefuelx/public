@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { motion } from 'framer-motion'
+
 import { 
   Truck, 
   Calendar, 
@@ -133,9 +133,7 @@ const BookingForm = ({ onSuccess }: { onSuccess: () => void }) => {
   )
 
   const renderStep1 = () => (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
+    <div
       className="space-y-6"
     >
       <div>
@@ -231,13 +229,11 @@ const BookingForm = ({ onSuccess }: { onSuccess: () => void }) => {
           )}
         </div>
       )}
-    </motion.div>
+    </div>
   )
 
   const renderStep2 = () => (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
+    <div
       className="space-y-6"
     >
       <div>
@@ -322,13 +318,11 @@ const BookingForm = ({ onSuccess }: { onSuccess: () => void }) => {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 
   const renderStep3 = () => (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
+    <div
       className="space-y-6"
     >
       <div>
@@ -391,13 +385,11 @@ const BookingForm = ({ onSuccess }: { onSuccess: () => void }) => {
           />
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 
   const renderStep4 = () => (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
+    <div
       className="space-y-6"
     >
       <div>
@@ -472,7 +464,7 @@ const BookingForm = ({ onSuccess }: { onSuccess: () => void }) => {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 
   const renderCurrentStep = () => {
