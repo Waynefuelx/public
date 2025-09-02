@@ -42,13 +42,27 @@ interface Lead {
 
 interface Order {
   id: string
+  orderType: 'purchase' | 'rental'
   customerName: string
+  customerEmail: string
+  customerPhone: string
+  company?: string
   containerType: string
+  containerId: string
   quantity: number
-  status: 'pending' | 'confirmed' | 'in-transit' | 'delivered' | 'returned'
+  status: 'pending' | 'confirmed' | 'in-transit' | 'delivered' | 'returned' | 'completed'
+  deliveryOption: 'delivery' | 'collection'
   deliveryDate: string
+  deliveryAddress?: string
+  city?: string
+  province?: string
+  postalCode?: string
   total: number
-  assignedDriver: string
+  assignedDriver?: string
+  specialRequirements?: string
+  paymentMethod: 'credit' | 'invoice' | 'quote'
+  createdAt: string
+  isNew: boolean
 }
 
 interface Container {
@@ -117,6 +131,78 @@ const AdminPage = () => {
   const [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null)
   const [showQRScanner, setShowQRScanner] = useState(false)
   const [scannedSerialNumber, setScannedSerialNumber] = useState('')
+  const [deliveries, setDeliveries] = useState<Delivery[]>([])
+  const [orders, setOrders] = useState<Order[]>([])
+  const [newOrderCount, setNewOrderCount] = useState(0)
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [showStatusUpdateModal, setShowStatusUpdateModal] = useState(false)
+  const [orderToUpdate, setOrderToUpdate] = useState<Order | null>(null)
+  const [notifications, setNotifications] = useState<Array<{
+    id: string
+    orderId: string
+    customerEmail: string
+    message: string
+    type: 'order_confirmed' | 'delivery_started'
+    trackingNumber?: string
+    timestamp: string
+  }>>([])
+  const [isClient, setIsClient] = useState(false)
+
+  // Set client flag to prevent hydration issues
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Initialize deliveries state with mock data
+  useEffect(() => {
+    const initialDeliveries: Delivery[] = [
+      {
+        id: 'D001',
+        containerNumber: 'VC-20-001',
+        containerType: '20ft Standard',
+        customerName: 'Construction Plus Inc.',
+        customerPhone: '+27 82 123 4567',
+        customerEmail: 'john.smith@constructionplus.co.za',
+        deliveryAddress: '123 Main Street, Industrial Area',
+        deliveryCity: 'George',
+        deliveryProvince: 'Western Cape',
+        coordinates: {
+          lat: -33.9715,
+          lng: 22.4617
+        },
+        scheduledDate: '2024-01-20T08:00:00Z',
+        status: 'pending',
+        driverName: 'Mike Johnson',
+        driverPhone: '+27 82 555 1234',
+        notes: 'Deliver to construction site - contact John Smith on arrival',
+        serialNumber: 'VC20001-2024',
+        qrCode: 'VC20001-2024-QR'
+      },
+      {
+        id: 'D002',
+        containerNumber: 'VC-40-002',
+        containerType: '40ft High Cube',
+        customerName: 'Global Logistics Solutions',
+        customerPhone: '+27 82 234 5678',
+        customerEmail: 'maria.garcia@globallogistics.co.za',
+        deliveryAddress: '456 Harbour Road, Port Area',
+        deliveryCity: 'Cape Town',
+        deliveryProvince: 'Western Cape',
+        coordinates: {
+          lat: -33.9249,
+          lng: 18.4241
+        },
+        scheduledDate: '2024-01-21T10:00:00Z',
+        status: 'in-transit',
+        driverName: 'Tom Davis',
+        driverPhone: '+27 82 555 2345',
+        notes: 'Port delivery - security clearance required',
+        serialNumber: 'VC40002-2024',
+        qrCode: 'VC40002-2024-QR'
+      }
+    ]
+    setDeliveries(initialDeliveries)
+  }, [])
 
   // Add Leaflet CSS styles
   useEffect(() => {
@@ -205,38 +291,196 @@ const AdminPage = () => {
     }
   ]
 
-  const orders: Order[] = [
-    {
-      id: 'O001',
-      customerName: 'Construction Plus Inc.',
-      containerType: '40ft Standard',
-      quantity: 2,
-      status: 'in-transit',
-      deliveryDate: '2024-01-15T14:00:00Z',
-      total: 500,
-      assignedDriver: 'Mike Johnson'
-    },
-    {
-      id: 'O002',
-      customerName: 'Global Logistics Solutions',
-      containerType: '20ft Refrigerated',
-      quantity: 1,
-      status: 'confirmed',
-      deliveryDate: '2024-01-18T10:00:00Z',
-      total: 200,
-      assignedDriver: 'Tom Davis'
-    },
-    {
-      id: 'O003',
-      customerName: 'Event Productions LLC',
-      containerType: '20ft Standard',
-      quantity: 3,
-      status: 'pending',
-      deliveryDate: '2024-01-20T12:00:00Z',
-      total: 450,
-      assignedDriver: 'Unassigned'
+  // Initialize orders data and fetch from API
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch('/api/orders')
+        if (response.ok) {
+          const data = await response.json()
+          setOrders(data.orders || [])
+          setNewOrderCount(data.orders?.filter((order: Order) => order.isNew).length || 0)
+        } else {
+          // Fallback to demo data if API fails
+          const initialOrders: Order[] = [
+            {
+              id: 'O001',
+              orderType: 'rental',
+              customerName: 'John Smith',
+              customerEmail: 'john.smith@constructionplus.co.za',
+              customerPhone: '+27 82 123 4567',
+              company: 'Construction Plus Inc.',
+              containerType: '6m Storage Container',
+              containerId: '6m-storage',
+              quantity: 2,
+              status: 'in-transit',
+              deliveryOption: 'delivery',
+              deliveryDate: '2024-01-15T14:00:00Z',
+              deliveryAddress: '123 Main Street, Industrial Area',
+              city: 'George',
+              province: 'Western Cape',
+              postalCode: '6530',
+              total: 500,
+              assignedDriver: 'Mike Johnson',
+              specialRequirements: 'Deliver to construction site - contact John Smith on arrival',
+              paymentMethod: 'invoice',
+              createdAt: '2024-01-10T08:00:00Z',
+              isNew: false
+            },
+            {
+              id: 'O002',
+              orderType: 'rental',
+              customerName: 'Maria Garcia',
+              customerEmail: 'maria.garcia@globallogistics.co.za',
+              customerPhone: '+27 82 234 5678',
+              company: 'Global Logistics Solutions',
+              containerType: '6m Refrigeration Container',
+              containerId: '6m-refrigeration',
+              quantity: 1,
+              status: 'confirmed',
+              deliveryOption: 'delivery',
+              deliveryDate: '2024-01-18T10:00:00Z',
+              deliveryAddress: '456 Harbour Road, Port Area',
+              city: 'Cape Town',
+              province: 'Western Cape',
+              postalCode: '8001',
+              total: 200,
+              assignedDriver: 'Tom Davis',
+              paymentMethod: 'credit',
+              createdAt: '2024-01-12T15:30:00Z',
+              isNew: false
+            }
+          ]
+          setOrders(initialOrders)
+          setNewOrderCount(0)
+        }
+      } catch (error) {
+        console.error('Error fetching orders:', error)
+        setOrders([])
+        setNewOrderCount(0)
+      }
     }
-  ]
+
+    fetchOrders()
+    
+    // Poll for new orders every 30 seconds
+    const interval = setInterval(fetchOrders, 30000)
+    
+    return () => clearInterval(interval)
+  }, [])
+
+  // Function to add new order
+  const addNewOrder = (orderData: Omit<Order, 'id' | 'createdAt' | 'isNew'>) => {
+    const newOrder: Order = {
+      ...orderData,
+      id: `O${String(orders.length + 1).padStart(3, '0')}`,
+      createdAt: new Date().toISOString(),
+      isNew: true
+    }
+    
+    setOrders(prevOrders => [newOrder, ...prevOrders])
+    setNewOrderCount(prevCount => prevCount + 1)
+  }
+
+  // Function to mark order as viewed
+  const markOrderAsViewed = (orderId: string) => {
+    setOrders(prevOrders => 
+      prevOrders.map(order => 
+        order.id === orderId ? { ...order, isNew: false } : order
+      )
+    )
+    setNewOrderCount(prevCount => Math.max(0, prevCount - 1))
+  }
+
+  // Function to generate tracking number
+  const generateTrackingNumber = () => {
+    const prefix = 'VC'
+    const timestamp = Date.now().toString().slice(-6)
+    const random = Math.random().toString(36).substring(2, 5).toUpperCase()
+    return `${prefix}${timestamp}${random}`
+  }
+
+  // Function to send customer notification
+  const sendCustomerNotification = (order: Order, type: 'order_confirmed' | 'delivery_started', trackingNumber?: string) => {
+    const notification = {
+      id: `notif_${Date.now()}`,
+      orderId: order.id,
+      customerEmail: order.customerEmail,
+      message: type === 'order_confirmed' 
+        ? `Your order ${order.id} has been confirmed and we're preparing your container for delivery.`
+        : `Your container is on its way! Tracking number: ${trackingNumber}`,
+      type,
+      trackingNumber,
+      timestamp: new Date().toISOString()
+    }
+    
+    setNotifications(prev => [notification, ...prev])
+    
+    // In a real app, this would send an email/SMS to the customer
+    console.log(`Notification sent to ${order.customerEmail}:`, notification.message)
+  }
+
+  // Function to update order status
+  const updateOrderStatus = (orderId: string, newStatus: Order['status'], trackingNumber?: string) => {
+    setOrders(prevOrders => 
+      prevOrders.map(order => {
+        if (order.id === orderId) {
+          const updatedOrder = { ...order, status: newStatus }
+          
+          // Send notification to customer
+          if (newStatus === 'confirmed') {
+            sendCustomerNotification(updatedOrder, 'order_confirmed')
+          } else if (newStatus === 'in-transit' && trackingNumber) {
+            sendCustomerNotification(updatedOrder, 'delivery_started', trackingNumber)
+          }
+          
+          return updatedOrder
+        }
+        return order
+      })
+    )
+  }
+
+  // Function to start delivery process
+  const startDeliveryProcess = (order: Order) => {
+    const trackingNumber = generateTrackingNumber()
+    updateOrderStatus(order.id, 'in-transit', trackingNumber)
+    
+    // Move order to drivers tab by creating a delivery entry
+    const newDelivery: Delivery = {
+      id: `D${String(deliveries.length + 1).padStart(3, '0')}`,
+      containerNumber: `VC-${order.containerId.toUpperCase()}`,
+      containerType: order.containerType,
+      customerName: order.customerName,
+      customerPhone: order.customerPhone,
+      customerEmail: order.customerEmail,
+      deliveryAddress: order.deliveryAddress || '',
+      deliveryCity: order.city || '',
+      deliveryProvince: order.province || '',
+      coordinates: {
+        lat: -33.9715, // Default coordinates - in real app would geocode address
+        lng: 22.4617
+      },
+      scheduledDate: order.deliveryDate,
+      status: 'pending',
+      driverName: 'Unassigned',
+      driverPhone: '',
+      notes: order.specialRequirements || '',
+      serialNumber: trackingNumber,
+      qrCode: `${trackingNumber}-QR`
+    }
+    
+    // Add the new delivery to the deliveries state
+    setDeliveries(prevDeliveries => [newDelivery, ...prevDeliveries])
+    
+    console.log('New delivery created and added to drivers:', newDelivery)
+    
+    // Show success message
+    alert(`Delivery started successfully!\n\nTracking Number: ${trackingNumber}\n\nOrder ${order.id} has been moved to the Drivers tab for assignment.`)
+    
+    setShowStatusUpdateModal(false)
+    setOrderToUpdate(null)
+  }
 
   const containers: Container[] = [
     {
@@ -356,96 +600,7 @@ const AdminPage = () => {
     }
   ]
 
-  const deliveries: Delivery[] = [
-    {
-      id: 'D001',
-      containerNumber: 'VC-20-001',
-      containerType: '20ft Standard',
-      customerName: 'Construction Plus Inc.',
-      customerPhone: '+27 82 123 4567',
-      customerEmail: 'john.smith@constructionplus.co.za',
-      deliveryAddress: '123 Main Street, Industrial Area',
-      deliveryCity: 'George',
-      deliveryProvince: 'Western Cape',
-      coordinates: {
-        lat: -33.9715,
-        lng: 22.4617
-      },
-      scheduledDate: '2024-01-20T08:00:00Z',
-      status: 'pending',
-      driverName: 'Mike Johnson',
-      driverPhone: '+27 82 555 1234',
-      notes: 'Deliver to construction site - contact John Smith on arrival',
-      serialNumber: 'VC20001-2024',
-      qrCode: 'VC20001-2024-QR'
-    },
-    {
-      id: 'D002',
-      containerNumber: 'VC-40-002',
-      containerType: '40ft High Cube',
-      customerName: 'Global Logistics Solutions',
-      customerPhone: '+27 82 234 5678',
-      customerEmail: 'maria.garcia@globallogistics.co.za',
-      deliveryAddress: '456 Harbour Road, Port Area',
-      deliveryCity: 'Cape Town',
-      deliveryProvince: 'Western Cape',
-      coordinates: {
-        lat: -33.9249,
-        lng: 18.4241
-      },
-      scheduledDate: '2024-01-21T10:00:00Z',
-      status: 'in-transit',
-      driverName: 'Tom Davis',
-      driverPhone: '+27 82 555 2345',
-      notes: 'Port delivery - security clearance required',
-      serialNumber: 'VC40002-2024',
-      qrCode: 'VC40002-2024-QR'
-    },
-    {
-      id: 'D003',
-      containerNumber: 'VC-20-003',
-      containerType: '20ft Refrigerated',
-      customerName: 'Fresh Foods Ltd',
-      customerPhone: '+27 82 345 6789',
-      customerEmail: 'info@freshfoods.co.za',
-      deliveryAddress: '789 Industrial Park, Food Zone',
-      deliveryCity: 'Johannesburg',
-      deliveryProvince: 'Gauteng',
-      coordinates: {
-        lat: -26.2041,
-        lng: 28.0473
-      },
-      scheduledDate: '2024-01-22T14:00:00Z',
-      status: 'pending',
-      driverName: 'Sarah Wilson',
-      driverPhone: '+27 82 555 3456',
-      notes: 'Refrigerated container - maintain temperature during transport',
-      serialNumber: 'VC20003-2024',
-      qrCode: 'VC20003-2024-QR'
-    },
-    {
-      id: 'D004',
-      containerNumber: 'VC-40-004',
-      containerType: '40ft Standard',
-      customerName: 'Mining Solutions Corp',
-      customerPhone: '+27 82 456 7890',
-      customerEmail: 'contact@miningsolutions.co.za',
-      deliveryAddress: 'Mining Site A, Northern Cape',
-      deliveryCity: 'Kimberley',
-      deliveryProvince: 'Northern Cape',
-      coordinates: {
-        lat: -28.7282,
-        lng: 24.7499
-      },
-      scheduledDate: '2024-01-23T07:00:00Z',
-      status: 'pending',
-      driverName: 'David Brown',
-      driverPhone: '+27 82 555 4567',
-      notes: 'Mining site delivery - safety equipment required',
-      serialNumber: 'VC40004-2024',
-      qrCode: 'VC40004-2024-QR'
-    }
-  ]
+
 
   const stats = [
     { label: 'Total Leads', value: '156', change: '+12%', changeType: 'positive' },
@@ -721,7 +876,7 @@ const AdminPage = () => {
     { id: 'containers', label: 'View All Containers', icon: Navigation },
     { id: 'drivers', label: 'Drivers', icon: Truck },
     { id: 'leads', label: 'Lead Management', icon: Users },
-    { id: 'orders', label: 'Orders', icon: Truck },
+    { id: 'orders', label: 'Orders', icon: Truck, notificationCount: newOrderCount },
     { id: 'calendar', label: 'Calendar', icon: Calendar },
     { id: 'reports', label: 'Reports', icon: FileText }
   ]
@@ -757,8 +912,17 @@ const AdminPage = () => {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-sm whitespace-nowrap min-w-fit ${
+                onClick={() => {
+                  setActiveTab(tab.id)
+                  if (tab.id === 'orders') {
+                    // Mark all orders as viewed when opening orders tab
+                    setOrders(prevOrders => 
+                      prevOrders.map(order => ({ ...order, isNew: false }))
+                    )
+                    setNewOrderCount(0)
+                  }
+                }}
+                className={`flex items-center space-x-2 py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-sm whitespace-nowrap min-w-fit relative ${
                   activeTab === tab.id
                     ? 'border-primary-500 text-primary-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -766,6 +930,11 @@ const AdminPage = () => {
               >
                 <tab.icon className="w-4 h-4" />
                 <span>{tab.label}</span>
+                {tab.notificationCount && tab.notificationCount > 0 && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-white font-bold">{tab.notificationCount}</span>
+                  </div>
+                )}
               </button>
             ))}
           </nav>
@@ -798,7 +967,7 @@ const AdminPage = () => {
             </div>
 
             {/* Recent Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="card">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Leads</h3>
                 <div className="space-y-4">
@@ -830,6 +999,38 @@ const AdminPage = () => {
                        </span>
                      </div>
                    ))}
+                </div>
+              </div>
+
+              <div className="card">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Notifications</h3>
+                <div className="space-y-4">
+                  {isClient ? (
+                    notifications.length > 0 ? (
+                      notifications.slice(0, 3).map((notification) => (
+                        <div key={notification.id} className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <div className="flex items-start gap-2">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <div className="flex-1">
+                              <p className="text-sm text-blue-900 font-medium">Order {notification.orderId}</p>
+                              <p className="text-xs text-blue-700 mt-1">{notification.message}</p>
+                              <p className="text-xs text-blue-600 mt-1">
+                                {formatDate(notification.timestamp)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4">
+                        <p className="text-sm text-gray-500">No notifications yet</p>
+                      </div>
+                    )
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-gray-500">Loading notifications...</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1362,58 +1563,197 @@ const AdminPage = () => {
             className="space-y-6"
           >
             <div className="card">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Active Orders</h3>
-              <div className="overflow-x-auto">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">All Orders</h3>
+                  <p className="text-sm text-gray-600">Purchase and rental orders from customers</p>
+                </div>
+                <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Purchase</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">Rental</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <span className="text-sm text-gray-600">New</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Mobile View - Cards */}
+              <div className="block lg:hidden space-y-4">
+                {orders.map((order) => (
+                  <div key={order.id} className={`bg-white border rounded-lg p-4 space-y-3 ${order.isNew ? 'border-green-500 bg-green-50' : 'border-gray-200'}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div>
+                          <h4 className="font-medium text-gray-900">{order.id}</h4>
+                          <p className="text-sm text-gray-500">{order.containerType}</p>
+                        </div>
+                        {order.isNew && (
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          order.orderType === 'purchase' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                        }`}>
+                          {order.orderType}
+                        </span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getOrderStatusColor(order.status)}`}>
+                          {order.status}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-gray-600">Customer</p>
+                        <p className="font-medium text-gray-900">{order.customerName}</p>
+                        {order.company && <p className="text-xs text-gray-500">{order.company}</p>}
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Total</p>
+                        <p className="font-medium text-gray-900">R{order.total.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Delivery</p>
+                        <p className="font-medium text-gray-900">{order.deliveryOption}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-600">Date</p>
+                        <p className="font-medium text-gray-900">{formatDate(order.deliveryDate)}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => {
+                          setSelectedOrder(order)
+                          markOrderAsViewed(order.id)
+                        }}
+                        className="btn-primary text-sm flex-1"
+                      >
+                        View Details
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setOrderToUpdate(order)
+                          setShowStatusUpdateModal(true)
+                        }}
+                        className="btn-secondary text-sm flex-1"
+                      >
+                        Update Status
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop View - Table */}
+              <div className="hidden lg:block overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                                     <thead className="bg-secondary-200">
-                     <tr>
-                       <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
-                         Order
-                       </th>
-                       <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
-                         Customer
-                       </th>
-                       <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
-                         Status
-                       </th>
-                       <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
-                         Delivery Date
-                       </th>
-                       <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
-                         Driver
-                       </th>
-                       <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
-                         Actions
-                       </th>
-                       </tr>
-                     </thead>
+                  <thead className="bg-secondary-200">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Order
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Customer
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Container
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Delivery
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Total
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {orders.map((order) => (
-                      <tr key={order.id} className="hover:bg-gray-50">
+                      <tr key={order.id} className={`hover:bg-gray-50 ${order.isNew ? 'bg-green-50' : ''}`}>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{order.id}</div>
-                          <div className="text-sm text-gray-500">{order.containerType}</div>
+                          <div className="flex items-center gap-2">
+                            <div className="text-sm font-medium text-gray-900">{order.id}</div>
+                            {order.isNew && (
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-500">{formatDate(order.createdAt)}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {order.customerName}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            order.orderType === 'purchase' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                          }`}>
+                            {order.orderType}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{order.customerName}</div>
+                            {order.company && <div className="text-sm text-gray-500">{order.company}</div>}
+                            <div className="text-sm text-gray-500">{order.customerEmail}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{order.containerType}</div>
+                            <div className="text-sm text-gray-500">Qty: {order.quantity}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{order.deliveryOption}</div>
+                            <div className="text-sm text-gray-500">{formatDate(order.deliveryDate)}</div>
+                            {order.deliveryAddress && (
+                              <div className="text-xs text-gray-500 truncate max-w-32">{order.deliveryAddress}</div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          R{order.total.toLocaleString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${getOrderStatusColor(order.status)}`}>
                             {order.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(order.deliveryDate)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {order.assignedDriver}
-                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
-                            <button className="text-primary-600 hover:text-primary-900">
+                            <button 
+                              onClick={() => {
+                                setSelectedOrder(order)
+                                markOrderAsViewed(order.id)
+                              }}
+                              className="text-primary-600 hover:text-primary-900"
+                              title="View details"
+                            >
                               <Eye className="w-4 h-4" />
                             </button>
-                            <button className="text-primary-600 hover:text-primary-900">
+                            <button 
+                              onClick={() => {
+                                setOrderToUpdate(order)
+                                setShowStatusUpdateModal(true)
+                              }}
+                              className="text-primary-600 hover:text-primary-900" 
+                              title="Update status"
+                            >
                               <Edit className="w-4 h-4" />
                             </button>
                           </div>
@@ -1854,6 +2194,376 @@ const AdminPage = () => {
                       Update Status
                     </button>
                   </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Order Detail Modal */}
+        {selectedOrder && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Order Details</h2>
+                  <button
+                    onClick={() => setSelectedOrder(null)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Order Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Order Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Order ID</p>
+                        <p className="font-medium text-gray-900">{selectedOrder.id}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Order Type</p>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          selectedOrder.orderType === 'purchase' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                        }`}>
+                          {selectedOrder.orderType}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Status</p>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getOrderStatusColor(selectedOrder.status)}`}>
+                          {selectedOrder.status}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Created Date</p>
+                        <p className="font-medium text-gray-900">{formatDate(selectedOrder.createdAt)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Total Amount</p>
+                        <p className="font-medium text-gray-900">R{selectedOrder.total.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Payment Method</p>
+                        <p className="font-medium text-gray-900 capitalize">{selectedOrder.paymentMethod}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Customer Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Customer Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Customer Name</p>
+                        <p className="font-medium text-gray-900">{selectedOrder.customerName}</p>
+                      </div>
+                      {selectedOrder.company && (
+                        <div>
+                          <p className="text-sm text-gray-600">Company</p>
+                          <p className="font-medium text-gray-900">{selectedOrder.company}</p>
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-sm text-gray-600">Email</p>
+                        <a 
+                          href={`mailto:${selectedOrder.customerEmail}`}
+                          className="font-medium text-primary-600 hover:text-primary-800 transition-colors duration-200"
+                          title={`Click to email ${selectedOrder.customerEmail}`}
+                        >
+                          {selectedOrder.customerEmail}
+                        </a>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Phone</p>
+                        <a 
+                          href={`tel:${selectedOrder.customerPhone}`}
+                          className="font-medium text-primary-600 hover:text-primary-700"
+                        >
+                          {selectedOrder.customerPhone}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Container Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Container Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Container Type</p>
+                        <p className="font-medium text-gray-900">{selectedOrder.containerType}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Container ID</p>
+                        <p className="font-medium text-gray-900">{selectedOrder.containerId}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Quantity</p>
+                        <p className="font-medium text-gray-900">{selectedOrder.quantity}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Delivery Info */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Delivery Information</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Delivery Option</p>
+                        <p className="font-medium text-gray-900 capitalize">{selectedOrder.deliveryOption}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Delivery Date</p>
+                        <p className="font-medium text-gray-900">{formatDate(selectedOrder.deliveryDate)}</p>
+                      </div>
+                      {selectedOrder.deliveryAddress && (
+                        <div className="md:col-span-2">
+                          <p className="text-sm text-gray-600">Delivery Address</p>
+                          <p className="font-medium text-gray-900">{selectedOrder.deliveryAddress}</p>
+                        </div>
+                      )}
+                      {selectedOrder.city && (
+                        <div>
+                          <p className="text-sm text-gray-600">City</p>
+                          <p className="font-medium text-gray-900">{selectedOrder.city}</p>
+                        </div>
+                      )}
+                      {selectedOrder.province && (
+                        <div>
+                          <p className="text-sm text-gray-600">Province</p>
+                          <p className="font-medium text-gray-900">{selectedOrder.province}</p>
+                        </div>
+                      )}
+                      {selectedOrder.postalCode && (
+                        <div>
+                          <p className="text-sm text-gray-600">Postal Code</p>
+                          <p className="font-medium text-gray-900">{selectedOrder.postalCode}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Additional Info */}
+                  {(selectedOrder.assignedDriver || selectedOrder.specialRequirements) && (
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Additional Information</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {selectedOrder.assignedDriver && (
+                          <div>
+                            <p className="text-sm text-gray-600">Assigned Driver</p>
+                            <p className="font-medium text-gray-900">{selectedOrder.assignedDriver}</p>
+                          </div>
+                        )}
+                        {selectedOrder.specialRequirements && (
+                          <div className="md:col-span-2">
+                            <p className="text-sm text-gray-600">Special Requirements</p>
+                            <p className="font-medium text-gray-900">{selectedOrder.specialRequirements}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
+                    <a 
+                      href={`tel:${selectedOrder.customerPhone}`}
+                      className="btn-primary flex-1 text-center"
+                    >
+                      Call Customer
+                    </a>
+                    <a 
+                      href={`mailto:${selectedOrder.customerEmail}`}
+                      className="btn-secondary flex-1 text-center"
+                    >
+                      Email Customer
+                    </a>
+                    <button 
+                      onClick={() => {
+                        setOrderToUpdate(selectedOrder)
+                        setShowStatusUpdateModal(true)
+                        setSelectedOrder(null)
+                      }}
+                      className="btn-secondary flex-1"
+                    >
+                      Update Status
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Status Update Modal */}
+        {showStatusUpdateModal && orderToUpdate && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Update Order Status</h2>
+                  <button
+                    onClick={() => {
+                      setShowStatusUpdateModal(false)
+                      setOrderToUpdate(null)
+                    }}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Order Info */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h3 className="font-semibold text-gray-900 mb-2">Order Information</h3>
+                    <div className="space-y-1 text-sm">
+                      <p><span className="font-medium">Order ID:</span> {orderToUpdate.id}</p>
+                      <p><span className="font-medium">Customer:</span> {orderToUpdate.customerName}</p>
+                      <p><span className="font-medium">Container:</span> {orderToUpdate.containerType}</p>
+                      <p><span className="font-medium">Current Status:</span> 
+                        <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getOrderStatusColor(orderToUpdate.status)}`}>
+                          {orderToUpdate.status}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Status Update Options */}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-4">Update Status</h3>
+                    
+                    {orderToUpdate.status === 'pending' && (
+                      <div className="space-y-4">
+                        <div className="border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                              <CheckCircle className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-medium text-gray-900 mb-1">Confirm Order</h4>
+                              <p className="text-sm text-gray-600 mb-3">
+                                Let the customer know their order has been received and is being prepared.
+                              </p>
+                              <button
+                                onClick={() => {
+                                  updateOrderStatus(orderToUpdate.id, 'confirmed')
+                                  setShowStatusUpdateModal(false)
+                                  setOrderToUpdate(null)
+                                }}
+                                className="btn-primary text-sm"
+                              >
+                                Confirm Order & Notify Customer
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {orderToUpdate.status === 'confirmed' && (
+                      <div className="space-y-4">
+                        <div className="border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                              <Truck className="w-4 h-4 text-green-600" />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-medium text-gray-900 mb-1">Start Delivery Process</h4>
+                              <p className="text-sm text-gray-600 mb-3">
+                                Generate tracking number and assign to driver. Customer will be notified that their container is on the way.
+                              </p>
+                              <button
+                                onClick={() => startDeliveryProcess(orderToUpdate)}
+                                className="btn-primary text-sm"
+                              >
+                                Start Delivery & Send Tracking Info
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {orderToUpdate.status === 'in-transit' && (
+                      <div className="space-y-4">
+                        <div className="border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                              <MapPin className="w-4 h-4 text-purple-600" />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-medium text-gray-900 mb-1">Mark as Delivered</h4>
+                              <p className="text-sm text-gray-600 mb-3">
+                                Update status to delivered when container has been successfully delivered to customer.
+                              </p>
+                              <button
+                                onClick={() => {
+                                  updateOrderStatus(orderToUpdate.id, 'delivered')
+                                  setShowStatusUpdateModal(false)
+                                  setOrderToUpdate(null)
+                                }}
+                                className="btn-primary text-sm"
+                              >
+                                Mark as Delivered
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {orderToUpdate.status === 'delivered' && (
+                      <div className="text-center py-8">
+                        <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                        <h4 className="font-medium text-gray-900 mb-2">Order Completed</h4>
+                        <p className="text-sm text-gray-600">
+                          This order has been successfully delivered to the customer.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Notification Preview */}
+                  {isClient && notifications.filter(n => n.orderId === orderToUpdate.id).length > 0 && (
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Recent Notifications</h3>
+                      <div className="space-y-2">
+                        {notifications
+                          .filter(n => n.orderId === orderToUpdate.id)
+                          .slice(0, 2)
+                          .map((notification) => (
+                            <div key={notification.id} className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                              <div className="flex items-start gap-2">
+                                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <div className="flex-1">
+                                  <p className="text-sm text-blue-900">{notification.message}</p>
+                                  <p className="text-xs text-blue-600 mt-1">
+                                    {formatDate(notification.timestamp)}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

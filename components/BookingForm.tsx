@@ -162,13 +162,48 @@ const BookingForm = ({
     setIsSubmitting(true)
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Prepare order data for API
+      const orderData = {
+        orderType: 'rental',
+        customerName: data.contactName,
+        customerEmail: data.email,
+        customerPhone: data.phone,
+        company: data.company,
+        containerType: data.containerType,
+        containerId: selectedContainer?.id || 'unknown',
+        quantity: data.quantity,
+        deliveryOption: 'delivery', // Rental is always delivery
+        deliveryDate: data.deliveryDate,
+        deliveryAddress: data.deliveryAddress,
+        city: data.city,
+        province: data.province,
+        postalCode: data.postalCode,
+        total: selectedContainer ? selectedContainer.price * data.quantity : 0,
+        specialRequirements: data.specialRequirements,
+        paymentMethod: data.paymentMethod
+      }
       
-      toast.success('Booking submitted successfully! We\'ll contact you soon.')
+      // Submit to API
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit order')
+      }
+      
+      const result = await response.json()
+      console.log('Rental order submitted:', result)
+      
+      toast.success('Rental order submitted successfully!')
       onSuccess()
     } catch (error) {
-      toast.error('Something went wrong. Please try again.')
+      console.error('Error submitting rental:', error)
+      toast.error('Failed to submit rental order. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

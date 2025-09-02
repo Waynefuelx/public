@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+
 import { useState } from 'react'
 import { 
   MapPin, 
@@ -93,24 +93,18 @@ const ContactPage = () => {
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-32">
           <div className="text-center">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+            <h1 
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6"
             >
               Get in Touch
               <span className="block text-primary-100">We'd Love to Hear from You</span>
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            </h1>
+            <p 
               className="text-lg sm:text-xl md:text-2xl text-primary-50 mb-6 sm:mb-8 max-w-3xl mx-auto px-4"
             >
               Have questions about our container solutions? Need a custom quote? 
               Our team is here to help you find the perfect solution.
-            </motion.p>
+            </p>
           </div>
         </div>
       </section>
@@ -129,11 +123,8 @@ const ContactPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {contactInfo.map((info, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-200"
               >
                 <div className={`w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4`}>
@@ -167,7 +158,7 @@ const ContactPage = () => {
                     </p>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -186,9 +177,9 @@ const ContactPage = () => {
           </div>
 
           {isSubmitted ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+            <div
+
+
               className="bg-green-50 border border-green-200 rounded-xl p-8 text-center"
             >
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -204,12 +195,9 @@ const ContactPage = () => {
               >
                 Send Another Message
               </button>
-            </motion.div>
+            </div>
           ) : (
-            <motion.form
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+            <form
               onSubmit={handleSubmit}
               className="bg-white rounded-xl shadow-soft p-8"
             >
@@ -321,7 +309,7 @@ const ContactPage = () => {
                   Send Message
                 </button>
               </div>
-            </motion.form>
+            </form>
           )}
         </div>
       </section>
@@ -359,11 +347,8 @@ const ContactPage = () => {
                 email: 'durban@valleycontainers.co.za'
               }
             ].map((branch, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-200"
               >
                 <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -398,7 +383,7 @@ const ContactPage = () => {
                     </a>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
 

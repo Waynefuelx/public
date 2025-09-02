@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+
 import { 
   Wrench, 
   Building2, 
@@ -275,28 +275,22 @@ const ConversionsPage = () => {
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-32">
           <div className="text-center">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+            <h1 
+
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6"
             >
               Container Conversions
               <span className="block text-primary-100">Custom Solutions</span>
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            </h1>
+            <p 
+
               className="text-lg sm:text-xl md:text-2xl text-primary-50 mb-6 sm:mb-8 max-w-3xl mx-auto px-4"
             >
               Valley Containers has over a decade of container conversion experience. 
               Transform standard containers into versatile, functional spaces.
-            </motion.p>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+            </p>
+            <div 
+
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
             >
               <Link 
@@ -311,7 +305,7 @@ const ConversionsPage = () => {
               >
                 Contact Us
               </button>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -320,36 +314,30 @@ const ConversionsPage = () => {
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+            <h2 
+
               className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6"
             >
               CUSTOM CONTAINERS
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            </h2>
+            <p 
+
               className="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed"
             >
               You can transform a standard containers into versatile, functional spaces with our expert container conversions near me. 
               Whatever your need for modified shipping containers is, we can bring your vision to life. Our team specialises in 
               creating custom shipping containers tailored to your specific needs, handling everything from design to sourcing 
               appliances and furniture.
-            </motion.p>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+            </p>
+            <div 
+
               className="bg-primary-50 border border-primary-200 rounded-lg p-6"
             >
               <p className="text-primary-800 font-medium">
                 All modified shipping container are thoroughly tested, including electrical and plumbing, 
                 to ensure it's ready for immediate use upon delivery.
               </p>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -358,31 +346,25 @@ const ConversionsPage = () => {
       <section className="py-16 sm:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16">
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+            <h2 
+
               className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4"
             >
               Types of Shipping Container Conversions
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            </h2>
+            <p 
+
               className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto"
             >
               From office spaces to specialized facilities, we can convert containers for any purpose.
-            </motion.p>
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {conversionTypes.map((conversion, index) => (
-              <motion.div
+              <div
                 key={conversion.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+
                 className="bg-white rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden group"
               >
                 {/* Conversion Image */}
@@ -446,7 +428,7 @@ const ConversionsPage = () => {
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
                   </Link>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -456,41 +438,33 @@ const ConversionsPage = () => {
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center mb-12">
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+            <h2 
+
               className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6"
             >
               Get in touch with us
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            </h2>
+            <p 
+
               className="text-lg sm:text-xl text-gray-600 mb-8"
             >
               Contact us by phone for immediate live assistance – or send us an email. 
               We'll get back to you as soon as we can.
-            </motion.p>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+            </p>
+            <p 
+
               className="text-lg text-gray-700"
             >
               Get in touch with any of our branches to arrange a visit to our depot or to discuss your specific requirements.
-            </motion.p>
+            </p>
           </div>
 
           {/* Branches Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {branches.map((branch, index) => (
-              <motion.div
+              <div
                 key={branch.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+
                 className="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-primary-300 transition-colors duration-200"
               >
                 <div className="flex items-start gap-4">
@@ -532,7 +506,7 @@ const ConversionsPage = () => {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -541,27 +515,21 @@ const ConversionsPage = () => {
       {/* CTA Section */}
       <section className="py-16 sm:py-20 bg-primary-500 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+          <h2 
+
             className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4"
           >
             Get your quote today!
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+          </h2>
+          <p 
+
             className="text-lg sm:text-xl text-primary-50 mb-6 sm:mb-8 max-w-2xl mx-auto"
           >
             Ready to transform your container into something extraordinary? 
             Contact our team today to discuss your conversion needs.
-          </motion.p>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+          </p>
+          <div 
+
             className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
           >
             <Link 
@@ -576,7 +544,7 @@ const ConversionsPage = () => {
             >
               Contact Us
             </button>
-          </motion.div>
+          </div>
         </div>
       </section>
 

@@ -17,6 +17,7 @@ const ContainerTypes = () => {
     purchase: boolean
     icon: any
     image?: string
+    category: string
   }> = [
     {
       id: '6m-storage',
@@ -30,7 +31,8 @@ const ContainerTypes = () => {
       rental: true,
       purchase: true,
       icon: Package,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png'
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png',
+      category: 'Storage'
     },
     {
       id: '6m-office',
@@ -44,7 +46,8 @@ const ContainerTypes = () => {
       rental: true,
       purchase: true,
       icon: Package,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png'
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png',
+      category: 'Office'
     },
     {
       id: '6m-vip-office',
@@ -58,7 +61,8 @@ const ContainerTypes = () => {
       rental: true,
       purchase: true,
       icon: Package,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png'
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png',
+      category: 'Office'
     },
     {
       id: '6m-refrigeration',
@@ -72,7 +76,8 @@ const ContainerTypes = () => {
       rental: true,
       purchase: false,
       icon: Thermometer,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png'
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png',
+      category: 'Specialized'
     },
     {
       id: '3m-storage',
@@ -86,7 +91,8 @@ const ContainerTypes = () => {
       rental: true,
       purchase: true,
       icon: Package,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/3m-storage-container.png'
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/3m-storage-container.png',
+      category: 'Storage'
     },
     {
       id: '6m-split',
@@ -100,7 +106,8 @@ const ContainerTypes = () => {
       rental: true,
       purchase: true,
       icon: Package,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png'
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png',
+      category: 'Storage'
     },
     {
       id: 'elite-mobile-office',
@@ -114,7 +121,8 @@ const ContainerTypes = () => {
       rental: true,
       purchase: true,
       icon: Package,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png'
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png',
+      category: 'Office'
     },
     {
       id: '3m-ablution',
@@ -128,7 +136,8 @@ const ContainerTypes = () => {
       rental: true,
       purchase: false,
       icon: Package,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png'
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png',
+      category: 'Facilities'
     },
     {
       id: '6m-pavilion',
@@ -142,7 +151,8 @@ const ContainerTypes = () => {
       rental: true,
       purchase: true,
       icon: Package,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png'
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png',
+      category: 'Events'
     },
     {
       id: '6m-sleeper',
@@ -156,7 +166,8 @@ const ContainerTypes = () => {
       rental: true,
       purchase: false,
       icon: Package,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png'
+      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png',
+      category: 'Accommodation'
     }
   ]
 
@@ -248,16 +259,11 @@ const ContainerTypes = () => {
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 {container.rental && (
-                  <button className="btn-primary flex-1 text-sm w-full">
-                    Rent Now
-                  </button>
-                )}
-                {container.purchase && (
                   <Link
-                    href="/rental"
-                    className="btn-secondary flex-1 text-sm w-full text-center"
+                    href={`/booking?container=${container.id}&type=${container.name}&category=${container.category}&dimensions=${encodeURIComponent(container.dimensions)}&capacity=${encodeURIComponent(container.capacity)}&price=${container.price}`}
+                    className="btn-primary flex-1 text-sm w-full text-center"
                   >
-                    Get Quote
+                    Rent Now
                   </Link>
                 )}
               </div>

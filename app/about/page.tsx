@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+
 import { 
   Users, 
   Award, 
@@ -122,28 +122,19 @@ const AboutPage = () => {
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-32">
           <div className="text-center">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+            <h1 
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6"
             >
               About Valley Containers
               <span className="block text-primary-100">Your Trusted Partner Since 2008</span>
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            </h1>
+            <p 
               className="text-lg sm:text-xl md:text-2xl text-primary-50 mb-6 sm:mb-8 max-w-3xl mx-auto px-4"
             >
               We're more than just a container company. We're innovators, problem-solvers, 
               and your partners in building success stories across South Africa.
-            </motion.p>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+            </p>
+            <div 
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
             >
               <Link 
@@ -158,7 +149,7 @@ const AboutPage = () => {
               >
                 Get in Touch
               </Link>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -168,11 +159,8 @@ const AboutPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
                 <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -184,7 +172,7 @@ const AboutPage = () => {
                 <div className="text-gray-600 font-medium">
                   {stat.label}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -194,10 +182,8 @@ const AboutPage = () => {
       <section className="py-16 sm:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
+            <div
+
             >
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
                 Our Story
@@ -219,12 +205,10 @@ const AboutPage = () => {
                   storage to sophisticated office complexes.
                 </p>
               </div>
-            </motion.div>
+            </div>
             
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            <div
+
               className="relative"
             >
               <div className="bg-primary-500 rounded-2xl p-8 text-white">
@@ -237,7 +221,7 @@ const AboutPage = () => {
                   </p>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -256,11 +240,8 @@ const AboutPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-200"
               >
                 <div className={`w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4`}>
@@ -272,7 +253,7 @@ const AboutPage = () => {
                 <p className="text-gray-600">
                   {value.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -292,11 +273,8 @@ const AboutPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {team.map((member, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="bg-white rounded-xl p-6 text-center shadow-soft hover:shadow-lg transition-all duration-300"
               >
                 <div className="w-24 h-24 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -311,7 +289,7 @@ const AboutPage = () => {
                 <p className="text-gray-600 text-sm">
                   {member.experience}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -335,11 +313,8 @@ const AboutPage = () => {
             
             <div className="space-y-12">
               {milestones.map((milestone, index) => (
-                <motion.div
+                <div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
                   className={`relative flex items-center ${
                     index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
                   }`}
@@ -361,7 +336,7 @@ const AboutPage = () => {
                       </p>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>

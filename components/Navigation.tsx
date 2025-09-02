@@ -24,7 +24,7 @@ const Navigation = () => {
     { name: 'Rental', href: '/rental' },
     { name: 'Conversions', href: '/services' },
     { name: 'Branches', href: '/branches' },
-    { name: 'Pricing', href: '/pricing' },
+    { name: 'Buying', href: '/buying' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
   ]

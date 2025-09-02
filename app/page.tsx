@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+
 import Link from 'next/link'
 import { 
   Truck, 
@@ -67,32 +67,23 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-32">
           <div className="text-center">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+            <h1 
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6"
             >
               Professional Container
               <span className="block text-primary-100">Rental & Sales</span>
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            </h1>
+            <p 
               className="text-lg sm:text-xl md:text-2xl text-primary-50 mb-6 sm:mb-8 max-w-3xl mx-auto px-4"
             >
               Streamlined container management with real-time tracking, instant quotes, and nationwide delivery.
-            </motion.p>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+            </p>
+            <div 
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 relative z-10"
             >
               <Link 
                 href="/rental"
-                className="bg-white text-primary-500 hover:bg-secondary-100 font-semibold py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 border border-primary-200 text-base sm:text-lg w-full sm:w-auto inline-flex items-center justify-center cursor-pointer hover:shadow-lg active:scale-95"
+                className="bg-white text-primary-500 hover:bg-secondary-100 font-semibold py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 border border-primary-200 text-base sm:text-lg w-full sm:w-auto inline-flex items-center justify-center hover:shadow-lg active:scale-95"
               >
                 Rent Now
               </Link>
@@ -102,12 +93,12 @@ export default function Home() {
               >
                 Buy Now
               </Link>
-            </motion.div>
+            </div>
           </div>
         </div>
         
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10 -z-10">
+        <div className="absolute inset-0 opacity-10 -z-10" style={{ zIndex: -1 }}>
           <div className="absolute inset-0" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
           }}></div>
@@ -119,18 +110,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {stats.map((stat, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
                 <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary-600 mb-2">
                   {stat.number}
                 </div>
                 <div className="text-sm sm:text-base text-gray-600">{stat.label}</div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -150,11 +138,8 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {features.map((feature, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="card hover:shadow-soft transition-shadow duration-300"
               >
                 <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
@@ -166,7 +151,7 @@ export default function Home() {
                 <p className="text-gray-600">
                   {feature.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

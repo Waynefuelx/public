@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+
 import { 
   Truck, 
   MapPin, 
@@ -111,28 +111,19 @@ const LogisticsServicesPage = () => {
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-32">
           <div className="text-center">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+            <h1 
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6"
             >
               Logistics & Delivery
               <span className="block text-primary-100">Nationwide Service</span>
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            </h1>
+            <p 
               className="text-lg sm:text-xl md:text-2xl text-primary-50 mb-6 sm:mb-8 max-w-3xl mx-auto px-4"
             >
               Comprehensive logistics solutions including delivery, pickup, and transportation 
               services across South Africa and beyond.
-            </motion.p>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+            </p>
+            <div 
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
             >
               <Link 
@@ -147,7 +138,7 @@ const LogisticsServicesPage = () => {
               >
                 View All Services
               </Link>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -156,50 +147,38 @@ const LogisticsServicesPage = () => {
       <section className="py-12 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+            <div
               className="text-center"
             >
               <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary-600 mb-2">
                 9
               </div>
               <div className="text-sm sm:text-base text-gray-600">Provinces</div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+            </div>
+            <div
               className="text-center"
             >
               <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary-600 mb-2">
                 24/7
               </div>
               <div className="text-sm sm:text-base text-gray-600">Support</div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+            </div>
+            <div
               className="text-center"
             >
               <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary-600 mb-2">
                 50+
               </div>
               <div className="text-sm sm:text-base text-gray-600">Cities</div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+            </div>
+            <div
               className="text-center"
             >
               <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary-600 mb-2">
                 100%
               </div>
               <div className="text-sm sm:text-base text-gray-600">Insured</div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -218,11 +197,8 @@ const LogisticsServicesPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {logisticsServices.map((service, index) => (
-              <motion.div
+              <div
                 key={service.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="bg-white rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden"
               >
                 <div className="p-6 sm:p-8">
@@ -269,7 +245,7 @@ const LogisticsServicesPage = () => {
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
                   </Link>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -289,11 +265,8 @@ const LogisticsServicesPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {coverage.map((region, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="bg-white rounded-xl shadow-soft p-6 text-center"
               >
                 <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -309,7 +282,7 @@ const LogisticsServicesPage = () => {
                     </p>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -350,11 +323,8 @@ const LogisticsServicesPage = () => {
                 description: 'Monitor progress and receive your container on schedule.'
               }
             ].map((step, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="text-center"
               >
                 <div className="w-16 h-16 bg-primary-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
@@ -366,7 +336,7 @@ const LogisticsServicesPage = () => {
                 <p className="text-gray-600 text-sm">
                   {step.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
