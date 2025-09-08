@@ -1,7 +1,9 @@
 'use client'
 
-
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useAuth } from '@/contexts/AuthContext'
 import { 
   Truck, 
   Calendar, 
@@ -19,6 +21,46 @@ import Branches from '@/components/Branches'
 import Testimonials from '@/components/Testimonials'
 
 export default function Home() {
+  const { user, isLoading } = useAuth()
+  const router = useRouter()
+
+  // Redirect users based on authentication status
+  useEffect(() => {
+    if (!isLoading) {
+      if (user) {
+        // Redirect authenticated users to their appropriate dashboard
+        switch (user.type) {
+          case 'customer':
+            router.push('/customer')
+            break
+          case 'driver':
+            router.push('/driver')
+            break
+          case 'admin':
+            router.push('/admin')
+            break
+        }
+      } else {
+        // Redirect unauthenticated users to login
+        router.push('/login')
+      }
+    }
+  }, [user, isLoading, router])
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // This will redirect, so we don't need to render anything
+  return null
 
   const features = [
     {

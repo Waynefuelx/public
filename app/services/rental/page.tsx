@@ -21,7 +21,7 @@ const RentalServicesPage = () => {
       id: 1,
       name: 'Storage Containers',
       description: 'Secure storage solutions for businesses and individuals',
-      sizes: ['6ft', '10ft', '20ft', '40ft'],
+      sizes: ['2m', '3m', '6m', '12m'],
       pricing: 'From R120/day',
       features: [
         'Weather resistant',
@@ -37,7 +37,7 @@ const RentalServicesPage = () => {
       id: 2,
       name: 'Office Containers',
       description: 'Converted containers perfect for office spaces and site offices',
-      sizes: ['20ft', '40ft'],
+      sizes: ['6m', '12m'],
       pricing: 'From R200/day',
       features: [
         'Fully furnished options',
@@ -53,7 +53,7 @@ const RentalServicesPage = () => {
       id: 3,
       name: 'Event Containers',
       description: 'Specialized containers for events, exhibitions, and temporary needs',
-      sizes: ['10ft', '20ft', '40ft'],
+      sizes: ['3m', '6m', '12m'],
       pricing: 'From R150/day',
       features: [
         'Custom branding options',
@@ -69,7 +69,7 @@ const RentalServicesPage = () => {
       id: 4,
       name: 'Industrial Containers',
       description: 'Heavy-duty containers for industrial and construction applications',
-      sizes: ['20ft', '40ft', '40ft HC'],
+      sizes: ['6m', '12m', '12m HC'],
       pricing: 'From R180/day',
       features: [
         'Heavy-duty construction',

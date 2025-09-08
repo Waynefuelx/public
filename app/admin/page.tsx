@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import ProtectedRoute from '@/components/ProtectedRoute'
 import { 
   Users, 
   Truck, 
@@ -159,7 +160,7 @@ const AdminPage = () => {
       {
         id: 'D001',
         containerNumber: 'VC-20-001',
-        containerType: '20ft Standard',
+        containerType: '6m Standard',
         customerName: 'Construction Plus Inc.',
         customerPhone: '+27 82 123 4567',
         customerEmail: 'john.smith@constructionplus.co.za',
@@ -181,7 +182,7 @@ const AdminPage = () => {
       {
         id: 'D002',
         containerNumber: 'VC-40-002',
-        containerType: '40ft High Cube',
+        containerType: '12m High Cube',
         customerName: 'Global Logistics Solutions',
         customerPhone: '+27 82 234 5678',
         customerEmail: 'maria.garcia@globallogistics.co.za',
@@ -259,7 +260,7 @@ const AdminPage = () => {
       lastContact: '2024-01-14T10:30:00Z',
       nextFollowUp: '2024-01-16T14:00:00Z',
       value: 2500,
-      notes: 'Interested in 40ft containers for construction project. Budget approved.'
+      notes: 'Interested in 12m containers for construction project. Budget approved.'
     },
     {
       id: 'L002',
@@ -486,7 +487,7 @@ const AdminPage = () => {
     {
       id: 'C001',
       containerNumber: 'VC-20-001',
-      containerType: '20ft Standard',
+      containerType: '6m Standard',
       customerName: 'Construction Plus Inc.',
       customerEmail: 'john.smith@constructionplus.co.za',
       customerPhone: '+27 82 123 4567',
@@ -509,7 +510,7 @@ const AdminPage = () => {
     {
       id: 'C002',
       containerNumber: 'VC-40-002',
-      containerType: '40ft High Cube',
+      containerType: '12m High Cube',
       customerName: 'Global Logistics Solutions',
       customerEmail: 'maria.garcia@globallogistics.co.za',
       customerPhone: '+27 82 234 5678',
@@ -532,7 +533,7 @@ const AdminPage = () => {
     {
       id: 'C003',
       containerNumber: 'VC-20-003',
-      containerType: '20ft Refrigerated',
+              containerType: '6m Refrigerated',
       customerName: 'Fresh Foods Ltd',
       customerEmail: 'info@freshfoods.co.za',
       customerPhone: '+27 82 345 6789',
@@ -555,7 +556,7 @@ const AdminPage = () => {
     {
       id: 'C004',
       containerNumber: 'VC-40-004',
-      containerType: '40ft Standard',
+              containerType: '12m Standard',
       customerName: 'Mining Solutions Corp',
       customerEmail: 'contact@miningsolutions.co.za',
       customerPhone: '+27 82 456 7890',
@@ -578,7 +579,7 @@ const AdminPage = () => {
     {
       id: 'C005',
       containerNumber: 'VC-20-005',
-      containerType: '20ft Standard',
+      containerType: '6m Standard',
       customerName: 'Event Productions LLC',
       customerEmail: 'david.wilson@eventproductions.co.za',
       customerPhone: '+27 82 567 8901',
@@ -882,7 +883,8 @@ const AdminPage = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-secondary-200">
+    <ProtectedRoute allowedTypes={['admin']}>
+      <div className="min-h-screen bg-secondary-200">
       {/* Admin Header - Fixed positioning to avoid conflicts with main nav */}
       <div className="bg-white shadow-sm border-b border-gray-200 sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -2571,6 +2573,7 @@ const AdminPage = () => {
         )}
       </div>
     </div>
+    </ProtectedRoute>
   )
 }
 

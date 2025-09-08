@@ -11,56 +11,39 @@ import {
   User,
   AlertCircle
 } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { useAuth } from '@/contexts/AuthContext'
 
 const LoginPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { login, isLoading } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError('')
     
     if (!email || !password) {
-      toast.error('Please fill in all fields')
+      setError('Please fill in all fields')
       return
     }
 
-    setIsLoading(true)
+    const success = await login(email, password)
     
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // For demo purposes, accept any email/password combination
-      if (email && password) {
-        toast.success('Login successful! Redirecting to admin panel...')
-        setTimeout(() => {
-          router.push('/admin')
-        }, 1000)
-      } else {
-        toast.error('Invalid credentials')
-      }
-    } catch (error) {
-      toast.error('Login failed. Please try again.')
-    } finally {
-      setIsLoading(false)
+    if (success) {
+      // Redirect based on user type will be handled by ProtectedRoute
+      router.push('/')
+    } else {
+      setError('Invalid credentials. Please check your email and password.')
     }
   }
 
   const demoCredentials = [
-    { role: 'Sales Manager', email: 'sarah.johnson@valleycontainers.co.za', password: 'demo123' },
-    { role: 'Operations Manager', email: 'mike.chen@valleycontainers.co.za', password: 'demo123' },
-    { role: 'Finance Manager', email: 'lisa.wang@valleycontainers.co.za', password: 'demo123' }
-  ]
-
-  const driverCredentials = [
-    { name: 'Mike Johnson', phone: '+27 82 555 1234', vehicle: 'CA 123-456' },
-    { name: 'Tom Davis', phone: '+27 82 555 2345', vehicle: 'CA 234-567' },
-    { name: 'Sarah Wilson', phone: '+27 82 555 3456', vehicle: 'CA 345-678' },
-    { name: 'David Brown', phone: '+27 82 555 4567', vehicle: 'CA 456-789' }
+    { role: 'Customer', email: 'customer@valley.com', password: 'customer123', description: 'Access to buying, renting, tracking, and order history' },
+    { role: 'Driver', email: 'driver@valley.com', password: 'driver123', description: 'View assigned deliveries and location tracking' },
+    { role: 'Admin', email: 'admin@valley.com', password: 'admin123', description: 'Full admin panel access for order management' }
   ]
 
   return (
@@ -77,7 +60,7 @@ const LoginPage = () => {
           Valley Containers
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Staff Portal Access
+          Portal Access
         </p>
       </div>
 
@@ -163,6 +146,15 @@ const LoginPage = () => {
               </div>
             </div>
 
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <div className="flex items-center">
+                  <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
+                  <p className="text-sm text-red-800">{error}</p>
+                </div>
+              </div>
+            )}
+
             <div>
               <button
                 type="submit"
@@ -192,45 +184,46 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {/* Admin Credentials */}
+            {/* Demo Credentials */}
             <div className="mt-4">
-              <h4 className="text-sm font-medium text-gray-900 mb-3">Admin Portal Access</h4>
+              <h4 className="text-sm font-medium text-gray-900 mb-3">Demo User Accounts</h4>
               <div className="space-y-3">
                 {demoCredentials.map((credential, index) => (
                   <div
                     key={index}
-                    className="bg-secondary-200 rounded-lg p-3 text-xs sm:text-sm"
+                    className={`rounded-lg p-3 text-xs sm:text-sm ${
+                      credential.role === 'Customer' ? 'bg-green-50 border border-green-200' :
+                      credential.role === 'Driver' ? 'bg-blue-50 border border-blue-200' :
+                      'bg-purple-50 border border-purple-200'
+                    }`}
                   >
-                    <div className="font-medium text-secondary-900">{credential.role}</div>
-                    <div className="text-secondary-600 break-all">
+                    <div className={`font-medium ${
+                      credential.role === 'Customer' ? 'text-green-900' :
+                      credential.role === 'Driver' ? 'text-blue-900' :
+                      'text-purple-900'
+                    }`}>
+                      {credential.role}
+                    </div>
+                    <div className={`break-all ${
+                      credential.role === 'Customer' ? 'text-green-600' :
+                      credential.role === 'Driver' ? 'text-blue-600' :
+                      'text-purple-600'
+                    }`}>
                       <span className="font-medium">Email:</span> {credential.email}
                     </div>
-                    <div className="text-secondary-600">
+                    <div className={`${
+                      credential.role === 'Customer' ? 'text-green-600' :
+                      credential.role === 'Driver' ? 'text-blue-600' :
+                      'text-purple-600'
+                    }`}>
                       <span className="font-medium">Password:</span> {credential.password}
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Driver Credentials */}
-            <div className="mt-6">
-              <h4 className="text-sm font-medium text-gray-900 mb-3">Driver Portal Access</h4>
-              <div className="space-y-3">
-                {driverCredentials.map((driver, index) => (
-                  <div
-                    key={index}
-                    className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs sm:text-sm"
-                  >
-                    <div className="font-medium text-blue-900">{driver.name}</div>
-                    <div className="text-blue-700">
-                      <span className="font-medium">Phone:</span> {driver.phone}
-                    </div>
-                    <div className="text-blue-700">
-                      <span className="font-medium">Vehicle:</span> {driver.vehicle}
-                    </div>
-                    <div className="text-blue-600 text-xs mt-1">
-                      Access driver portal at: <a href="/driver" className="underline font-medium">/driver</a>
+                    <div className={`text-xs mt-1 ${
+                      credential.role === 'Customer' ? 'text-green-500' :
+                      credential.role === 'Driver' ? 'text-blue-500' :
+                      'text-purple-500'
+                    }`}>
+                      {credential.description}
                     </div>
                   </div>
                 ))}
@@ -245,12 +238,13 @@ const LoginPage = () => {
               <div className="text-sm text-blue-800">
                 <p className="font-medium">Demo Mode</p>
                 <p className="mt-1">
-                  This is a demonstration application. Use any of the demo credentials above to access the admin panel or driver portal.
+                  This is a demonstration application. Use any of the demo credentials above to access different user portals.
                   All data is simulated for presentation purposes.
                 </p>
                 <p className="mt-2">
-                  <strong>Admin Portal:</strong> Full management interface for staff<br/>
-                  <strong>Driver Portal:</strong> Mobile-optimized delivery management for drivers
+                  <strong>Customer Portal:</strong> Buy, rent, track containers, and view order history<br/>
+                  <strong>Driver Portal:</strong> View assigned deliveries and location tracking<br/>
+                  <strong>Admin Portal:</strong> Full management interface for order processing
                 </p>
               </div>
             </div>

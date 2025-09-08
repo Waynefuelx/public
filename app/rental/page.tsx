@@ -105,7 +105,7 @@ const containerTypes: ContainerType[] = [
       'Alarm systems',
       'Insulated walls'
     ],
-    sizes: ['6m x 2.4m', '12m x 2.4m', '20ft', '40ft'],
+    sizes: ['6m x 2.4m', '12m x 2.4m', '6m', '12m'],
     rentalPeriods: ['Weekly', 'Monthly', 'Long-term'],
     startingPrice: 'R850/day',
     image: '/refrigeration-container.jpg',

@@ -21,7 +21,7 @@ const SalesServicesPage = () => {
       id: 1,
       name: 'New Containers',
       description: 'Brand new containers with full manufacturer warranty and certification',
-      sizes: ['6ft', '10ft', '20ft', '40ft', '40ft HC'],
+      sizes: ['2m', '3m', '6m', '12m', '12m HC'],
       pricing: 'From R25,000',
       features: [
         'Full manufacturer warranty',
@@ -37,7 +37,7 @@ const SalesServicesPage = () => {
       id: 2,
       name: 'Used Containers',
       description: 'Quality pre-owned containers at competitive prices',
-      sizes: ['6ft', '10ft', '20ft', '40ft'],
+      sizes: ['2m', '3m', '6m', '12m'],
       pricing: 'From R15,000',
       features: [
         'Quality inspected',
@@ -53,7 +53,7 @@ const SalesServicesPage = () => {
       id: 3,
       name: 'Modified Containers',
       description: 'Custom-converted containers for specific applications',
-      sizes: ['20ft', '40ft'],
+      sizes: ['6m', '12m'],
       pricing: 'Custom quote',
       features: [
         'Custom design & build',
