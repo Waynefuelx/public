@@ -27,10 +27,6 @@ const Navigation = () => {
   const getNavigation = () => {
     if (user?.type === 'customer') {
       return [
-        { name: 'Dashboard', href: '/customer' },
-        { name: 'Containers', href: '/containers' },
-        { name: 'Conversions', href: '/services' },
-        { name: 'Tracking', href: '/track' },
         { name: 'About', href: '/about' },
         { name: 'Contact', href: '/contact' },
       ]
@@ -66,6 +62,13 @@ const Navigation = () => {
     { name: 'Dashboard', href: user?.type === 'customer' ? '/customer' : user?.type === 'driver' ? '/driver' : '/admin', icon: BarChart3 },
     { name: 'Settings', href: '/settings', icon: Settings },
     { name: 'Notifications', href: '/notifications', icon: Bell },
+  ]
+
+  // Additional menu items for customers
+  const customerMenuItems = [
+    { name: 'Containers', href: '/containers', icon: Package },
+    { name: 'Conversions', href: '/services', icon: Settings },
+    { name: 'Tracking', href: '/track', icon: Truck },
   ]
 
   return (
@@ -141,6 +144,17 @@ const Navigation = () => {
                         <p className="text-xs text-primary-600 capitalize">{user.type}</p>
                       </div>
                       {userMenuItems.map((item) => (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <item.icon className="w-4 h-4 mr-3" />
+                          {item.name}
+                        </Link>
+                      ))}
+                      {user?.type === 'customer' && customerMenuItems.map((item) => (
                         <Link
                           key={item.name}
                           href={item.href}
@@ -227,6 +241,17 @@ const Navigation = () => {
                   <p className="text-xs text-primary-600 capitalize">{user.type}</p>
                 </div>
                 {userMenuItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-lg transition-colors duration-200 active:bg-gray-200"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <item.icon className="w-4 h-4 mr-3" />
+                    {item.name}
+                  </Link>
+                ))}
+                {user?.type === 'customer' && customerMenuItems.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}

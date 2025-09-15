@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Search, 
@@ -41,6 +41,9 @@ const TrackPage = () => {
   const [trackingNumber, setTrackingNumber] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [trackingInfo, setTrackingInfo] = useState<TrackingInfo | null>(null)
+  const [map, setMap] = useState<any>(null)
+  const [markers, setMarkers] = useState<any[]>([])
+  const [isMapLoaded, setIsMapLoaded] = useState(false)
 
   // Mock tracking data - in real app this would come from API
   const mockTrackingData: TrackingInfo = {
@@ -156,6 +159,208 @@ const TrackPage = () => {
     if (diffInDays === 1) return '1 day ago'
     return `${diffInDays} days ago`
   }
+
+  // Load Leaflet (OpenStreetMap) script and CSS
+  useEffect(() => {
+    if (trackingInfo && !isMapLoaded) {
+      // Check if Leaflet is already loaded
+      if (typeof window !== 'undefined' && (window as any).L) {
+        setIsMapLoaded(true)
+        setTimeout(() => initializeMap(), 100)
+        return
+      }
+
+      // Load Leaflet CSS
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='
+      link.crossOrigin = ''
+      document.head.appendChild(link)
+
+      // Load Leaflet JS
+      const script = document.createElement('script')
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='
+      script.crossOrigin = ''
+      script.onload = () => {
+        setIsMapLoaded(true)
+        setTimeout(() => initializeMap(), 100)
+      }
+      document.head.appendChild(script)
+    }
+  }, [trackingInfo, isMapLoaded])
+
+  // Initialize Leaflet Map
+  const initializeMap = () => {
+    if (typeof window !== 'undefined' && (window as any).L) {
+      const mapElement = document.getElementById('track-live-map')
+      if (mapElement && !map) {
+        const L = (window as any).L
+        
+        // Clear any existing map
+        if (map) {
+          map.remove()
+        }
+        
+        const newMap: any = L.map('track-live-map', {
+          center: [-30.5595, 22.9375], // Center of South Africa
+          zoom: 6,
+          zoomControl: true,
+          scrollWheelZoom: true,
+          doubleClickZoom: true,
+          boxZoom: true,
+          keyboard: true,
+          dragging: true,
+          touchZoom: true,
+          attributionControl: false
+        })
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(newMap)
+        
+        // Force map to resize after initialization
+        setTimeout(() => {
+          newMap.invalidateSize()
+        }, 200)
+        
+        setMap(newMap)
+        addTrackingMarker(newMap)
+      }
+    }
+  }
+
+  // Add tracking marker to map
+  const addTrackingMarker = (mapInstance: any) => {
+    if (!trackingInfo) return
+
+    const newMarkers: any[] = []
+    
+    // Create custom icon based on tracking status
+    const customIcon = (window as any).L.divIcon({
+      className: 'custom-marker',
+      html: `
+        <div class="w-10 h-10 rounded-full border-3 border-white shadow-lg flex items-center justify-center text-white font-bold text-sm" 
+             style="background-color: ${
+               trackingInfo.status === 'delivered' ? '#10B981' : 
+               trackingInfo.status === 'in-transit' ? '#3B82F6' : 
+               trackingInfo.status === 'out-for-delivery' ? '#8B5CF6' :
+               trackingInfo.status === 'confirmed' ? '#F59E0B' : '#EF4444'
+             }">
+          <Truck class="w-5 h-5" />
+        </div>
+      `,
+      iconSize: [40, 40],
+      iconAnchor: [20, 20]
+    })
+
+    // Get coordinates for the current location
+    const coords = getCoordinatesForLocation(trackingInfo.currentLocation)
+    const marker = (window as any).L.marker([coords.lat, coords.lng], {
+      icon: customIcon
+    }).addTo(mapInstance)
+
+    // Create popup content
+    const popupContent = `
+      <div class="p-4 max-w-sm">
+        <h3 class="font-semibold text-gray-900 mb-2">Container ${trackingInfo.containerId}</h3>
+        <div class="space-y-2 text-sm">
+          <p><strong>Status:</strong> ${trackingInfo.status.replace('-', ' ')}</p>
+          <p><strong>Location:</strong> ${trackingInfo.currentLocation}</p>
+          <p><strong>Driver:</strong> ${trackingInfo.driverName}</p>
+          <p><strong>Phone:</strong> ${trackingInfo.driverPhone}</p>
+          <p><strong>Last Update:</strong> ${formatTimeAgo(trackingInfo.lastUpdate)}</p>
+        </div>
+      </div>
+    `
+
+    marker.bindPopup(popupContent)
+    newMarkers.push(marker)
+    
+    setMarkers(newMarkers)
+  }
+
+  // Get coordinates for locations
+  const getCoordinatesForLocation = (location: string) => {
+    // Simple location mapping - in real app this would use geocoding
+    const locationCoords: { [key: string]: { lat: number; lng: number } } = {
+      'N1 Highway, Johannesburg': { lat: -26.2041, lng: 28.0473 },
+      'Valley Containers Warehouse, Johannesburg': { lat: -26.2041, lng: 28.0473 },
+      'Cape Town': { lat: -33.9249, lng: 18.4241 },
+      'Durban': { lat: -29.8587, lng: 31.0218 },
+      'Pretoria': { lat: -25.7479, lng: 28.2293 },
+      'Port Elizabeth': { lat: -33.9608, lng: 25.6022 },
+      'Bloemfontein': { lat: -29.0852, lng: 26.1596 },
+      'East London': { lat: -33.0292, lng: 27.8546 },
+      'Nelspruit': { lat: -25.4747, lng: 30.9703 }
+    }
+    
+    // Try to find matching location
+    for (const [key, coords] of Object.entries(locationCoords)) {
+      if (location.toLowerCase().includes(key.toLowerCase())) {
+        return coords
+      }
+    }
+    
+    return { lat: -30.5595, lng: 22.9375 } // Default to South Africa center
+  }
+
+  // Add map styles
+  useEffect(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      .custom-marker {
+        background: transparent !important;
+        border: none !important;
+      }
+      #track-live-map {
+        height: 400px !important;
+        width: 100% !important;
+        position: relative !important;
+        z-index: 1 !important;
+      }
+      .leaflet-popup-content-wrapper {
+        border-radius: 8px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+      }
+      .leaflet-popup-content {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+    `
+    document.head.appendChild(style)
+    
+    return () => {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style)
+      }
+    }
+  }, [])
+
+  // Cleanup map when component unmounts
+  useEffect(() => {
+    return () => {
+      // Remove all markers
+      markers.forEach(marker => {
+        if (marker && marker.remove) {
+          marker.remove()
+        }
+      })
+      setMarkers([])
+      
+      // Clear map
+      if (map && map.remove) {
+        map.remove()
+        setMap(null)
+      }
+      
+      // Reset map loaded state
+      setIsMapLoaded(false)
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-secondary-200 py-12">
@@ -334,17 +539,70 @@ const TrackPage = () => {
               </div>
             </div>
 
-            {/* Map Placeholder */}
+            {/* Live Location Map */}
             <div className="card">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Live Location</h3>
-              <div className="bg-secondary-200 rounded-lg h-64 flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Interactive map showing container location</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Real-time GPS tracking and route visualization
-                  </p>
+              <div className="relative h-96 rounded-lg overflow-hidden">
+                {/* Leaflet Map */}
+                <div 
+                  id="track-live-map" 
+                  className="w-full h-full"
+                  style={{
+                    height: '400px',
+                    width: '100%',
+                    position: 'relative',
+                    zIndex: 1
+                  }}
+                ></div>
+                
+                {/* Map Controls Overlay */}
+                <div className="absolute top-4 left-4 bg-white bg-opacity-95 rounded-lg px-3 py-2 shadow-lg">
+                  <h4 className="text-sm font-semibold text-gray-900">Live Tracking</h4>
+                  <p className="text-xs text-gray-600">Container {trackingInfo.containerId}</p>
                 </div>
+                
+                {/* Map Legend */}
+                <div className="absolute bottom-4 left-4 bg-white bg-opacity-95 rounded-lg p-3 shadow-lg max-w-xs">
+                  <h4 className="text-sm font-semibold text-gray-900 mb-2">Status Legend</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-green-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                      <span className="text-xs text-gray-700">Delivered</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-blue-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                      <span className="text-xs text-gray-700">In Transit</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-purple-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                      <span className="text-xs text-gray-700">Out for Delivery</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-yellow-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                      <span className="text-xs text-gray-700">Confirmed</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                      <span className="text-xs text-gray-700">Pending</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Driver Info */}
+                <div className="absolute top-4 right-4 bg-white bg-opacity-95 rounded-lg px-3 py-2 shadow-lg">
+                  <div className="text-sm font-semibold text-gray-900">{trackingInfo.driverName}</div>
+                  <div className="text-xs text-gray-600">Driver</div>
+                </div>
+                
+                {/* Loading State */}
+                {!isMapLoaded && (
+                  <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-2"></div>
+                      <p className="text-sm text-gray-600">Loading map...</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
