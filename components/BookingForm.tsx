@@ -39,6 +39,7 @@ interface ContainerType {
   dimensions: string
   capacity: string
   price: number
+  priceUnit?: string
   image: string
 }
 
@@ -73,6 +74,7 @@ const BookingForm = ({
       dimensions: '6m × 2.4m × 2.6m',
       capacity: '37.4 cu m',
       price: 125,
+      priceUnit: 'month',
       image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png'
     },
     {
@@ -82,6 +84,7 @@ const BookingForm = ({
       dimensions: '6m × 2.4m × 2.6m',
       capacity: '37.4 cu m',
       price: 450,
+      priceUnit: 'month',
       image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png'
     },
     {
@@ -91,6 +94,7 @@ const BookingForm = ({
       dimensions: '6m × 2.4m × 2.6m',
       capacity: '37.4 cu m',
       price: 550,
+      priceUnit: 'month',
       image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png'
     },
     {
@@ -100,6 +104,7 @@ const BookingForm = ({
       dimensions: '6m × 2.4m × 2.6m',
       capacity: '33.1 cu m',
       price: 200,
+      priceUnit: 'month',
       image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png'
     },
     {
@@ -109,6 +114,7 @@ const BookingForm = ({
       dimensions: '3m × 2.4m × 2.6m',
       capacity: '18.7 cu m',
       price: 75,
+      priceUnit: 'month',
       image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/3m-storage-container.png'
     },
     {
@@ -118,6 +124,7 @@ const BookingForm = ({
       dimensions: '6m × 2.4m × 2.6m',
       capacity: '37.4 cu m',
       price: 175,
+      priceUnit: 'month',
       image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png'
     },
     {
@@ -127,6 +134,7 @@ const BookingForm = ({
       dimensions: '6m × 2.4m × 2.6m',
       capacity: '37.4 cu m',
       price: 600,
+      priceUnit: 'month',
       image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png'
     },
     {
@@ -136,6 +144,7 @@ const BookingForm = ({
       dimensions: '3m × 2.4m × 2.6m',
       capacity: '18.7 cu m',
       price: 100,
+      priceUnit: 'month',
       image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png'
     },
     {
@@ -145,6 +154,7 @@ const BookingForm = ({
       dimensions: '6m × 2.4m × 2.6m',
       capacity: '37.4 cu m',
       price: 150,
+      priceUnit: 'month',
       image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png'
     },
     {
@@ -154,6 +164,7 @@ const BookingForm = ({
       dimensions: '6m × 2.4m × 2.6m',
       capacity: '37.4 cu m',
       price: 200,
+      priceUnit: 'month',
       image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png'
     }
   ]
@@ -316,7 +327,7 @@ const BookingForm = ({
                     <div>Dimensions: {selectedContainer.dimensions}</div>
                     <div>Capacity: {selectedContainer.capacity}</div>
                     <div className="font-medium text-primary-600">
-                      R{selectedContainer.price}/month
+                      R{selectedContainer.price}/{selectedContainer.priceUnit || 'month'}
                     </div>
                   </div>
                 </div>
@@ -363,7 +374,7 @@ const BookingForm = ({
                         <div>Dimensions: {container.dimensions}</div>
                         <div>Capacity: {container.capacity}</div>
                         <div className="font-medium text-primary-600">
-                          R{container.price}/month
+                          R{container.price}/{container.priceUnit || 'month'}
                         </div>
                       </div>
                     </div>
