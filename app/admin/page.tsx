@@ -894,7 +894,7 @@ const AdminPage = () => {
     { id: 'containers', label: 'View All Containers', icon: Navigation },
     { id: 'drivers', label: 'Drivers', icon: Truck },
     { id: 'leads', label: 'Lead Management', icon: Users },
-    { id: 'orders', label: 'Orders', icon: Truck, notificationCount: newOrderCount },
+    { id: 'orders', label: 'Orders', icon: Truck },
     { id: 'calendar', label: 'Calendar', icon: Calendar },
     { id: 'reports', label: 'Reports', icon: FileText }
   ]
