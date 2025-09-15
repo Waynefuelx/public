@@ -56,6 +56,9 @@ const CustomerDashboard = () => {
     budget: 'Under R50,000',
     timeline: 'ASAP'
   })
+  const [map, setMap] = useState<any>(null)
+  const [markers, setMarkers] = useState<any[]>([])
+  const [isMapLoaded, setIsMapLoaded] = useState(false)
 
   // Mock orders data for the customer
   useEffect(() => {
@@ -179,6 +182,198 @@ const CustomerDashboard = () => {
       timeline: 'ASAP'
     })
   }
+
+  // Load Leaflet (OpenStreetMap) script and CSS
+  useEffect(() => {
+    if (activeTab === 'tracking' && !isMapLoaded) {
+      // Check if Leaflet is already loaded
+      if (typeof window !== 'undefined' && (window as any).L) {
+        setIsMapLoaded(true)
+        setTimeout(() => initializeMap(), 100)
+        return
+      }
+
+      // Load Leaflet CSS
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='
+      link.crossOrigin = ''
+      document.head.appendChild(link)
+
+      // Load Leaflet JS
+      const script = document.createElement('script')
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='
+      script.crossOrigin = ''
+      script.onload = () => {
+        setIsMapLoaded(true)
+        setTimeout(() => initializeMap(), 100)
+      }
+      document.head.appendChild(script)
+    }
+  }, [activeTab, isMapLoaded])
+
+  // Initialize Leaflet Map
+  const initializeMap = () => {
+    if (typeof window !== 'undefined' && (window as any).L) {
+      const mapElement = document.getElementById('customer-tracking-map')
+      if (mapElement && !map) {
+        const L = (window as any).L
+        
+        // Clear any existing map
+        if (map) {
+          map.remove()
+        }
+        
+        const newMap: any = L.map('customer-tracking-map', {
+          center: [-30.5595, 22.9375], // Center of South Africa
+          zoom: 6,
+          zoomControl: true,
+          scrollWheelZoom: true,
+          doubleClickZoom: true,
+          boxZoom: true,
+          keyboard: true,
+          dragging: true,
+          touchZoom: true,
+          attributionControl: false
+        })
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(newMap)
+        
+        // Force map to resize after initialization
+        setTimeout(() => {
+          newMap.invalidateSize()
+        }, 200)
+        
+        setMap(newMap)
+        addOrderMarkers(newMap)
+      }
+    }
+  }
+
+  // Add order markers to map
+  const addOrderMarkers = (mapInstance: any) => {
+    const newMarkers: any[] = []
+    
+    orders.filter(order => order.trackingNumber).forEach((order) => {
+      // Create custom icon based on order status
+      const customIcon = (window as any).L.divIcon({
+        className: 'custom-marker',
+        html: `
+          <div class="w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs" 
+               style="background-color: ${
+                 order.status === 'delivered' ? '#10B981' : 
+                 order.status === 'in-transit' ? '#3B82F6' : 
+                 order.status === 'confirmed' ? '#F59E0B' : '#EF4444'
+               }">
+            ${order.id.slice(-2)}
+          </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16]
+      })
+
+      // Use order delivery address coordinates or default to city center
+      const coords = getCoordinatesForCity(order.city)
+      const marker = (window as any).L.marker([coords.lat, coords.lng], {
+        icon: customIcon
+      }).addTo(mapInstance)
+
+      // Create popup content
+      const popupContent = `
+        <div class="p-3 max-w-xs">
+          <h3 class="font-semibold text-gray-900 mb-2">Order #${order.id}</h3>
+          <div class="space-y-1 text-sm">
+            <p><strong>Container:</strong> ${order.containerType}</p>
+            <p><strong>Status:</strong> ${order.status.replace('-', ' ')}</p>
+            <p><strong>Location:</strong> ${order.city}, ${order.province}</p>
+            <p><strong>Tracking:</strong> ${order.trackingNumber}</p>
+            <p><strong>Amount:</strong> ${formatCurrency(order.totalAmount)}</p>
+          </div>
+        </div>
+      `
+
+      marker.bindPopup(popupContent)
+      newMarkers.push(marker)
+    })
+    
+    setMarkers(newMarkers)
+  }
+
+  // Get coordinates for major South African cities
+  const getCoordinatesForCity = (city: string) => {
+    const cityCoords: { [key: string]: { lat: number; lng: number } } = {
+      'Cape Town': { lat: -33.9249, lng: 18.4241 },
+      'Johannesburg': { lat: -26.2041, lng: 28.0473 },
+      'Durban': { lat: -29.8587, lng: 31.0218 },
+      'Pretoria': { lat: -25.7479, lng: 28.2293 },
+      'Port Elizabeth': { lat: -33.9608, lng: 25.6022 },
+      'Bloemfontein': { lat: -29.0852, lng: 26.1596 },
+      'East London': { lat: -33.0292, lng: 27.8546 },
+      'Nelspruit': { lat: -25.4747, lng: 30.9703 }
+    }
+    
+    return cityCoords[city] || { lat: -30.5595, lng: 22.9375 } // Default to South Africa center
+  }
+
+  // Cleanup map when component unmounts or tab changes
+  useEffect(() => {
+    return () => {
+      // Remove all markers
+      markers.forEach(marker => {
+        if (marker && marker.remove) {
+          marker.remove()
+        }
+      })
+      setMarkers([])
+      
+      // Clear map
+      if (map && map.remove) {
+        map.remove()
+        setMap(null)
+      }
+      
+      // Reset map loaded state
+      setIsMapLoaded(false)
+    }
+  }, [activeTab])
+
+  // Add map styles
+  useEffect(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      .custom-marker {
+        background: transparent !important;
+        border: none !important;
+      }
+      #customer-tracking-map {
+        height: 384px !important;
+        width: 100% !important;
+        position: relative !important;
+        z-index: 1 !important;
+      }
+      .leaflet-popup-content-wrapper {
+        border-radius: 8px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+      }
+      .leaflet-popup-content {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+    `
+    document.head.appendChild(style)
+    
+    return () => {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style)
+      }
+    }
+  }, [])
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Package },
@@ -1251,7 +1446,7 @@ const CustomerDashboard = () => {
                   {/* Tracking Input */}
                   <div className="mb-6">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Enter Tracking Number</label>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-col sm:flex-row">
                       <input 
                         type="text"
                         className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -1334,24 +1529,67 @@ const CustomerDashboard = () => {
                   )}
                 </div>
 
-                {/* Quick Actions */}
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                      <MapPin className="w-5 h-5 text-primary-600 mr-3" />
-                      <div className="text-left">
-                        <p className="font-medium text-gray-900">Live Tracking</p>
-                        <p className="text-sm text-gray-500">View real-time location</p>
+                {/* Order Tracking Map */}
+                <div className="bg-white rounded-lg shadow">
+                  <div className="relative h-96 rounded-lg overflow-hidden">
+                    {/* Leaflet Map */}
+                    <div 
+                      id="customer-tracking-map" 
+                      className="w-full h-full"
+                      style={{
+                        height: '384px',
+                        width: '100%',
+                        position: 'relative',
+                        zIndex: 1
+                      }}
+                    ></div>
+                    
+                    {/* Map Controls Overlay */}
+                    <div className="absolute top-4 left-4 bg-white bg-opacity-95 rounded-lg px-3 py-2 shadow-lg">
+                      <h3 className="text-sm font-semibold text-gray-900">South Africa</h3>
+                      <p className="text-xs text-gray-600">Your Order Locations</p>
+                    </div>
+                    
+                    {/* Map Legend */}
+                    <div className="absolute bottom-4 left-4 bg-white bg-opacity-95 rounded-lg p-3 shadow-lg max-w-xs">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-2">Order Status</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 bg-green-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                          <span className="text-xs text-gray-700">Delivered</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 bg-blue-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                          <span className="text-xs text-gray-700">In Transit</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 bg-yellow-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                          <span className="text-xs text-gray-700">Confirmed</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                          <span className="text-xs text-gray-700">Pending</span>
+                        </div>
                       </div>
-                    </button>
-                    <button className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                      <Clock className="w-5 h-5 text-primary-600 mr-3" />
-                      <div className="text-left">
-                        <p className="font-medium text-gray-900">Delivery Updates</p>
-                        <p className="text-sm text-gray-500">Get SMS notifications</p>
+                    </div>
+                    
+                    {/* Order Count */}
+                    <div className="absolute top-4 right-4 bg-white bg-opacity-95 rounded-lg px-3 py-2 shadow-lg">
+                      <div className="text-sm font-semibold text-gray-900">
+                        {orders.filter(order => order.trackingNumber).length}
                       </div>
-                    </button>
+                      <div className="text-xs text-gray-600">Tracked Orders</div>
+                    </div>
+                    
+                    {/* Loading State */}
+                    {!isMapLoaded && (
+                      <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-2"></div>
+                          <p className="text-sm text-gray-600">Loading map...</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
