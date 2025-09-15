@@ -20,6 +20,15 @@ function PurchasePageContent() {
   const containerCapacity = searchParams.get('capacity')
   const containerPrice = searchParams.get('price')
   
+  // Helper function to parse price from query parameter
+  const parsePrice = (priceString: string | null): number => {
+    if (!priceString) return 15000 // default price for purchase
+    
+    // Extract numeric value from price string (e.g., "R150/day" -> 150)
+    const numericMatch = priceString.match(/\d+/)
+    return numericMatch ? parseInt(numericMatch[0], 10) : 15000
+  }
+  
   // Container data to pass to the form
   const selectedContainerData = containerId && containerType ? {
     id: containerId,
@@ -28,7 +37,7 @@ function PurchasePageContent() {
     description: `${containerType} container for ${containerCategory || 'general use'}`,
     dimensions: containerDimensions || '6m × 2.4m × 2.6m',
     capacity: containerCapacity || '37.4 cu m',
-    price: containerPrice ? parseInt(containerPrice) : 15000,
+    price: parsePrice(containerPrice),
     image: '/api/placeholder/300/200'
   } : null
 
