@@ -169,24 +169,26 @@ const Navigation = () => {
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <div className="lg:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 hover:text-primary-600 p-2"
-            >
-              {isOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
-          </div>
+          {/* Mobile menu button - hidden for drivers */}
+          {user?.type !== 'driver' && (
+            <div className="lg:hidden">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="text-gray-700 hover:text-primary-600 p-2"
+              >
+                {isOpen ? (
+                  <X className="w-6 h-6" />
+                ) : (
+                  <Menu className="w-6 h-6" />
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      {isOpen && (
+      {/* Mobile Navigation - hidden for drivers */}
+      {isOpen && user?.type !== 'driver' && (
         <div
           className="lg:hidden border-t border-gray-200 bg-white shadow-lg"
         >

@@ -16,7 +16,7 @@ import {
   Package,
   User,
   Calendar,
-  Map
+  Edit3
 } from 'lucide-react'
 
 interface Delivery {
@@ -46,8 +46,10 @@ const DriverDashboard = () => {
   const { user, logout } = useAuth()
   const [activeTab, setActiveTab] = useState('deliveries')
   const [deliveries, setDeliveries] = useState<Delivery[]>([])
-  const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null)
   const [isTracking, setIsTracking] = useState(false)
+  const [licenseExpiry, setLicenseExpiry] = useState('')
+  const [showLicenseWarning, setShowLicenseWarning] = useState(false)
+  const [isEditingLicense, setIsEditingLicense] = useState(false)
 
   // Mock deliveries assigned to this driver
   useEffect(() => {
@@ -100,53 +102,24 @@ const DriverDashboard = () => {
     setDeliveries(mockDeliveries)
   }, [user])
 
-  // Get current location
+  // Load license expiry date and check for warnings
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCurrentLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          })
-        },
-        (error) => {
-          // Handle different types of geolocation errors
-          let errorMessage = 'Unknown error'
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = 'Location access denied by user'
-              break
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = 'Location information unavailable'
-              break
-            case error.TIMEOUT:
-              errorMessage = 'Location request timed out'
-              break
-          }
-          console.warn('Geolocation error:', errorMessage)
-          
-          // Set a fallback location (Johannesburg, South Africa)
-          setCurrentLocation({
-            lat: -26.2041,
-            lng: 28.0473
-          })
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 300000 // 5 minutes
-        }
-      )
-    } else {
-      console.warn('Geolocation is not supported by this browser')
-      // Set fallback location
-      setCurrentLocation({
-        lat: -26.2041,
-        lng: 28.0473
-      })
+    // Load license expiry from localStorage (in a real app, this would come from the backend)
+    const savedLicenseExpiry = localStorage.getItem('driverLicenseExpiry')
+    if (savedLicenseExpiry) {
+      setLicenseExpiry(savedLicenseExpiry)
+      
+      // Check if license expires within 2 months
+      const expiryDate = new Date(savedLicenseExpiry)
+      const today = new Date()
+      const twoMonthsFromNow = new Date(today.getFullYear(), today.getMonth() + 2, today.getDate())
+      
+      if (expiryDate <= twoMonthsFromNow && expiryDate > today) {
+        setShowLicenseWarning(true)
+      }
     }
   }, [])
+
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -202,9 +175,43 @@ const DriverDashboard = () => {
     setIsTracking(false)
   }
 
+  const navigateToDelivery = (delivery: Delivery) => {
+    const fullAddress = `${delivery.deliveryAddress}, ${delivery.deliveryCity}, ${delivery.deliveryProvince}`
+    const encodedAddress = encodeURIComponent(fullAddress)
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`
+    window.open(googleMapsUrl, '_blank')
+  }
+
+  const handleLicenseExpiryChange = (date: string) => {
+    setLicenseExpiry(date)
+    localStorage.setItem('driverLicenseExpiry', date)
+    
+    // Check if license expires within 2 months
+    const expiryDate = new Date(date)
+    const today = new Date()
+    const twoMonthsFromNow = new Date(today.getFullYear(), today.getMonth() + 2, today.getDate())
+    
+    if (expiryDate <= twoMonthsFromNow && expiryDate > today) {
+      setShowLicenseWarning(true)
+    } else {
+      setShowLicenseWarning(false)
+    }
+  }
+
+  const dismissLicenseWarning = () => {
+    setShowLicenseWarning(false)
+  }
+
+  const toggleLicenseEdit = () => {
+    setIsEditingLicense(!isEditingLicense)
+  }
+
+  const handleLicenseSave = () => {
+    setIsEditingLicense(false)
+  }
+
   const tabs = [
     { id: 'deliveries', label: 'My Deliveries', icon: Truck },
-    { id: 'map', label: 'Map View', icon: Map },
     { id: 'profile', label: 'Profile', icon: User }
   ]
 
@@ -214,29 +221,90 @@ const DriverDashboard = () => {
         {/* Header */}
         <div className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Driver Portal</h1>
-                <p className="text-sm text-gray-600">Welcome back, {user?.name}</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <div className={`w-2 h-2 rounded-full ${isTracking ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                  <span className="text-sm text-gray-600">
-                    {isTracking ? 'Tracking Active' : 'Tracking Off'}
-                  </span>
+            <div className="py-4">
+              {/* Mobile Layout */}
+              <div className="block sm:hidden">
+                <div className="flex flex-col space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h1 className="text-xl font-bold text-gray-900 truncate">Driver Portal</h1>
+                    <button 
+                      onClick={logout}
+                      className="text-sm text-primary-600 hover:text-primary-500 transition-colors flex-shrink-0"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-600">Welcome back, {user?.name}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-2 h-2 rounded-full ${isTracking ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                      <span className="text-sm text-gray-600">
+                        {isTracking ? 'Tracking Active' : 'Tracking Off'}
+                      </span>
+                    </div>
+                    <span className="text-sm text-gray-600 truncate">{user?.email}</span>
+                  </div>
                 </div>
-                <span className="text-sm text-gray-600">{user?.email}</span>
-                <button 
-                  onClick={logout}
-                  className="text-sm text-primary-600 hover:text-primary-500 transition-colors"
-                >
-                  Logout
-                </button>
+              </div>
+              
+              {/* Desktop Layout */}
+              <div className="hidden sm:flex items-center justify-between h-16">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Driver Portal</h1>
+                  <p className="text-sm text-gray-600">Welcome back, {user?.name}</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-2 h-2 rounded-full ${isTracking ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                    <span className="text-sm text-gray-600">
+                      {isTracking ? 'Tracking Active' : 'Tracking Off'}
+                    </span>
+                  </div>
+                  <span className="text-sm text-gray-600">{user?.email}</span>
+                  <button 
+                    onClick={logout}
+                    className="text-sm text-primary-600 hover:text-primary-500 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* License Expiry Warning */}
+        {showLicenseWarning && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="bg-orange-50 border border-orange-200 rounded-md p-4">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <AlertCircle className="h-5 w-5 text-orange-400" />
+                </div>
+                <div className="ml-3 flex-1">
+                  <h3 className="text-sm font-medium text-orange-800">
+                    Driver's License Expiry Warning
+                  </h3>
+                  <div className="mt-2 text-sm text-orange-700">
+                    <p>
+                      Your driver's license will expire on {new Date(licenseExpiry).toLocaleDateString('en-ZA')}. 
+                      Please renew your license as soon as possible to avoid any service interruptions.
+                    </p>
+                  </div>
+                  <div className="mt-3">
+                    <button
+                      type="button"
+                      onClick={dismissLicenseWarning}
+                      className="text-sm bg-orange-100 text-orange-800 px-3 py-1 rounded-md hover:bg-orange-200 transition-colors"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Navigation Tabs */}
@@ -351,7 +419,14 @@ const DriverDashboard = () => {
                             </div>
                           </div>
                           <div className="flex flex-col space-y-2">
-                            <div className="flex space-x-2">
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                onClick={() => navigateToDelivery(delivery)}
+                                className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+                              >
+                                <MapPin className="w-3 h-3 mr-1" />
+                                Navigate
+                              </button>
                               <a
                                 href={`tel:${delivery.customerPhone}`}
                                 className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
@@ -367,7 +442,7 @@ const DriverDashboard = () => {
                                 Email
                               </a>
                             </div>
-                            <div className="flex space-x-2">
+                            <div className="flex flex-wrap gap-2">
                               {delivery.status === 'pending' && (
                                 <button
                                   onClick={() => startDelivery(delivery.id)}
@@ -396,38 +471,6 @@ const DriverDashboard = () => {
               </div>
             )}
 
-            {activeTab === 'map' && (
-              <div className="space-y-6">
-                <div className="bg-white rounded-lg shadow p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Delivery Map</h3>
-                  <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <Map className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">Map view would be integrated here</p>
-                      <p className="text-sm text-gray-500 mt-2">
-                        Shows delivery locations and current position
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                {currentLocation && (
-                  <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Current Location</h3>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium text-gray-600">Latitude:</span>
-                        <p className="text-gray-900">{currentLocation.lat.toFixed(6)}</p>
-                      </div>
-                      <div>
-                        <span className="font-medium text-gray-600">Longitude:</span>
-                        <p className="text-gray-900">{currentLocation.lng.toFixed(6)}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
 
             {activeTab === 'profile' && (
               <div className="space-y-6">
@@ -449,6 +492,49 @@ const DriverDashboard = () => {
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Driver ID</label>
                       <p className="mt-1 text-sm text-gray-900">{user?.driverId}</p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700">License Expiry Date</label>
+                      {isEditingLicense ? (
+                        <div className="mt-1">
+                          <input
+                            type="date"
+                            value={licenseExpiry}
+                            onChange={(e) => handleLicenseExpiryChange(e.target.value)}
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                            placeholder="Select license expiry date"
+                          />
+                          <div className="mt-2 flex space-x-2">
+                            <button
+                              onClick={handleLicenseSave}
+                              className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded text-white bg-primary-600 hover:bg-primary-700"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={toggleLicenseEdit}
+                              className="inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-1 flex items-center space-x-2">
+                          <p className="text-sm text-gray-900">
+                            {licenseExpiry ? new Date(licenseExpiry).toLocaleDateString('en-ZA') : 'Not set'}
+                          </p>
+                          <button
+                            onClick={toggleLicenseEdit}
+                            className="inline-flex items-center p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                      <p className="mt-1 text-xs text-gray-500">
+                        Your driver's license expires every 5 years in South Africa
+                      </p>
                     </div>
                   </div>
                 </div>
