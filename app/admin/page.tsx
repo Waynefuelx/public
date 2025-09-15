@@ -896,11 +896,10 @@ const AdminPage = () => {
             <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
               <button 
                 onClick={() => window.location.href = '/admin/new-lead'}
-                className="btn-primary text-sm"
+                className="btn-primary text-sm flex items-center flex-wrap"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">New Lead</span>
-                <span className="sm:hidden">New</span>
+                <Plus className="w-4 h-4 mr-2 flex-shrink-0" />
+                <span className="whitespace-nowrap">New Lead</span>
               </button>
               <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
                 <Users className="w-4 h-4 text-primary-600" />
