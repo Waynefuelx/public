@@ -40,6 +40,12 @@ const LoginPage = () => {
     }
   }
 
+  const handleDemoClick = (credential: { email: string; password: string }) => {
+    setEmail(credential.email)
+    setPassword(credential.password)
+    setError('')
+  }
+
   const demoCredentials = [
     { role: 'Customer', email: 'customer@valley.com', password: 'customer123', description: 'Access to buying, renting, tracking, and order history' },
     { role: 'Driver', email: 'driver@valley.com', password: 'driver123', description: 'View assigned deliveries and location tracking' },
@@ -191,10 +197,11 @@ const LoginPage = () => {
                 {demoCredentials.map((credential, index) => (
                   <div
                     key={index}
-                    className={`rounded-lg p-3 text-xs sm:text-sm ${
-                      credential.role === 'Customer' ? 'bg-green-50 border border-green-200' :
-                      credential.role === 'Driver' ? 'bg-blue-50 border border-blue-200' :
-                      'bg-purple-50 border border-purple-200'
+                    onClick={() => handleDemoClick(credential)}
+                    className={`rounded-lg p-3 text-xs sm:text-sm cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-md ${
+                      credential.role === 'Customer' ? 'bg-green-50 border border-green-200 hover:bg-green-100' :
+                      credential.role === 'Driver' ? 'bg-blue-50 border border-blue-200 hover:bg-blue-100' :
+                      'bg-purple-50 border border-purple-200 hover:bg-purple-100'
                     }`}
                   >
                     <div className={`font-medium ${
@@ -224,6 +231,13 @@ const LoginPage = () => {
                       'text-purple-500'
                     }`}>
                       {credential.description}
+                    </div>
+                    <div className={`text-xs mt-2 font-medium ${
+                      credential.role === 'Customer' ? 'text-green-600' :
+                      credential.role === 'Driver' ? 'text-blue-600' :
+                      'text-purple-600'
+                    }`}>
+                      👆 Click to auto-fill
                     </div>
                   </div>
                 ))}
