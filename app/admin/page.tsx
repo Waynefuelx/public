@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import DeliveryCalendar from '@/components/DeliveryCalendar'
 import { 
   Users, 
   Truck, 
@@ -1794,18 +1795,7 @@ const AdminPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <div className="card">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Delivery Calendar</h3>
-              <div className="bg-secondary-200 rounded-lg h-96 flex items-center justify-center">
-                <div className="text-center">
-                  <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Interactive calendar view</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Schedule management and delivery coordination
-                  </p>
-                </div>
-              </div>
-            </div>
+            <DeliveryCalendar />
           </motion.div>
         )}
 
