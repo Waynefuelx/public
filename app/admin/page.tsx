@@ -894,7 +894,10 @@ const AdminPage = () => {
               <p className="text-sm text-gray-600 truncate">Valley Containers Staff Portal</p>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
-              <button className="btn-primary text-sm">
+              <button 
+                onClick={() => window.location.href = '/admin/new-lead'}
+                className="btn-primary text-sm"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">New Lead</span>
                 <span className="sm:hidden">New</span>
