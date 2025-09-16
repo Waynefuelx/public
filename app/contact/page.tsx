@@ -1,6 +1,5 @@
 'use client'
 
-
 import { useState } from 'react'
 import { 
   MapPin, 
@@ -10,9 +9,11 @@ import {
   Send,
   Building2,
   MessageCircle,
-  CheckCircle
+  CheckCircle,
+  Loader2
 } from 'lucide-react'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -24,20 +25,46 @@ const ContactPage = () => {
     service: 'general'
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the form data to your backend
-    console.log('Form submitted:', formData)
-    setIsSubmitted(true)
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      company: '',
-      message: '',
-      service: 'general'
-    })
+    setIsSubmitting(true)
+    
+    try {
+      // Submit to API
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to submit quote request')
+      }
+      
+      const result = await response.json()
+      console.log('Quote request submitted:', result)
+      
+      toast.success('Quote request submitted successfully! We will contact you soon.')
+      setIsSubmitted(true)
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        company: '',
+        message: '',
+        service: 'general'
+      })
+    } catch (error) {
+      console.error('Error submitting quote request:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to submit quote request. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -303,10 +330,20 @@ const ContactPage = () => {
               <div className="text-center">
                 <button
                   type="submit"
-                  className="bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center gap-2 text-lg"
+                  disabled={isSubmitting}
+                  className="bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center gap-2 text-lg"
                 >
-                  <Send className="w-5 h-5" />
-                  Send Message
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      Send Message
+                    </>
+                  )}
                 </button>
               </div>
             </form>
