@@ -534,9 +534,12 @@ export default function RentalPage() {
                 >
                   View All Rentals
                 </Link>
-                <button className="btn-secondary">
+                <a 
+                  href="mailto:info@valleycontainers.co.za?subject=Custom Container Quote Request&body=Hi, I would like to request a custom quote for container modifications or specialized solutions. Please contact me with more information."
+                  className="btn-secondary inline-block text-center"
+                >
                   Request Custom Quote
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -691,12 +694,12 @@ export default function RentalPage() {
                     >
                       Rent Now
                     </Link>
-                    <Link
-                      href="/rental"
-                      className="flex-1 bg-white border border-primary-500 text-primary-500 hover:bg-primary-50 font-medium py-3 px-6 rounded-lg transition-colors duration-200 text-center"
+                    <a
+                      href="mailto:info@valleycontainers.co.za?subject=Container Rental Quote Request&body=Hi, I would like to request a quote for container rental. Please contact me with more information about pricing and availability."
+                      className="flex-1 bg-white border border-primary-500 text-primary-500 hover:bg-primary-50 font-medium py-3 px-6 rounded-lg transition-colors duration-200 text-center inline-block"
                     >
                       Get Quote
-                    </Link>
+                    </a>
                   </div>
                 </div>
               </div>

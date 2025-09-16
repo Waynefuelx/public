@@ -238,12 +238,12 @@ const BranchesPage = () => {
                   </>
                 )}
               </button>
-              <Link 
-                href="/rental"
+              <a 
+                href="mailto:info@valleycontainers.co.za?subject=Quote Request&body=Hi, I would like to request a quote for container rental or purchase. Please contact me with more information."
                 className="bg-white text-primary-500 hover:bg-secondary-100 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto border border-primary-200 inline-flex items-center justify-center"
               >
                 Request Quote
-              </Link>
+              </a>
             </div>
           </div>
         </div>

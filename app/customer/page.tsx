@@ -1221,9 +1221,12 @@ const CustomerDashboard = () => {
                         <li>• Air conditioning</li>
                         <li>• Security systems</li>
                       </ul>
-                      <button className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors">
+                      <a 
+                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
+                      >
                         Request Quote
-                      </button>
+                      </a>
                     </div>
 
                     <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -1246,9 +1249,12 @@ const CustomerDashboard = () => {
                         <li>• Security features</li>
                         <li>• Loading equipment</li>
                       </ul>
-                      <button className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors">
+                      <a 
+                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
+                      >
                         Request Quote
-                      </button>
+                      </a>
                     </div>
 
                     <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -1271,9 +1277,12 @@ const CustomerDashboard = () => {
                         <li>• Alarm systems</li>
                         <li>• Monitoring equipment</li>
                       </ul>
-                      <button className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors">
+                      <a 
+                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
+                      >
                         Request Quote
-                      </button>
+                      </a>
                     </div>
 
                     <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -1296,9 +1305,12 @@ const CustomerDashboard = () => {
                         <li>• Work benches</li>
                         <li>• Tool storage</li>
                       </ul>
-                      <button className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors">
+                      <a 
+                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
+                      >
                         Request Quote
-                      </button>
+                      </a>
                     </div>
 
                     <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -1321,9 +1333,12 @@ const CustomerDashboard = () => {
                         <li>• Quick setup</li>
                         <li>• Weather protection</li>
                       </ul>
-                      <button className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors">
+                      <a 
+                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
+                      >
                         Request Quote
-                      </button>
+                      </a>
                     </div>
 
                     <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -1346,9 +1361,12 @@ const CustomerDashboard = () => {
                         <li>• Unique layouts</li>
                         <li>• Expert consultation</li>
                       </ul>
-                      <button className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors">
+                      <a 
+                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
+                      >
                         Request Quote
-                      </button>
+                      </a>
                     </div>
                   </div>
                 </div>

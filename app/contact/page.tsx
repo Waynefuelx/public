@@ -446,12 +446,12 @@ const ContactPage = () => {
             Don't wait! Contact us today and let's discuss how we can help with your container needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <Link 
-              href="/rental"
-              className="bg-white text-primary-500 hover:bg-secondary-100 font-medium py-3 px-8 rounded-lg transition-colors duration-200 text-lg w-full sm:w-auto"
+            <a
+              href="mailto:info@valleycontainers.co.za?subject=Quote Request&body=Hi, I would like to request a quote for container rental or purchase. Please contact me with more information."
+              className="bg-white text-primary-500 hover:bg-secondary-100 font-medium py-3 px-8 rounded-lg transition-colors duration-200 text-lg w-full sm:w-auto inline-block text-center"
             >
               Get Quote
-            </Link>
+            </a>
             <Link 
               href="/services"
               className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-8 rounded-lg transition-colors duration-200 text-lg w-full sm:w-auto"

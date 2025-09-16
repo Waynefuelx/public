@@ -224,13 +224,13 @@ const CustomSolutionsPage = () => {
                     </div>
                   </div>
 
-                  <Link
-                    href="/rental"
-                    className="btn-primary w-full text-center group-hover:bg-primary-600 transition-colors duration-200"
+                  <a
+                    href="mailto:info@valleycontainers.co.za?subject=Custom Container Quote Request&body=Hi, I would like to request a quote for custom container solutions. Please contact me with more information about your custom services and pricing."
+                    className="btn-primary w-full text-center group-hover:bg-primary-600 transition-colors duration-200 inline-block"
                   >
                     Get Quote
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-                  </Link>
+                  </a>
                 </div>
               </div>
             ))}

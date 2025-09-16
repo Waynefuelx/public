@@ -40,6 +40,7 @@ interface ContainerType {
   capacity: string
   price: number
   image: string
+  category?: string
 }
 
 const BookingForm = ({ 
@@ -165,22 +166,42 @@ const BookingForm = ({
       // Prepare order data for API
       const orderData = {
         orderType: 'rental',
-        customerName: data.contactName,
-        customerEmail: data.email,
-        customerPhone: data.phone,
-        company: data.company,
-        containerType: data.containerType,
+        customerName: data.contactName || '',
+        customerEmail: data.email || '',
+        customerPhone: data.phone || '',
+        company: data.company || '',
+        containerType: data.containerType || '',
         containerId: selectedContainer?.id || 'unknown',
-        quantity: data.quantity,
+        quantity: data.quantity || 1,
         deliveryOption: 'delivery', // Rental is always delivery
-        deliveryDate: data.deliveryDate,
-        deliveryAddress: data.deliveryAddress,
-        city: data.city,
-        province: data.province,
-        postalCode: data.postalCode,
-        total: selectedContainer ? selectedContainer.price * data.quantity : 0,
-        specialRequirements: data.specialRequirements,
-        paymentMethod: data.paymentMethod
+        deliveryDate: data.deliveryDate || '',
+        deliveryAddress: data.deliveryAddress || '',
+        city: data.city || '',
+        province: data.province || '',
+        postalCode: data.postalCode || '',
+        total: selectedContainer ? selectedContainer.price * (data.quantity || 1) : 0,
+        specialRequirements: data.specialRequirements || '',
+        paymentMethod: data.paymentMethod || ''
+      }
+      
+      console.log('Submitting order data:', orderData)
+      
+      // Validate required fields before sending
+      const missingFields = []
+      if (!orderData.customerName) missingFields.push('customerName')
+      if (!orderData.customerEmail) missingFields.push('customerEmail')
+      if (!orderData.customerPhone) missingFields.push('customerPhone')
+      if (!orderData.containerType) missingFields.push('containerType')
+      if (!orderData.containerId) missingFields.push('containerId')
+      if (!orderData.quantity) missingFields.push('quantity')
+      if (!orderData.deliveryOption) missingFields.push('deliveryOption')
+      if (!orderData.deliveryDate) missingFields.push('deliveryDate')
+      if (!orderData.total) missingFields.push('total')
+      if (!orderData.paymentMethod) missingFields.push('paymentMethod')
+      
+      if (missingFields.length > 0) {
+        console.error('Missing required fields:', missingFields)
+        throw new Error(`Missing required fields: ${missingFields.join(', ')}`)
       }
       
       // Submit to API
@@ -193,7 +214,9 @@ const BookingForm = ({
       })
       
       if (!response.ok) {
-        throw new Error('Failed to submit order')
+        const errorData = await response.json()
+        console.error('API Error:', errorData)
+        throw new Error(errorData.error || 'Failed to submit order')
       }
       
       const result = await response.json()
@@ -572,18 +595,57 @@ const BookingForm = ({
                   <span>Container:</span>
                   <span className="font-medium">{selectedContainer.name}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span>Quantity:</span>
-                  <span className="font-medium">{watch('quantity') || 0}</span>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentQty = watch('quantity') || 0
+                        if (currentQty > 1) {
+                          setValue('quantity', currentQty - 1)
+                        }
+                      }}
+                      className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors"
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      min="1"
+                      max="100"
+                      {...register('quantity', { 
+                        required: 'Quantity is required',
+                        min: { value: 1, message: 'Minimum quantity is 1' },
+                        max: { value: 100, message: 'Maximum quantity is 100' }
+                      })}
+                      className="w-16 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentQty = watch('quantity') || 0
+                        if (currentQty < 100) {
+                          setValue('quantity', currentQty + 1)
+                        }
+                      }}
+                      className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
+                {errors.quantity && (
+                  <p className="text-error-600 text-xs mt-1">{errors.quantity.message}</p>
+                )}
                 <div className="flex justify-between">
                   <span>Price per unit:</span>
-                                          <span className="font-medium">R{selectedContainer.price}</span>
+                  <span className="font-medium">R{selectedContainer.price}</span>
                 </div>
                 <hr className="my-2" />
                 <div className="flex justify-between font-medium">
                   <span>Total:</span>
-                                          <span>R{(selectedContainer.price * (watch('quantity') || 0)).toFixed(2)}</span>
+                  <span>R{(selectedContainer.price * (watch('quantity') || 0)).toFixed(2)}</span>
                 </div>
               </>
             )}

@@ -128,12 +128,12 @@ const SalesServicesPage = () => {
             <div 
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
             >
-              <Link 
-                href="/rental"
-                className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-100 w-full sm:w-auto"
+              <a 
+                href="mailto:info@valleycontainers.co.za?subject=Container Sales Quote Request&body=Hi, I would like to request a quote for container purchase. Please contact me with more information about pricing and availability."
+                className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-100 w-full sm:w-auto inline-block text-center"
               >
                 Get Quote
-              </Link>
+              </a>
               <Link 
                 href="/services"
                 className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 border-white text-white hover:bg-white hover:text-primary-500 w-full sm:w-auto"
@@ -239,13 +239,13 @@ const SalesServicesPage = () => {
                     </div>
                   </div>
 
-                  <Link
-                    href="/rental"
-                    className="btn-primary w-full text-center group-hover:bg-primary-600 transition-colors duration-200"
+                  <a
+                    href="mailto:info@valleycontainers.co.za?subject=Container Sales Quote Request&body=Hi, I would like to request a quote for container purchase. Please contact me with more information about pricing and availability."
+                    className="btn-primary w-full text-center group-hover:bg-primary-600 transition-colors duration-200 inline-block"
                   >
                     Get Quote
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-                  </Link>
+                  </a>
                 </div>
               </div>
             ))}
@@ -317,12 +317,12 @@ const SalesServicesPage = () => {
             Contact our sales team today to discuss your container needs and get a personalized quote.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <Link 
-              href="/rental"
-              className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-500 hover:bg-secondary-100 w-full sm:w-auto"
+            <a 
+              href="mailto:info@valleycontainers.co.za?subject=Container Sales Quote Request&body=Hi, I would like to request a quote for container purchase. Please contact me with more information about pricing and availability."
+              className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-500 hover:bg-secondary-100 w-full sm:w-auto inline-block text-center"
             >
               Get Quote
-            </Link>
+            </a>
             <Link 
               href="/services"
               className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto"

@@ -279,12 +279,12 @@ const Branches = () => {
               geographical footprint across the country and into the rest of Africa.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-              <Link
-                href="/rental"
-                className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3"
+              <a
+                href="mailto:info@valleycontainers.co.za?subject=Quote Request&body=Hi, I would like to request a quote for container rental or purchase. Please contact me with more information."
+                className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 inline-block text-center"
               >
                 Request a Quote
-              </Link>
+              </a>
               <button className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3">
                 Find Nearest Branch
               </button>

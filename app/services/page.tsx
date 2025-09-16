@@ -22,9 +22,12 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import BranchLocationModal from '@/components/BranchLocationModal'
+import ConversionQuoteModal from '@/components/ConversionQuoteModal'
 
 const ConversionsPage = () => {
   const [isBranchModalOpen, setIsBranchModalOpen] = useState(false)
+  const [isConversionQuoteModalOpen, setIsConversionQuoteModalOpen] = useState(false)
+  const [selectedConversionType, setSelectedConversionType] = useState<string>('')
   
   const conversionTypes = [
     {
@@ -293,12 +296,15 @@ const ConversionsPage = () => {
 
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
             >
-              <Link 
-                href="/rental"
+              <button 
+                onClick={() => {
+                  setSelectedConversionType('')
+                  setIsConversionQuoteModalOpen(true)
+                }}
                 className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-100 w-full sm:w-auto"
               >
                 Get A Quote
-              </Link>
+              </button>
               <button 
                 onClick={() => setIsBranchModalOpen(true)}
                 className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 border-white text-primary-500 hover:bg-white hover:text-primary-500 w-full sm:w-auto"
@@ -420,13 +426,13 @@ const ConversionsPage = () => {
                   </div>
 
                   {/* Action Button */}
-                  <Link
-                    href="/contact"
+                  <a 
+                    href="mailto:info@valleycontainers.co.za?subject=Container Services Quote Request&body=Hi, I would like to request a quote for container services. Please contact me with more information about your services and pricing."
                     className="bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 w-full text-center inline-flex items-center justify-center group"
                   >
                     Get Quote
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-                  </Link>
+                  </a>
                 </div>
               </div>
             ))}
@@ -532,12 +538,12 @@ const ConversionsPage = () => {
 
             className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
           >
-            <Link 
-              href="/contact"
-              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto"
+            <a 
+              href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto inline-block text-center"
             >
               Get A Quote
-            </Link>
+            </a>
             <button 
               onClick={() => setIsBranchModalOpen(true)}
               className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto"
@@ -552,6 +558,13 @@ const ConversionsPage = () => {
       <BranchLocationModal 
         isOpen={isBranchModalOpen}
         onClose={() => setIsBranchModalOpen(false)}
+      />
+
+      {/* Conversion Quote Modal */}
+      <ConversionQuoteModal 
+        isOpen={isConversionQuoteModalOpen}
+        onClose={() => setIsConversionQuoteModalOpen(false)}
+        conversionType={selectedConversionType}
       />
     </div>
   )

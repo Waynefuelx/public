@@ -201,12 +201,12 @@ export default function PublicHome() {
             >
               Sign In to Your Account
             </Link>
-            <Link
-              href="/contact"
-              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-4 px-8 rounded-lg transition-colors duration-200 text-lg"
+            <a
+              href="mailto:info@valleycontainers.co.za?subject=Quote Request&body=Hi, I would like to request a quote for container rental or purchase. Please contact me with more information."
+              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-4 px-8 rounded-lg transition-colors duration-200 text-lg inline-block text-center"
             >
               Get a Quote
-            </Link>
+            </a>
           </div>
         </div>
       </section>

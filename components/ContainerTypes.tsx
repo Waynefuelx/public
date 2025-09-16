@@ -295,9 +295,12 @@ const ContainerTypes = () => {
               >
                 View All Rentals
               </Link>
-              <button className="btn-secondary">
+              <a 
+                href="mailto:info@valleycontainers.co.za?subject=Custom Container Quote Request&body=Hi, I would like to request a custom quote for container modifications or specialized solutions. Please contact me with more information."
+                className="btn-secondary inline-block text-center"
+              >
                 Request Custom Quote
-              </button>
+              </a>
             </div>
           </div>
         </div>

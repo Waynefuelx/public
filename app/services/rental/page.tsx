@@ -134,12 +134,12 @@ const RentalServicesPage = () => {
               >
                 Start Renting Now
               </Link>
-              <Link 
-                href="/rental"
-                className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 border-white text-white hover:bg-white hover:text-primary-500 w-full sm:w-auto"
+              <a 
+                href="mailto:info@valleycontainers.co.za?subject=Container Rental Quote Request&body=Hi, I would like to request a quote for container rental services. Please contact me with more information about pricing and availability."
+                className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 border-white text-white hover:bg-white hover:text-primary-500 w-full sm:w-auto inline-block text-center"
               >
                 Get Quote
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -323,12 +323,12 @@ const RentalServicesPage = () => {
             >
               Start Renting
             </Link>
-            <Link 
-              href="/rental"
-              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto"
+            <a 
+              href="mailto:info@valleycontainers.co.za?subject=Container Rental Quote Request&body=Hi, I would like to request a quote for container rental services. Please contact me with more information about pricing and availability."
+              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto inline-block text-center"
             >
               Get Quote
-            </Link>
+            </a>
           </div>
         </div>
       </section>
