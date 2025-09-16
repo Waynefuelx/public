@@ -890,13 +890,13 @@ const AdminPage = () => {
   }
 
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'containers', label: 'View All Containers', icon: Navigation },
-    { id: 'drivers', label: 'Drivers', icon: Truck },
-    { id: 'leads', label: 'Lead Management', icon: Users },
-    { id: 'orders', label: 'Orders', icon: Truck },
-    { id: 'calendar', label: 'Calendar', icon: Calendar },
-    { id: 'reports', label: 'Reports', icon: FileText }
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3, notificationCount: 0 },
+    { id: 'containers', label: 'View All Containers', icon: Navigation, notificationCount: 0 },
+    { id: 'drivers', label: 'Drivers', icon: Truck, notificationCount: 0 },
+    { id: 'leads', label: 'Lead Management', icon: Users, notificationCount: 0 },
+    { id: 'orders', label: 'Orders', icon: Truck, notificationCount: newOrderCount },
+    { id: 'calendar', label: 'Calendar', icon: Calendar, notificationCount: 0 },
+    { id: 'reports', label: 'Reports', icon: FileText, notificationCount: 0 }
   ]
 
   return (
