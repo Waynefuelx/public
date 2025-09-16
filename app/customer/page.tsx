@@ -389,14 +389,14 @@ const CustomerDashboard = () => {
         {/* Header */}
         <div className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Customer Portal</h1>
-                <p className="text-sm text-gray-600">Welcome back, {user?.name}</p>
+            <div className="flex items-center justify-between py-4 min-h-[4rem]">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-2xl font-bold text-gray-900 break-words">Customer Portal</h1>
+                <p className="text-sm text-gray-600 break-words">Welcome back, {user?.name}</p>
               </div>
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">{user?.email}</span>
-                <button className="text-sm text-primary-600 hover:text-primary-500">
+              <div className="flex items-center space-x-4 flex-shrink-0 ml-4">
+                <span className="text-sm text-gray-600 break-words hidden sm:inline">{user?.email}</span>
+                <button className="text-sm text-primary-600 hover:text-primary-500 whitespace-nowrap">
                   Logout
                 </button>
               </div>
