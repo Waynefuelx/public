@@ -130,6 +130,13 @@ interface Delivery {
   qrCode?: string
 }
 
+interface Tab {
+  id: string
+  label: string
+  icon: any
+  notificationCount: number
+}
+
 // Leaflet types
 declare global {
   interface Window {
@@ -889,7 +896,7 @@ const AdminPage = () => {
     })
   }
 
-  const tabs = [
+  const tabs: Tab[] = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3, notificationCount: 0 },
     { id: 'containers', label: 'View All Containers', icon: Navigation, notificationCount: 0 },
     { id: 'drivers', label: 'Drivers', icon: Truck, notificationCount: 0 },
