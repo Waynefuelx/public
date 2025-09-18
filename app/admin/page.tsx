@@ -958,7 +958,7 @@ const AdminPage = () => {
               >
                 <tab.icon className="w-4 h-4" />
                 <span>{tab.label}</span>
-                {tab.notificationCount && tab.notificationCount > 0 && (
+                {tab.notificationCount > 0 && (
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
                     <span className="text-xs text-white font-bold">{tab.notificationCount}</span>
                   </div>

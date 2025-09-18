@@ -267,7 +267,11 @@ const DeliveryCalendar: React.FC<DeliveryCalendarProps> = ({ deliveries = [] }) 
             return (
               <button
                 key={index}
-                onClick={() => setSelectedDate(date)}
+                onClick={() => {
+                  setSelectedDate(date);
+                  setViewMode('day');
+                  setCurrentDate(date);
+                }}
                 className={`
                   p-4 text-left hover:bg-gray-50 transition-colors relative
                   ${isCurrentDay ? 'bg-blue-50 border-l-4 border-blue-500' : ''}
@@ -338,7 +342,11 @@ const DeliveryCalendar: React.FC<DeliveryCalendarProps> = ({ deliveries = [] }) 
             return (
               <button
                 key={index}
-                onClick={() => setSelectedDate(date)}
+                onClick={() => {
+                  setSelectedDate(date);
+                  setViewMode('day');
+                  setCurrentDate(date);
+                }}
                 className={`
                   p-3 text-left hover:bg-gray-50 transition-colors relative min-h-[100px]
                   ${isCurrentDay ? 'bg-blue-50 border-l-4 border-blue-500' : ''}

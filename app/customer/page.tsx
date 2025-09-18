@@ -189,7 +189,23 @@ const CustomerDashboard = () => {
       // Check if Leaflet is already loaded
       if (typeof window !== 'undefined' && (window as any).L) {
         setIsMapLoaded(true)
-        setTimeout(() => initializeMap(), 100)
+        // Add a small delay to ensure DOM is ready
+        setTimeout(() => initializeMap(), 200)
+        return
+      }
+
+      // Check if scripts are already being loaded
+      const existingScript = document.querySelector('script[src*="leaflet"]')
+      const existingLink = document.querySelector('link[href*="leaflet"]')
+      
+      if (existingScript && existingLink) {
+        // Scripts already loaded, just wait for them to be ready
+        setTimeout(() => {
+          if ((window as any).L) {
+            setIsMapLoaded(true)
+            setTimeout(() => initializeMap(), 200)
+          }
+        }, 100)
         return
       }
 
@@ -208,7 +224,7 @@ const CustomerDashboard = () => {
       script.crossOrigin = ''
       script.onload = () => {
         setIsMapLoaded(true)
-        setTimeout(() => initializeMap(), 100)
+        setTimeout(() => initializeMap(), 200)
       }
       document.head.appendChild(script)
     }
@@ -221,10 +237,29 @@ const CustomerDashboard = () => {
       if (mapElement && !map) {
         const L = (window as any).L
         
-        // Clear any existing map
-        if (map) {
-          map.remove()
+        // Check if there's already a map instance on this container
+        if ((mapElement as any)._leaflet_id) {
+          try {
+            const existingMap = L.map.getContainer(mapElement)
+            if (existingMap) {
+              existingMap.remove()
+            }
+          } catch (error) {
+            console.warn('Existing map cleanup warning:', error)
+          }
         }
+        
+        // Clear any existing map instance from state
+        if (map && typeof map.remove === 'function') {
+          try {
+            map.remove()
+          } catch (error) {
+            console.warn('Map cleanup warning:', error)
+          }
+        }
+        
+        // Clear the map container content to prevent conflicts
+        mapElement.innerHTML = ''
         
         const newMap: any = L.map('customer-tracking-map', {
           center: [-30.5595, 22.9375], // Center of South Africa
@@ -247,7 +282,9 @@ const CustomerDashboard = () => {
         
         // Force map to resize after initialization
         setTimeout(() => {
-          newMap.invalidateSize()
+          if (newMap && typeof newMap.invalidateSize === 'function') {
+            newMap.invalidateSize()
+          }
         }, 200)
         
         setMap(newMap)
@@ -324,19 +361,27 @@ const CustomerDashboard = () => {
   // Cleanup map when component unmounts or tab changes
   useEffect(() => {
     return () => {
-      // Remove all markers
+      // Remove all markers safely
       markers.forEach(marker => {
-        if (marker && marker.remove) {
-          marker.remove()
+        if (marker && typeof marker.remove === 'function') {
+          try {
+            marker.remove()
+          } catch (error) {
+            console.warn('Marker cleanup warning:', error)
+          }
         }
       })
       setMarkers([])
       
-      // Clear map
-      if (map && map.remove) {
-        map.remove()
-        setMap(null)
+      // Clear map safely
+      if (map && typeof map.remove === 'function') {
+        try {
+          map.remove()
+        } catch (error) {
+          console.warn('Map cleanup warning:', error)
+        }
       }
+      setMap(null)
       
       // Reset map loaded state
       setIsMapLoaded(false)
