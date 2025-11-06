@@ -28,6 +28,37 @@ function BookingPageContent() {
     return numericMatch ? parseInt(numericMatch[0], 10) : 150
   }
   
+  // Helper function to extract pricing unit from query parameter
+  const parsePriceUnit = (priceString: string | null): string => {
+    if (!priceString) return 'month' // default unit
+    
+    // Extract unit from price string (e.g., "R150/day" -> "day", "R150/month" -> "month")
+    const unitMatch = priceString.match(/\/(\w+)/)
+    return unitMatch ? unitMatch[1] : 'month'
+  }
+  
+  // Helper function to get the correct image URL based on container type
+  const getContainerImage = (containerId: string | null): string => {
+    if (!containerId) return '/api/placeholder/300/200'
+    
+    // Map container IDs to their corresponding image URLs from BookingForm
+    const containerImages: { [key: string]: string } = {
+      '6m-storage': 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png',
+      '6m-office': 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png',
+      '6m-vip-office': 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png',
+      '6m-refrigeration': 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png',
+      '3m-storage': 'https://valleycontainers.co.za/wp-content/uploads/2025/04/3m-storage-container.png',
+      '6m-split': 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png',
+      'elite-mobile-office': 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png',
+      'mobile-site': 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png', // Alternative ID
+      '3m-ablution': 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png',
+      '6m-pavilion': 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png',
+      '6m-sleeper': 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png'
+    }
+    
+    return containerImages[containerId] || '/api/placeholder/300/200'
+  }
+
   // Container data to pass to the form
   const selectedContainerData = containerId && containerType ? {
     id: containerId,
@@ -37,7 +68,8 @@ function BookingPageContent() {
     dimensions: containerDimensions || '6m × 2.4m × 2.6m',
     capacity: containerCapacity || '37.4 cu m',
     price: parsePrice(containerPrice),
-    image: '/api/placeholder/300/200'
+    priceUnit: parsePriceUnit(containerPrice),
+    image: getContainerImage(containerId)
   } : null
 
   const bookingSteps = [
