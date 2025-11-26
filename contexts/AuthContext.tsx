@@ -1,6 +1,8 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { authApi, CurrentUserProfile } from '@/lib/api/services'
+import { setAuthTokens, clearAuthTokens, getAuthToken } from '@/lib/api-client'
 
 export type UserType = 'customer' | 'driver' | 'admin'
 
@@ -20,99 +22,165 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
   isLoading: boolean
+  register: (data: { email: string; password: string; confirmPassword: string; firstName?: string; lastName?: string; phone?: string }) => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-// Demo credentials for each user type
-const DEMO_USERS = [
-  {
-    id: '1',
-    email: 'customer@valley.com',
-    password: 'customer123',
-    name: 'John Smith',
-    type: 'customer' as UserType,
-    phone: '+27 82 123 4567',
-    company: 'Smith Construction'
-  },
-  {
-    id: '2',
-    email: 'driver@valley.com',
-    password: 'driver123',
-    name: 'Mike Johnson',
-    type: 'driver' as UserType,
-    phone: '+27 82 555 1234',
-    driverId: 'DRV001'
-  },
-  {
-    id: '3',
-    email: 'admin@valley.com',
-    password: 'admin123',
-    name: 'Sarah Wilson',
-    type: 'admin' as UserType,
-    phone: '+27 82 999 8888'
+// Helper function to fetch user info from unified endpoint
+async function fetchUserInfo(): Promise<User | null> {
+  const token = getAuthToken()
+  if (!token) return null
+
+  try {
+    const profile: CurrentUserProfile = await authApi.getCurrentUser()
+    const roles = (profile.roles || []).map((role) => role?.toLowerCase?.() ?? '')
+
+    let userType: UserType = 'customer'
+    if (roles.includes('admin')) {
+      userType = 'admin'
+    } else if (roles.includes('driver')) {
+      userType = 'driver'
+    } else if (roles.includes('customer')) {
+      userType = 'customer'
+    }
+
+    return {
+      id: String(profile.id ?? ''),
+      email: profile.email || '',
+      name: profile.name || 'User',
+      type: userType,
+      phone: profile.phoneNumber || undefined,
+      company: profile.company || undefined,
+      isActive: true,
+    }
+  } catch (error) {
+    console.error('Error fetching user info:', error)
+    return null
   }
-]
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Load user from token on mount
   useEffect(() => {
-    // Check for stored user session
-    try {
-      const storedUser = localStorage.getItem('valley_user')
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser))
-        } catch (error) {
-          console.error('Error parsing stored user:', error)
-          localStorage.removeItem('valley_user')
+    const loadUser = async () => {
+      try {
+        const token = getAuthToken()
+        if (token) {
+          const userInfo = await fetchUserInfo()
+          if (userInfo) {
+            setUser(userInfo)
+            // Store user info in localStorage for quick access
+            try {
+              localStorage.setItem('valley_user', JSON.stringify(userInfo))
+            } catch (error) {
+              console.error('Error saving user to localStorage:', error)
+            }
+          } else {
+            // Token exists but couldn't fetch user, clear tokens
+            clearAuthTokens()
+          }
+        } else {
+          // No token, clear any stale user data
+          try {
+            localStorage.removeItem('valley_user')
+          } catch (error) {
+            console.error('Error removing user from localStorage:', error)
+          }
         }
+      } catch (error) {
+        console.error('Error loading user:', error)
+        clearAuthTokens()
+      } finally {
+        setIsLoading(false)
       }
-    } catch (error) {
-      console.error('Error accessing localStorage:', error)
-    } finally {
-      setIsLoading(false)
+    }
+
+    loadUser()
+
+    // Listen for logout events (from token refresh failures)
+    const handleLogout = () => {
+      setUser(null)
+      try {
+        localStorage.removeItem('valley_user')
+      } catch (error) {
+        console.error('Error removing user from localStorage:', error)
+      }
+    }
+
+    window.addEventListener('auth:logout', handleLogout)
+    return () => {
+      window.removeEventListener('auth:logout', handleLogout)
     }
   }, [])
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true)
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    const foundUser = DEMO_USERS.find(u => u.email === email && u.password === password)
-    
-    if (foundUser) {
-      const userData: User = {
-        id: foundUser.id,
-        email: foundUser.email,
-        name: foundUser.name,
-        type: foundUser.type,
-        phone: foundUser.phone,
-        company: foundUser.company,
-        driverId: foundUser.driverId,
-        isActive: true
-      }
+    try {
+      // Call login API
+      const tokenResponse = await authApi.login(email, password)
       
-      setUser(userData)
-      try {
-        localStorage.setItem('valley_user', JSON.stringify(userData))
-      } catch (error) {
-        console.error('Error saving user to localStorage:', error)
+      // Store tokens
+      setAuthTokens(
+        tokenResponse.accessToken,
+        tokenResponse.refreshToken,
+        tokenResponse.expiresIn
+      )
+      
+      // Fetch user info
+      const userInfo = await fetchUserInfo()
+      
+      if (userInfo) {
+        setUser(userInfo)
+        try {
+          localStorage.setItem('valley_user', JSON.stringify(userInfo))
+        } catch (error) {
+          console.error('Error saving user to localStorage:', error)
+        }
+        setIsLoading(false)
+        return true
+      } else {
+        // Login succeeded but couldn't fetch user info
+        clearAuthTokens()
+        setIsLoading(false)
+        return false
       }
+    } catch (error: any) {
+      console.error('Login error:', error)
+      clearAuthTokens()
+      setIsLoading(false)
+      return false
+    }
+  }
+
+  const register = async (data: {
+    email: string
+    password: string
+    confirmPassword: string
+    firstName?: string
+    lastName?: string
+    phone?: string
+  }): Promise<boolean> => {
+    setIsLoading(true)
+    
+    try {
+      await authApi.register(data)
       setIsLoading(false)
       return true
+    } catch (error: any) {
+      console.error('Registration error:', error)
+      setIsLoading(false)
+      return false
     }
-    
-    setIsLoading(false)
-    return false
   }
 
   const logout = () => {
     setUser(null)
+    clearAuthTokens()
     try {
       localStorage.removeItem('valley_user')
     } catch (error) {
@@ -121,7 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoading, register }}>
       {children}
     </AuthContext.Provider>
   )

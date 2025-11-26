@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import { useCustomerOrders } from '@/lib/api/hooks'
 import { 
   ShoppingCart, 
   Truck, 
@@ -48,7 +49,6 @@ interface Order {
 const CustomerDashboard = () => {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('overview')
-  const [orders, setOrders] = useState<Order[]>([])
   const [conversionRequest, setConversionRequest] = useState({
     type: 'Office Conversion',
     containerSize: '6m Standard',
@@ -60,68 +60,29 @@ const CustomerDashboard = () => {
   const [markers, setMarkers] = useState<any[]>([])
   const [isMapLoaded, setIsMapLoaded] = useState(false)
 
-  // Mock orders data for the customer
-  useEffect(() => {
-    const mockOrders: Order[] = [
-      {
-        id: 'O001',
-        containerType: 'Used Container',
-        category: 'Purchase',
-        status: 'delivered',
-        orderDate: '2024-01-15T10:00:00Z',
-        deliveryDate: '2024-01-20T14:00:00Z',
-        trackingNumber: 'VC20001-2024',
-        totalAmount: 15000,
-        customerName: user?.name || 'John Smith',
-        customerEmail: user?.email || 'customer@valley.com',
-        customerPhone: '+27 82 123 4567',
-        city: 'Cape Town',
-        province: 'Western Cape',
-        deliveryAddress: '123 Main Street, Industrial Area',
-        specialRequirements: 'Deliver to construction site',
-        containerId: '20-001',
-        isNew: false
-      },
-      {
-        id: 'O002',
-        containerType: '6m Office Container',
-        category: 'Rental',
-        status: 'in-transit',
-        orderDate: '2024-01-18T09:30:00Z',
-        deliveryDate: '2024-01-25T10:00:00Z',
-        trackingNumber: 'VC40002-2024',
-        totalAmount: 2500,
-        customerName: user?.name || 'John Smith',
-        customerEmail: user?.email || 'customer@valley.com',
-        customerPhone: '+27 82 123 4567',
-        city: 'Johannesburg',
-        province: 'Gauteng',
-        deliveryAddress: '456 Business Park, Storage Zone',
-        specialRequirements: 'Monthly rental - 6 months',
-        containerId: '40-002',
-        isNew: false
-      },
-      {
-        id: 'O003',
-        containerType: '6m Refrigeration Container',
-        category: 'Purchase',
-        status: 'confirmed',
-        orderDate: '2024-01-20T14:15:00Z',
-        deliveryDate: '2024-01-28T08:00:00Z',
-        totalAmount: 22000,
-        customerName: user?.name || 'John Smith',
-        customerEmail: user?.email || 'customer@valley.com',
-        customerPhone: '+27 82 123 4567',
-        city: 'Durban',
-        province: 'KwaZulu-Natal',
-        deliveryAddress: '789 Food Processing Plant',
-        specialRequirements: 'Refrigerated container for food storage',
-        containerId: '20-003',
-        isNew: true
-      }
-    ]
-    setOrders(mockOrders)
-  }, [user])
+  // Fetch orders from API
+  const { data: ordersData = [], isLoading: ordersLoading } = useCustomerOrders()
+  
+  // Transform API orders to match component interface
+  const orders: Order[] = ordersData.map((order: any) => ({
+    id: order.id,
+    containerType: order.containerType,
+    category: order.orderType === 'purchase' ? 'Purchase' : 'Rental',
+    status: order.status,
+    orderDate: order.createdAt,
+    deliveryDate: order.deliveryDate,
+    trackingNumber: order.trackingNumber || order.id,
+    totalAmount: order.total,
+    customerName: order.customerName,
+    customerEmail: order.customerEmail,
+    customerPhone: order.customerPhone,
+    city: order.city || '',
+    province: order.province || '',
+    deliveryAddress: order.deliveryAddress,
+    specialRequirements: order.specialRequirements,
+    containerId: order.containerId,
+    isNew: order.isNew || false
+  }))
 
   const getStatusIcon = (status: string) => {
     switch (status) {

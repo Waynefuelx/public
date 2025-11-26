@@ -15,6 +15,7 @@ import {
   Navigation
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useTrackOrder } from '@/lib/api/hooks'
 
 interface TrackingInfo {
   containerId: string
@@ -39,57 +40,27 @@ interface TrackingUpdate {
 
 const TrackPage = () => {
   const [trackingNumber, setTrackingNumber] = useState('')
+  const [searchTrackingNumber, setSearchTrackingNumber] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [trackingInfo, setTrackingInfo] = useState<TrackingInfo | null>(null)
   const [map, setMap] = useState<any>(null)
   const [markers, setMarkers] = useState<any[]>([])
   const [isMapLoaded, setIsMapLoaded] = useState(false)
 
-  // Mock tracking data - in real app this would come from API
-  const mockTrackingData: TrackingInfo = {
-    containerId: 'VC-2024-001',
-    status: 'in-transit',
-    estimatedDelivery: '2024-01-15T14:00:00Z',
-    currentLocation: 'N1 Highway, Johannesburg',
-    driverName: 'Mike Johnson',
-    driverPhone: '(555) 123-4567',
-    driverEmail: 'mike.johnson@valleycontainers.co.za',
-    lastUpdate: '2024-01-14T10:30:00Z',
-    updates: [
-      {
-        id: '1',
-        timestamp: '2024-01-14T10:30:00Z',
-        status: 'In Transit',
-        location: 'N1 Highway, Johannesburg',
-        description: 'Container is en route to delivery location. Estimated arrival in 3 hours.',
-        type: 'info'
-      },
-      {
-        id: '2',
-        timestamp: '2024-01-14T08:15:00Z',
-        status: 'Departed Warehouse',
-        location: 'Valley Containers Warehouse, Johannesburg',
-        description: 'Container has left the warehouse and is on its way to your location.',
-        type: 'success'
-      },
-      {
-        id: '3',
-        timestamp: '2024-01-14T07:00:00Z',
-        status: 'Loading Complete',
-        location: 'Valley Containers Warehouse, Johannesburg',
-        description: 'Container has been loaded and secured for transport.',
-        type: 'success'
-      },
-      {
-        id: '4',
-        timestamp: '2024-01-13T16:45:00Z',
-        status: 'Confirmed',
-        location: 'Valley Containers Warehouse, Johannesburg',
-        description: 'Your order has been confirmed and is being prepared for delivery.',
-        type: 'info'
-      }
-    ]
-  }
+  // Fetch tracking info when searchTrackingNumber is set
+  const { data: trackingData, isLoading: trackingLoading, error: trackingError } = useTrackOrder(searchTrackingNumber)
+  
+  // Use API data when available
+  useEffect(() => {
+    if (trackingData) {
+      setTrackingInfo(trackingData)
+      setIsSearching(false)
+    }
+    if (trackingError) {
+      toast.error('Unable to find tracking information. Please check your tracking number.')
+      setIsSearching(false)
+    }
+  }, [trackingData, trackingError])
 
   const handleTrack = async () => {
     if (!trackingNumber.trim()) {
@@ -98,19 +69,7 @@ const TrackPage = () => {
     }
 
     setIsSearching(true)
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // For demo purposes, show mock data for any tracking number
-      setTrackingInfo(mockTrackingData)
-      toast.success('Tracking information found!')
-    } catch (error) {
-      toast.error('Unable to find tracking information. Please check your tracking number.')
-    } finally {
-      setIsSearching(false)
-    }
+    setSearchTrackingNumber(trackingNumber.trim())
   }
 
   const getStatusColor = (status: string) => {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { useContainerTypes, useCreateOrder } from '@/lib/api/hooks'
 
 import { 
   Truck, 
@@ -52,11 +53,12 @@ const BookingForm = ({
   selectedContainer?: ContainerType | null
 }) => {
   const [currentStep, setCurrentStep] = useState(1)
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedContainer, setSelectedContainer] = useState<ContainerType | null>(initialSelectedContainer || null)
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<BookingFormData>()
   const watchServiceType = watch('serviceType')
+  const createOrderMutation = useCreateOrder()
+  const isSubmitting = createOrderMutation.isPending
   
   // Pre-fill form when selectedContainer changes
   useEffect(() => {
@@ -66,117 +68,29 @@ const BookingForm = ({
     }
   }, [selectedContainer, setValue])
 
-  // Container types that match the rental page data
-  const containerTypes: ContainerType[] = [
-    {
-      id: '6m-storage',
-      name: '6m Storage Container',
-      description: 'Versatile storage container perfect for secure storage, moving, and general cargo.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 125,
-      priceUnit: 'month',
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png'
-    },
-    {
-      id: '6m-office',
-      name: '6m Office Container',
-      description: 'Professional office space container, perfect for construction sites, events, and temporary workspaces.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 450,
-      priceUnit: 'month',
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png'
-    },
-    {
-      id: '6m-vip-office',
-      name: '6m VIP Container Office',
-      description: 'Premium office container with enhanced amenities and professional finish.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 550,
-      priceUnit: 'month',
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png'
-    },
-    {
-      id: '6m-refrigeration',
-      name: '6m Refrigeration Container',
-      description: 'Temperature controlled container for perishable goods, food, and pharmaceuticals.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '33.1 cu m',
-      price: 200,
-      priceUnit: 'month',
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png'
-    },
-    {
-      id: '3m-storage',
-      name: '3m Storage Container',
-      description: 'Compact storage container perfect for small spaces and limited storage needs.',
-      dimensions: '3m × 2.4m × 2.6m',
-      capacity: '18.7 cu m',
-      price: 75,
-      priceUnit: 'month',
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/3m-storage-container.png'
-    },
-    {
-      id: '6m-split',
-      name: '6m Split Container',
-      description: 'Divided container offering multiple compartments for organized storage.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 175,
-      priceUnit: 'month',
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png'
-    },
-    {
-      id: 'elite-mobile-office',
-      name: 'Elite Mobile Site Office',
-      description: 'Premium mobile office solution with advanced features and professional finish.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 600,
-      priceUnit: 'month',
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png'
-    },
-    {
-      id: '3m-ablution',
-      name: '3m Ablution Container',
-      description: 'Sanitation container with bathroom and shower facilities for construction sites and events.',
-      dimensions: '3m × 2.4m × 2.6m',
-      capacity: '18.7 cu m',
-      price: 100,
-      priceUnit: 'month',
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png'
-    },
-    {
-      id: '6m-pavilion',
-      name: '6m Pavilion Container',
-      description: 'Open-sided container perfect for events, exhibitions, and temporary structures.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 150,
-      priceUnit: 'month',
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png'
-    },
-    {
-      id: '6m-sleeper',
-      name: '6m Sleeper Container',
-      description: 'Sleeping accommodation container with beds and basic amenities for workers.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 200,
-      priceUnit: 'month',
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png'
-    }
-  ]
+  // Fetch container types from API
+  const { data: containerTypesData = [], isLoading: containerTypesLoading } = useContainerTypes()
+  
+  // Transform API data to match component interface, with fallback to empty array
+  const containerTypes: ContainerType[] = containerTypesData.length > 0 
+    ? containerTypesData.map((ct: any) => ({
+        id: ct.id || ct.name?.toLowerCase().replace(/\s+/g, '-'),
+        name: ct.name,
+        description: ct.description,
+        dimensions: ct.dimensions,
+        capacity: ct.capacity,
+        price: ct.price,
+        priceUnit: ct.priceUnit || 'month',
+        image: ct.image,
+        category: ct.category
+      }))
+    : []
 
   const onSubmit = async (data: BookingFormData) => {
-    setIsSubmitting(true)
-    
     try {
       // Prepare order data for API
       const orderData = {
-        orderType: 'rental',
+        orderType: (watchServiceType === 'purchase' ? 'purchase' : 'rental') as 'purchase' | 'rental',
         customerName: data.contactName || '',
         customerEmail: data.email || '',
         customerPhone: data.phone || '',
@@ -184,18 +98,16 @@ const BookingForm = ({
         containerType: data.containerType || '',
         containerId: selectedContainer?.id || 'unknown',
         quantity: data.quantity || 1,
-        deliveryOption: 'delivery', // Rental is always delivery
+        deliveryOption: 'delivery' as 'delivery' | 'collection', // Rental is always delivery
         deliveryDate: data.deliveryDate || '',
         deliveryAddress: data.deliveryAddress || '',
         city: data.city || '',
         province: data.province || '',
         postalCode: data.postalCode || '',
-        total: selectedContainer ? selectedContainer.price * (data.quantity || 1) : 0,
+        total: selectedContainer ? (selectedContainer.price || 0) * (data.quantity || 1) : 0,
         specialRequirements: data.specialRequirements || '',
         paymentMethod: data.paymentMethod || ''
       }
-      
-      console.log('Submitting order data:', orderData)
       
       // Validate required fields before sending
       const missingFields = []
@@ -211,35 +123,17 @@ const BookingForm = ({
       if (!orderData.paymentMethod) missingFields.push('paymentMethod')
       
       if (missingFields.length > 0) {
-        console.error('Missing required fields:', missingFields)
         throw new Error(`Missing required fields: ${missingFields.join(', ')}`)
       }
       
-      // Submit to API
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-      })
+      // Submit to API using React Query mutation
+      await createOrderMutation.mutateAsync(orderData)
       
-      if (!response.ok) {
-        const errorData = await response.json()
-        console.error('API Error:', errorData)
-        throw new Error(errorData.error || 'Failed to submit order')
-      }
-      
-      const result = await response.json()
-      console.log('Rental order submitted:', result)
-      
-      toast.success('Rental order submitted successfully!')
+      toast.success('Order submitted successfully!')
       onSuccess()
-    } catch (error) {
-      console.error('Error submitting rental:', error)
-      toast.error('Failed to submit rental order. Please try again.')
-    } finally {
-      setIsSubmitting(false)
+    } catch (error: any) {
+      console.error('Error submitting order:', error)
+      toast.error(error?.message || 'Failed to submit order. Please try again.')
     }
   }
 
