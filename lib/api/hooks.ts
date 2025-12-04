@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { adminApi, customerApi, driverApi, Order, Lead, Delivery, ContainerType, TrackingInfo, PaginatedResponse, LeadListItem, DashboardOverview } from './services'
+import { adminApi, customerApi, driverApi, Order, Lead, Delivery, ContainerType, TrackingInfo, PaginatedResponse, LeadListItem, DashboardOverview, ContainerDetailDto } from './services'
 
 // Admin Hooks
 export const useAdminOrders = () => {
@@ -20,7 +20,7 @@ export const useAdminOrder = (orderId: string) => {
 export const useUpdateOrderStatus = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ orderId, status }: { orderId: string; status: string }) =>
+    mutationFn: ({ orderId, status }: { orderId: string; status: number }) =>
       adminApi.updateOrderStatus(orderId, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] })
@@ -110,6 +110,14 @@ export const useAdminContainers = () => {
   return useQuery({
     queryKey: ['admin', 'containers'],
     queryFn: () => adminApi.getContainers(),
+  })
+}
+
+export const useAdminContainer = (containerId: string | null) => {
+  return useQuery<ContainerDetailDto>({
+    queryKey: ['admin', 'containers', containerId],
+    queryFn: () => adminApi.getContainer(containerId!),
+    enabled: !!containerId,
   })
 }
 

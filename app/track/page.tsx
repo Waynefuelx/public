@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Search, 
@@ -15,7 +15,9 @@ import {
   Navigation
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import L from 'leaflet'
 import { useTrackOrder } from '@/lib/api/hooks'
+import LeafletMap from '@/components/organisms/LeafletMap'
 
 interface TrackingInfo {
   containerId: string
@@ -43,9 +45,8 @@ const TrackPage = () => {
   const [searchTrackingNumber, setSearchTrackingNumber] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [trackingInfo, setTrackingInfo] = useState<TrackingInfo | null>(null)
-  const [map, setMap] = useState<any>(null)
-  const [markers, setMarkers] = useState<any[]>([])
-  const [isMapLoaded, setIsMapLoaded] = useState(false)
+  const mapRef = useRef<any>(null)
+  const markerRef = useRef<any>(null)
 
   // Fetch tracking info when searchTrackingNumber is set
   const { data: trackingData, isLoading: trackingLoading, error: trackingError } = useTrackOrder(searchTrackingNumber)
@@ -119,87 +120,19 @@ const TrackPage = () => {
     return `${diffInDays} days ago`
   }
 
-  // Load Leaflet (OpenStreetMap) script and CSS
-  useEffect(() => {
-    if (trackingInfo && !isMapLoaded) {
-      // Check if Leaflet is already loaded
-      if (typeof window !== 'undefined' && (window as any).L) {
-        setIsMapLoaded(true)
-        setTimeout(() => initializeMap(), 100)
-        return
-      }
-
-      // Load Leaflet CSS
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-      link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='
-      link.crossOrigin = ''
-      document.head.appendChild(link)
-
-      // Load Leaflet JS
-      const script = document.createElement('script')
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='
-      script.crossOrigin = ''
-      script.onload = () => {
-        setIsMapLoaded(true)
-        setTimeout(() => initializeMap(), 100)
-      }
-      document.head.appendChild(script)
-    }
-  }, [trackingInfo, isMapLoaded])
-
-  // Initialize Leaflet Map
-  const initializeMap = () => {
-    if (typeof window !== 'undefined' && (window as any).L) {
-      const mapElement = document.getElementById('track-live-map')
-      if (mapElement && !map) {
-        const L = (window as any).L
-        
-        // Clear any existing map
-        if (map) {
-          map.remove()
-        }
-        
-        const newMap: any = L.map('track-live-map', {
-          center: [-30.5595, 22.9375], // Center of South Africa
-          zoom: 6,
-          zoomControl: true,
-          scrollWheelZoom: true,
-          doubleClickZoom: true,
-          boxZoom: true,
-          keyboard: true,
-          dragging: true,
-          touchZoom: true,
-          attributionControl: false
-        })
-        
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 18,
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(newMap)
-        
-        // Force map to resize after initialization
-        setTimeout(() => {
-          newMap.invalidateSize()
-        }, 200)
-        
-        setMap(newMap)
-        addTrackingMarker(newMap)
-      }
-    }
-  }
-
   // Add tracking marker to map
   const addTrackingMarker = (mapInstance: any) => {
-    if (!trackingInfo) return
+    if (!trackingInfo || !mapInstance) return
 
-    const newMarkers: any[] = []
+    // Clear existing marker
+    if (markerRef.current && markerRef.current.remove) {
+      markerRef.current.remove()
+      markerRef.current = null
+    }
+
     
     // Create custom icon based on tracking status
-    const customIcon = (window as any).L.divIcon({
+    const customIcon = L.divIcon({
       className: 'custom-marker',
       html: `
         <div class="w-10 h-10 rounded-full border-3 border-white shadow-lg flex items-center justify-center text-white font-bold text-sm" 
@@ -218,7 +151,7 @@ const TrackPage = () => {
 
     // Get coordinates for the current location
     const coords = getCoordinatesForLocation(trackingInfo.currentLocation)
-    const marker = (window as any).L.marker([coords.lat, coords.lng], {
+    const marker = L.marker([coords.lat, coords.lng], {
       icon: customIcon
     }).addTo(mapInstance)
 
@@ -237,10 +170,18 @@ const TrackPage = () => {
     `
 
     marker.bindPopup(popupContent)
-    newMarkers.push(marker)
-    
-    setMarkers(newMarkers)
+    markerRef.current = marker
+
+    // Center map on marker
+    mapInstance.setView([coords.lat, coords.lng], 10)
   }
+
+  // Update marker when tracking info changes
+  useEffect(() => {
+    if (mapRef.current && trackingInfo) {
+      addTrackingMarker(mapRef.current)
+    }
+  }, [trackingInfo])
 
   // Get coordinates for locations
   const getCoordinatesForLocation = (location: string) => {
@@ -267,59 +208,6 @@ const TrackPage = () => {
     return { lat: -30.5595, lng: 22.9375 } // Default to South Africa center
   }
 
-  // Add map styles
-  useEffect(() => {
-    const style = document.createElement('style')
-    style.textContent = `
-      .custom-marker {
-        background: transparent !important;
-        border: none !important;
-      }
-      #track-live-map {
-        height: 400px !important;
-        width: 100% !important;
-        position: relative !important;
-        z-index: 1 !important;
-      }
-      .leaflet-popup-content-wrapper {
-        border-radius: 8px !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-      }
-      .leaflet-popup-content {
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-    `
-    document.head.appendChild(style)
-    
-    return () => {
-      if (document.head.contains(style)) {
-        document.head.removeChild(style)
-      }
-    }
-  }, [])
-
-  // Cleanup map when component unmounts
-  useEffect(() => {
-    return () => {
-      // Remove all markers
-      markers.forEach(marker => {
-        if (marker && marker.remove) {
-          marker.remove()
-        }
-      })
-      setMarkers([])
-      
-      // Clear map
-      if (map && map.remove) {
-        map.remove()
-        setMap(null)
-      }
-      
-      // Reset map loaded state
-      setIsMapLoaded(false)
-    }
-  }, [])
 
   return (
     <div className="min-h-screen bg-secondary-200 py-12">
@@ -501,19 +389,16 @@ const TrackPage = () => {
             {/* Live Location Map */}
             <div className="card">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Live Location</h3>
-              <div className="relative h-96 rounded-lg overflow-hidden">
-                {/* Leaflet Map */}
-                <div 
-                  id="track-live-map" 
-                  className="w-full h-full"
-                  style={{
-                    height: '400px',
-                    width: '100%',
-                    position: 'relative',
-                    zIndex: 1
-                  }}
-                ></div>
-                
+              <LeafletMap
+                mapId="track-live-map"
+                height="400px"
+                onMapReady={(map) => {
+                  mapRef.current = map
+                  if (trackingInfo) {
+                    addTrackingMarker(map)
+                  }
+                }}
+              >
                 {/* Map Controls Overlay */}
                 <div className="absolute top-4 left-4 bg-white bg-opacity-95 rounded-lg px-3 py-2 shadow-lg">
                   <h4 className="text-sm font-semibold text-gray-900">Live Tracking</h4>
@@ -552,17 +437,7 @@ const TrackPage = () => {
                   <div className="text-sm font-semibold text-gray-900">{trackingInfo.driverName}</div>
                   <div className="text-xs text-gray-600">Driver</div>
                 </div>
-                
-                {/* Loading State */}
-                {!isMapLoaded && (
-                  <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-2"></div>
-                      <p className="text-sm text-gray-600">Loading map...</p>
-                    </div>
-                  </div>
-                )}
-              </div>
+              </LeafletMap>
             </div>
           </motion.div>
         )}

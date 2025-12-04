@@ -203,10 +203,39 @@ export interface DashboardContainerSummary {
   id: number | string
   containerNumber: string
   size: string
+  type: string
   customer: CustomerSummary
   location: LocationDto
   address: AddressSummaryDto
   duration: string
+}
+
+export interface DetailLocationDto {
+  latitude: number | string | null
+  longitude: number | string | null
+  address: string | null
+  city: string
+  province: string
+}
+
+export interface ContainerDetailDto {
+  id: number | string
+  activeOrderId: number | string | null
+  containerNumber: string
+  containerType: string
+  containerSize: string
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  location: DetailLocationDto
+  deliveryDate: string | null
+  rentalDuration: string
+  monthlyRate: number | string | null
+  notes: string
+  paymentStatus?: 'paid' | 'overdue' | 'pending' | string
+  lastPaymentDate?: string | null
+  nextPaymentDate?: string | null
+  totalOwed?: number | string | null
 }
 
 export interface PaginatedResponse<T> {
@@ -237,8 +266,8 @@ export const adminApi = {
   // Orders
   getOrders: () => apiClient.get<Order[]>('/admin/orders'),
   getOrder: (orderId: string) => apiClient.get<Order>(`/admin/orders/${orderId}`),
-  updateOrderStatus: (orderId: string, status: string) => 
-    apiClient.patch(`/admin/orders/${orderId}/status`, { status }),
+  updateOrderStatus: (orderId: string, status: number) => 
+    apiClient.put(`/admin/orders/${orderId}/status`, { status }),
 
   // Leads
   getLeads: (params: AdminLeadsParams = {}) => {
@@ -274,7 +303,7 @@ export const adminApi = {
 
   // Containers
   getContainers: () => apiClient.get<DashboardContainerSummary[]>('/admin/containers'),
-  getContainer: (id: string) => apiClient.get(`/admin/containers/${id}`),
+  getContainer: (id: string) => apiClient.get<ContainerDetailDto>(`/admin/containers/${id}`),
 
   // Calendar
   getScheduledDeliveries: (start: string, end: string) => {
