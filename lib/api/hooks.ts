@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { adminApi, customerApi, driverApi, Order, Lead, Delivery, ContainerType, TrackingInfo, PaginatedResponse, LeadListItem, DashboardOverview, ContainerDetailDto } from './services'
+import { adminApi, customerApi, driverApi, Order, Lead, Delivery, ContainerType, TrackingInfo, PaginatedResponse, LeadListItem, DashboardOverview, ContainerDetailDto, UserListItemDto, UserDetailDto, UpdateUserRequest, ModifyUserRoleRequest } from './services'
 
 // Admin Hooks
 export const useAdminOrders = () => {
@@ -139,6 +139,95 @@ export const useOrderTypeEnum = () => {
   return useQuery({
     queryKey: ['admin', 'enums', 'ordertype'],
     queryFn: () => adminApi.getOrderTypeEnum(),
+  })
+}
+
+type AdminUsersQuery = {
+  search?: string
+  page?: number
+  pageSize?: number
+}
+
+type AdminUsersByRoleQuery = {
+  role: string
+  search?: string
+  page?: number
+  pageSize?: number
+}
+
+export const useAdminUsers = (params: AdminUsersQuery = {}) => {
+  return useQuery<PaginatedResponse<UserListItemDto>>({
+    queryKey: ['admin', 'users', params],
+    queryFn: () => adminApi.getUsers(params),
+  })
+}
+
+export const useAdminUsersByRole = (params: AdminUsersByRoleQuery) => {
+  return useQuery<PaginatedResponse<UserListItemDto>>({
+    queryKey: ['admin', 'users', 'by-role', params],
+    queryFn: () => adminApi.getUsersByRole(params),
+    enabled: !!params.role,
+  })
+}
+
+export const useAdminUser = (userId: string | null) => {
+  return useQuery<UserDetailDto>({
+    queryKey: ['admin', 'users', userId],
+    queryFn: () => adminApi.getUser(userId!),
+    enabled: !!userId,
+  })
+}
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ userId, data }: { userId: string; data: UpdateUserRequest }) =>
+      adminApi.updateUser(userId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users', variables.userId] })
+    },
+  })
+}
+
+export const useAdminUserRoles = (userId: string | null) => {
+  return useQuery<string[]>({
+    queryKey: ['admin', 'users', userId, 'roles'],
+    queryFn: () => adminApi.getUserRoles(userId!),
+    enabled: !!userId,
+  })
+}
+
+export const useAddUserRole = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ userId, data }: { userId: string; data: ModifyUserRoleRequest }) =>
+      adminApi.addUserRole(userId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users', variables.userId] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users', variables.userId, 'roles'] })
+    },
+  })
+}
+
+export const useRemoveUserRole = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ userId, roleName }: { userId: string; roleName: string }) =>
+      adminApi.removeUserRole(userId, roleName),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users', variables.userId] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users', variables.userId, 'roles'] })
+    },
+  })
+}
+
+export const useAdminRoles = () => {
+  return useQuery<string[]>({
+    queryKey: ['admin', 'roles'],
+    queryFn: () => adminApi.getRoles(),
   })
 }
 

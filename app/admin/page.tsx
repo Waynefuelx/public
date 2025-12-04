@@ -39,6 +39,7 @@ import {
   FileText,
   Plus,
   Navigation,
+  UserCog,
 } from "lucide-react";
 
 // Use Order type from API services
@@ -428,6 +429,7 @@ const AdminPage = () => {
     },
     { id: "calendar", label: "Calendar", icon: Calendar, notificationCount: 0 },
     { id: "reports", label: "Reports", icon: FileText, notificationCount: 0 },
+    { id: "users", label: "Users", icon: UserCog, notificationCount: 0 },
   ];
 
   return (
@@ -466,6 +468,11 @@ const AdminPage = () => {
             tabs={tabs}
             activeTab={activeTab}
             onTabChange={(tabId) => {
+              if (tabId === "users") {
+                // Navigate to users page
+                window.location.href = "/admin/users";
+                return;
+              }
               setActiveTab(tabId);
               if (tabId === "orders") {
                 // Mark all orders as viewed when opening orders tab

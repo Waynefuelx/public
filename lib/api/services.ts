@@ -254,9 +254,55 @@ export interface LeadListItem extends Lead {
   modifiedAt?: string
 }
 
+export interface UserListItemDto {
+  id: number | string
+  userName: string | null
+  email: string | null
+  phoneNumber: string | null
+  company: string | null
+  createdAt: string
+  modifiedAt: string
+}
+
+export interface UserDetailDto {
+  id: number | string
+  userName: string | null
+  email: string | null
+  emailConfirmed: boolean
+  phoneNumber: string | null
+  company: string | null
+  roles: string[]
+  createdAt: string
+  modifiedAt: string
+}
+
+export interface UpdateUserRequest {
+  userName?: string | null
+  email?: string | null
+  phoneNumber?: string | null
+  company?: string | null
+}
+
+export interface ModifyUserRoleRequest {
+  role?: string | null
+}
+
 interface AdminLeadsParams {
   search?: string
   leadStatus?: string
+  page?: number
+  pageSize?: number
+}
+
+interface AdminUsersParams {
+  search?: string
+  page?: number
+  pageSize?: number
+}
+
+interface AdminUsersByRoleParams {
+  role: string
+  search?: string
   page?: number
   pageSize?: number
 }
@@ -317,6 +363,38 @@ export const adminApi = {
   getOrderStatusEnum: () => apiClient.get<EnumOptionDto[]>('/admin/enums/orderstatus'),
   getLeadStatusEnum: () => apiClient.get<EnumOptionDto[]>('/admin/enums/leadstatus'),
   getOrderTypeEnum: () => apiClient.get<EnumOptionDto[]>('/admin/enums/ordertype'),
+
+  // Users
+  getUsers: (params: AdminUsersParams = {}) => {
+    const searchParams = new URLSearchParams()
+    if (params.search) searchParams.set('search', params.search)
+    if (typeof params.page !== 'undefined') searchParams.set('page', String(params.page))
+    if (typeof params.pageSize !== 'undefined') searchParams.set('pageSize', String(params.pageSize))
+
+    const queryString = searchParams.toString()
+    const endpoint = queryString ? `/admin/users?${queryString}` : '/admin/users'
+    return apiClient.get<PaginatedResponse<UserListItemDto>>(endpoint)
+  },
+  getUsersByRole: (params: AdminUsersByRoleParams) => {
+    const searchParams = new URLSearchParams()
+    searchParams.set('role', params.role)
+    if (params.search) searchParams.set('search', params.search)
+    if (typeof params.page !== 'undefined') searchParams.set('page', String(params.page))
+    if (typeof params.pageSize !== 'undefined') searchParams.set('pageSize', String(params.pageSize))
+
+    return apiClient.get<PaginatedResponse<UserListItemDto>>(`/admin/users/by-role?${searchParams.toString()}`)
+  },
+  getUser: (userId: string) => apiClient.get<UserDetailDto>(`/admin/users/${userId}`),
+  updateUser: (userId: string, data: UpdateUserRequest) => 
+    apiClient.put<UserDetailDto>(`/admin/users/${userId}`, data),
+  getUserRoles: (userId: string) => apiClient.get<string[]>(`/admin/users/${userId}/roles`),
+  addUserRole: (userId: string, data: ModifyUserRoleRequest) => 
+    apiClient.post<string[]>(`/admin/users/${userId}/roles`, data),
+  removeUserRole: (userId: string, roleName: string) => 
+    apiClient.delete<string[]>(`/admin/users/${userId}/roles/${roleName}`),
+
+  // Roles
+  getRoles: () => apiClient.get<string[]>('/admin/roles'),
 }
 
 // Customer API Services
