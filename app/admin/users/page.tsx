@@ -5,15 +5,17 @@ import { motion } from "framer-motion";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import UsersTab from "@/components/organisms/admin/UsersTab";
 import UserDetailModal from "@/components/organisms/admin/UserDetailModal";
+import CreateUserModal from "@/components/organisms/admin/CreateUserModal";
 import Card from "@/components/atoms/Card";
 import Button from "@/components/atoms/Button";
-import { Users, ArrowLeft, Filter } from "lucide-react";
+import { Users, ArrowLeft, Filter, Plus } from "lucide-react";
 import type { UserListItemDto } from "@/lib/api/services";
 
 const AdminUsersPage = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [roleFilter, setRoleFilter] = useState<string | undefined>(undefined);
   const [showRoleFilter, setShowRoleFilter] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const handleViewUser = (user: UserListItemDto) => {
     setSelectedUserId(String(user.id));
@@ -25,6 +27,11 @@ const AdminUsersPage = () => {
 
   const handleCloseModal = () => {
     setSelectedUserId(null);
+  };
+
+  const handleCreateSuccess = (userId: string) => {
+    // Open the newly created user's detail modal
+    setSelectedUserId(userId);
   };
 
   return (
@@ -53,6 +60,13 @@ const AdminUsersPage = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+                <Button
+                  onClick={() => setShowCreateModal(true)}
+                  className="btn-primary text-sm flex items-center flex-wrap"
+                >
+                  <Plus className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="whitespace-nowrap">New User</span>
+                </Button>
                 <div className="relative">
                   <Button
                     variant="outline"
@@ -168,6 +182,13 @@ const AdminUsersPage = () => {
           <UserDetailModal
             userId={selectedUserId}
             onClose={handleCloseModal}
+          />
+
+          {/* Create User Modal */}
+          <CreateUserModal
+            isOpen={showCreateModal}
+            onClose={() => setShowCreateModal(false)}
+            onSuccess={handleCreateSuccess}
           />
         </div>
       </div>

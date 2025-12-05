@@ -283,6 +283,15 @@ export interface UpdateUserRequest {
   company?: string | null
 }
 
+export interface CreateUserRequest {
+  name: string
+  email: string
+  password: string
+  phoneNumber?: string | null
+  company?: string | null
+  roles?: string[] | null
+}
+
 export interface ModifyUserRoleRequest {
   role?: string | null
 }
@@ -385,6 +394,8 @@ export const adminApi = {
     return apiClient.get<PaginatedResponse<UserListItemDto>>(`/admin/users/by-role?${searchParams.toString()}`)
   },
   getUser: (userId: string) => apiClient.get<UserDetailDto>(`/admin/users/${userId}`),
+  createUser: (data: CreateUserRequest) => 
+    apiClient.post<UserDetailDto>('/admin/users', data),
   updateUser: (userId: string, data: UpdateUserRequest) => 
     apiClient.put<UserDetailDto>(`/admin/users/${userId}`, data),
   getUserRoles: (userId: string) => apiClient.get<string[]>(`/admin/users/${userId}/roles`),

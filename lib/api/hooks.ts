@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { adminApi, customerApi, driverApi, Order, Lead, Delivery, ContainerType, TrackingInfo, PaginatedResponse, LeadListItem, DashboardOverview, ContainerDetailDto, UserListItemDto, UserDetailDto, UpdateUserRequest, ModifyUserRoleRequest } from './services'
+import { adminApi, customerApi, driverApi, Order, Lead, Delivery, ContainerType, TrackingInfo, PaginatedResponse, LeadListItem, DashboardOverview, ContainerDetailDto, UserListItemDto, UserDetailDto, UpdateUserRequest, ModifyUserRoleRequest, CreateUserRequest } from './services'
 
 // Admin Hooks
 export const useAdminOrders = () => {
@@ -228,6 +228,16 @@ export const useAdminRoles = () => {
   return useQuery<string[]>({
     queryKey: ['admin', 'roles'],
     queryFn: () => adminApi.getRoles(),
+  })
+}
+
+export const useCreateUser = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: CreateUserRequest) => adminApi.createUser(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+    },
   })
 }
 
