@@ -6,4 +6,6 @@ export { default as StepIndicator } from './StepIndicator'
 export { default as RadioOption } from './RadioOption'
 export { default as ContainerCard } from './ContainerCard'
 export { default as QuantitySelector } from './QuantitySelector'
+export { default as ContainerSizeCard } from './ContainerSizeCard'
+export { default as ContainerTypeCard } from './ContainerTypeCard'
 

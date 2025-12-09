@@ -1,92 +1,67 @@
-import Card from '../atoms/Card'
-import { X } from 'lucide-react'
+import Card from '@/components/atoms/Card'
+import { Trash2 } from 'lucide-react'
+import type { ContainerType } from '@/lib/api/services'
 
 interface ContainerTypeCardProps {
-  id: string
-  name: string
-  description: string
-  dimensions: string
-  capacity: string
-  price: number
-  priceUnit?: string
-  image: string
-  selected?: boolean
-  onClick: () => void
+  type: ContainerType
+  onDelete: (typeId: string | number) => void
 }
 
-const ContainerTypeCard = ({
-  id,
-  name,
-  description,
-  dimensions,
-  capacity,
-  price,
-  priceUnit = 'per month',
-  image,
-  selected = false,
-  onClick,
-}: ContainerTypeCardProps) => {
+const ContainerTypeCard = ({ type, onDelete }: ContainerTypeCardProps) => {
   return (
-    <Card>
-      <div
-        className={`p-4 cursor-pointer transition-all ${
-          selected
-            ? 'ring-2 ring-primary-500 bg-primary-50'
-            : 'hover:shadow-md'
-        }`}
-        onClick={onClick}
-      >
-        {selected && (
-          <div className="flex justify-end mb-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                onClick()
-              }}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        )}
-        {image && (
-          <div className="mb-4">
-            <img
-              src={image}
-              alt={name}
-              className="w-full h-auto max-h-48 object-contain rounded-lg"
-            />
-          </div>
-        )}
-        <h4 className="font-semibold text-gray-900 mb-2">{name}</h4>
-        <p className="text-sm text-gray-600 mb-3">{description}</p>
-        <div className="space-y-1 text-sm mb-3">
-          <div className="flex justify-between">
-            <span className="text-gray-500">Dimensions:</span>
-            <span className="font-medium text-gray-900">{dimensions}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Capacity:</span>
-            <span className="font-medium text-gray-900">{capacity}</span>
-          </div>
-        </div>
-        <div className="pt-3 border-t border-gray-200">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">Price:</span>
-            <span className="text-lg font-bold text-primary-600">
-              R{price.toLocaleString()}
-            </span>
-          </div>
-          {priceUnit && (
-            <p className="text-xs text-gray-500 text-right mt-1">
-              {priceUnit}
-            </p>
-          )}
-        </div>
+    <Card className="p-6 relative">
+      <div className="flex justify-between items-start mb-2">
+        <h3 className="text-lg font-semibold text-gray-900">
+          {type.name}
+        </h3>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete(type.id);
+          }}
+          className="text-red-600 hover:text-red-800 p-1"
+          title="Delete type"
+          type="button"
+        >
+          <Trash2 className="w-5 h-5" />
+        </button>
       </div>
+      {type.category && (
+        <span className="inline-block px-2 py-1 text-xs font-medium bg-primary-100 text-primary-800 rounded mb-2">
+          {type.category}
+        </span>
+      )}
+      {type.description && (
+        <p className="text-sm text-gray-600 mb-2">{type.description}</p>
+      )}
+      {type.dimensions && (
+        <p className="text-sm text-gray-500">
+          <span className="font-medium">Dimensions:</span> {type.dimensions}
+        </p>
+      )}
+      {type.capacity && (
+        <p className="text-sm text-gray-500">
+          <span className="font-medium">Capacity:</span> {type.capacity}
+        </p>
+      )}
+      {type.price && (
+        <p className="text-sm text-gray-900 font-medium mt-2">
+          {type.priceUnit || "$"}
+          {type.price}
+        </p>
+      )}
+      {type.image && (
+        <div className="mt-4">
+          <img
+            src={type.image}
+            alt={type.name}
+            className="w-full h-32 object-cover rounded-lg"
+          />
+        </div>
+      )}
     </Card>
   )
 }
 
 export default ContainerTypeCard
-

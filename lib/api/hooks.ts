@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { adminApi, customerApi, driverApi, Order, Lead, Delivery, ContainerType, TrackingInfo, PaginatedResponse, LeadListItem, DashboardOverview, ContainerDetailDto, UserListItemDto, UserDetailDto, UpdateUserRequest, ModifyUserRoleRequest, CreateUserRequest } from './services'
+import { adminApi, customerApi, driverApi, Order, Lead, Delivery, ContainerType, ContainerSize, TrackingInfo, PaginatedResponse, LeadListItem, DashboardOverview, ContainerDetailDto, UserListItemDto, UserDetailDto, UpdateUserRequest, ModifyUserRoleRequest, CreateUserRequest, CreateContainerTypeRequest, CreateContainerSizeRequest, AddContainerSizeToTypeRequest } from './services'
 
 // Admin Hooks
 export const useAdminOrders = () => {
@@ -91,10 +91,85 @@ export const useAdminDashboard = () => {
   })
 }
 
-export const useContainerTypes = () => {
-  return useQuery({
-    queryKey: ['container-types'],
-    queryFn: () => adminApi.getContainerTypes(),
+export const useContainerTypes = (params?: { search?: string; page?: number; pageSize?: number }) => {
+  return useQuery<PaginatedResponse<ContainerType>>({
+    queryKey: ['admin', 'container-types', params],
+    queryFn: () => adminApi.getContainerTypes(params),
+  })
+}
+
+export const useCreateContainerType = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: CreateContainerTypeRequest) => adminApi.createContainerType(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'container-types'] })
+      queryClient.invalidateQueries({ queryKey: ['container-types'] })
+    },
+  })
+}
+
+export const useDeleteContainerType = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (containerTypeId: string | number) => adminApi.deleteContainerType(containerTypeId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'container-types'] })
+      queryClient.invalidateQueries({ queryKey: ['container-types'] })
+    },
+  })
+}
+
+export const useContainerSizes = (params?: { search?: string; page?: number; pageSize?: number }) => {
+  return useQuery<PaginatedResponse<ContainerSize>>({
+    queryKey: ['admin', 'container-sizes', params],
+    queryFn: () => adminApi.getContainerSizes(params),
+  })
+}
+
+export const useCreateContainerSize = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: CreateContainerSizeRequest) => adminApi.createContainerSize(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'container-sizes'] })
+    },
+  })
+}
+
+export const useDeleteContainerSize = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (containerSizeId: string | number) => adminApi.deleteContainerSize(containerSizeId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'container-sizes'] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'container-types'] })
+      queryClient.invalidateQueries({ queryKey: ['container-types'] })
+    },
+  })
+}
+
+export const useAddContainerSizeToType = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ containerTypeId, data }: { containerTypeId: string | number; data: AddContainerSizeToTypeRequest }) =>
+      adminApi.addContainerSizeToType(containerTypeId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'container-types'] })
+      queryClient.invalidateQueries({ queryKey: ['container-types'] })
+    },
+  })
+}
+
+export const useRemoveContainerSizeFromType = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ containerTypeId, containerSizeId }: { containerTypeId: string | number; containerSizeId: string | number }) =>
+      adminApi.removeContainerSizeFromType(containerTypeId, containerSizeId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'container-types'] })
+      queryClient.invalidateQueries({ queryKey: ['container-types'] })
+    },
   })
 }
 

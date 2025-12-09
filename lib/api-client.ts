@@ -54,20 +54,68 @@ export function getRefreshToken(): string | null {
   return localStorage.getItem(REFRESH_TOKEN_KEY)
 }
 
+// Custom error class to preserve API error structure
+export class ApiError extends Error {
+  status?: number
+  errors?: Record<string, string[]>
+  title?: string
+  type?: string
+
+  constructor(message: string, status?: number, errors?: Record<string, string[]>, title?: string, type?: string) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+    this.errors = errors
+    this.title = title
+    this.type = type
+  }
+}
+
 // Helper function to handle API responses
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: response.statusText }))
-    throw new Error(error.message || `API Error: ${response.status}`)
+    let errorData: any;
+    try {
+      // Try to parse JSON error response
+      const text = await response.text();
+      if (text) {
+        errorData = JSON.parse(text);
+      } else {
+        errorData = { message: response.statusText };
+      }
+    } catch (parseError) {
+      // If parsing fails, use status text
+      errorData = { message: response.statusText };
+    }
+    
+    // Preserve the full error structure for better error handling
+    const errorMessage = errorData.message || errorData.title || `API Error: ${response.status}`
+    const apiError = new ApiError(
+      errorMessage,
+      response.status,
+      errorData.errors,
+      errorData.title,
+      errorData.type
+    );
+    
+    // Store original error data for debugging
+    (apiError as any).originalError = errorData;
+    
+    throw apiError;
   }
   
-  // Handle empty responses
+  // Handle empty responses (like 204 No Content for DELETE)
   const contentType = response.headers.get('content-type')
   if (!contentType || !contentType.includes('application/json')) {
     return {} as T
   }
   
-  return response.json()
+  try {
+    return await response.json()
+  } catch (parseError) {
+    // If JSON parsing fails (e.g., empty body), return empty object
+    return {} as T
+  }
 }
 
 // API Client class

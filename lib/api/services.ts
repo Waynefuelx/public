@@ -110,7 +110,7 @@ export interface ActiveDeliverySummaryDto {
 }
 
 export interface ContainerType {
-  id: string
+  id: string | number
   name: string
   description?: string
   dimensions?: string
@@ -119,6 +119,25 @@ export interface ContainerType {
   priceUnit?: string
   image?: string
   category?: string
+  sizes?: ContainerSize[]
+}
+
+export interface ContainerSize {
+  id: string | number
+  sizeMeters: number | string
+}
+
+export interface CreateContainerTypeRequest {
+  name: string
+  description?: string
+}
+
+export interface CreateContainerSizeRequest {
+  sizeMeters: number
+}
+
+export interface AddContainerSizeToTypeRequest {
+  containerSizeId: number | string
 }
 
 export interface TrackingInfo {
@@ -351,10 +370,42 @@ export const adminApi = {
   getDashboard: () => apiClient.get<DashboardOverview>('/admin/dashboard'),
 
   // Container Types
-  getContainerTypes: () => apiClient.get<ContainerType[]>('/admin/container-types'),
-  getContainerSizes: () => apiClient.get('/admin/container-sizes'),
+  getContainerTypes: (params?: { search?: string; page?: number; pageSize?: number }) => {
+    const searchParams = new URLSearchParams()
+    if (params?.search) searchParams.set('search', params.search)
+    if (typeof params?.page !== 'undefined') searchParams.set('page', String(params.page))
+    if (typeof params?.pageSize !== 'undefined') searchParams.set('pageSize', String(params.pageSize))
+    const queryString = searchParams.toString()
+    const endpoint = queryString ? `/admin/container-types?${queryString}` : '/admin/container-types'
+    return apiClient.get<PaginatedResponse<ContainerType>>(endpoint)
+  },
+  createContainerType: (data: CreateContainerTypeRequest) =>
+    apiClient.post<ContainerType>('/admin/container-types', data),
+  deleteContainerType: (containerTypeId: string | number) =>
+    apiClient.delete<void>(`/admin/container-types/${containerTypeId}`),
+  
+  // Container Sizes
+  getContainerSizes: (params?: { search?: string; page?: number; pageSize?: number }) => {
+    const searchParams = new URLSearchParams()
+    if (params?.search) searchParams.set('search', params.search)
+    if (typeof params?.page !== 'undefined') searchParams.set('page', String(params.page))
+    if (typeof params?.pageSize !== 'undefined') searchParams.set('pageSize', String(params.pageSize))
+    const queryString = searchParams.toString()
+    const endpoint = queryString ? `/admin/container-sizes?${queryString}` : '/admin/container-sizes'
+    return apiClient.get<PaginatedResponse<ContainerSize>>(endpoint)
+  },
+  createContainerSize: (data: CreateContainerSizeRequest) =>
+    apiClient.post<ContainerSize>('/admin/container-sizes', data),
+  deleteContainerSize: (containerSizeId: string | number) =>
+    apiClient.delete<void>(`/admin/container-sizes/${containerSizeId}`),
+  
+  // Container Type Sizes
   getContainerTypeSizes: (containerTypeId: string) => 
     apiClient.get(`/admin/container-types/${containerTypeId}/sizes`),
+  addContainerSizeToType: (containerTypeId: string | number, data: AddContainerSizeToTypeRequest) =>
+    apiClient.post<ContainerType>(`/admin/container-types/${containerTypeId}/sizes`, data),
+  removeContainerSizeFromType: (containerTypeId: string | number, containerSizeId: string | number) =>
+    apiClient.delete<void>(`/admin/container-types/${containerTypeId}/sizes/${containerSizeId}`),
 
   // Containers
   getContainers: () => apiClient.get<DashboardContainerSummary[]>('/admin/containers'),
