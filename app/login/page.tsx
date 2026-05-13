@@ -30,13 +30,17 @@ const LoginPage = () => {
       return
     }
 
-    const success = await login(email, password)
-    
-    if (success) {
-      // Redirect based on user type will be handled by ProtectedRoute
-      router.push('/')
-    } else {
-      setError('Invalid credentials. Please check your email and password.')
+    try {
+      const success = await login(email, password)
+      
+      if (success) {
+        // Redirect based on user type will be handled by ProtectedRoute
+        router.push('/')
+      } else {
+        setError('Invalid credentials. Please check your email and password.')
+      }
+    } catch (error: any) {
+      setError(error?.message || 'An error occurred during login. Please try again.')
     }
   }
 
@@ -47,9 +51,9 @@ const LoginPage = () => {
   }
 
   const demoCredentials = [
-    { role: 'Customer', email: 'customer@valley.com', password: 'customer123', description: 'Access to buying, renting, tracking, and order history' },
-    { role: 'Driver', email: 'driver@valley.com', password: 'driver123', description: 'View assigned deliveries and location tracking' },
-    { role: 'Admin', email: 'admin@valley.com', password: 'admin123', description: 'Full admin panel access for order management' }
+    { role: 'Customer', email: 'customer@valley.com', password: 'P@ssword1', description: 'Access to buying, renting, tracking, and order history' },
+    { role: 'Driver', email: 'driver@valley.com', password: 'P@ssword1', description: 'View assigned deliveries and location tracking' },
+    { role: 'Admin', email: 'admin@valley.com', password: 'P@ssword1', description: 'Full admin panel access for order management' }
   ]
 
   return (

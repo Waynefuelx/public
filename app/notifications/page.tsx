@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
+// Note: Notifications endpoint not found in API - using local state for now
 import { 
   Bell, 
   Check, 
@@ -40,65 +41,14 @@ const NotificationsPage = () => {
     setIsClient(true)
   }, [])
 
-  // Mock notifications data
+  // Note: Notifications API endpoint not found in backend
+  // Using local state for now - this should be replaced when notifications endpoint is available
+  // TODO: Add notifications endpoint to backend API
   useEffect(() => {
     if (isClient) {
-      const mockNotifications: Notification[] = [
-        {
-          id: '1',
-          orderId: 'ORD-2024-001',
-          customerEmail: 'john.doe@example.com',
-          message: 'Order confirmed and payment received',
-          type: 'order_confirmed',
-          trackingNumber: 'TRK-001',
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-          isRead: false,
-          priority: 'high'
-        },
-        {
-          id: '2',
-          orderId: 'ORD-2024-002',
-          customerEmail: 'jane.smith@example.com',
-          message: 'Delivery started - Container is on route',
-          type: 'delivery_started',
-          trackingNumber: 'TRK-002',
-          timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
-          isRead: false,
-          priority: 'medium'
-        },
-        {
-          id: '3',
-          orderId: 'ORD-2024-003',
-          customerEmail: 'bob.wilson@example.com',
-          message: 'Delivery completed successfully',
-          type: 'delivery_completed',
-          trackingNumber: 'TRK-003',
-          timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-          isRead: true,
-          priority: 'low'
-        },
-        {
-          id: '4',
-          orderId: 'ORD-2024-004',
-          customerEmail: 'alice.brown@example.com',
-          message: 'Payment received for order',
-          type: 'payment_received',
-          timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(), // 8 hours ago
-          isRead: true,
-          priority: 'medium'
-        },
-        {
-          id: '5',
-          orderId: 'ORD-2024-005',
-          customerEmail: 'charlie.davis@example.com',
-          message: 'Order cancelled by customer',
-          type: 'order_cancelled',
-          timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), // 12 hours ago
-          isRead: false,
-          priority: 'high'
-        }
-      ]
-      setNotifications(mockNotifications)
+      // For now, use empty array - notifications should come from API
+      // When endpoint is available, use: useNotifications() hook
+      setNotifications([])
     }
   }, [isClient])
 

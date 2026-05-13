@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import { useAssignedOrders, useStartOrder, useCompleteOrder } from '@/lib/api/hooks'
 import { 
   Truck, 
   MapPin, 
@@ -45,62 +46,39 @@ interface Delivery {
 const DriverDashboard = () => {
   const { user, logout } = useAuth()
   const [activeTab, setActiveTab] = useState('deliveries')
-  const [deliveries, setDeliveries] = useState<Delivery[]>([])
   const [isTracking, setIsTracking] = useState(false)
   const [licenseExpiry, setLicenseExpiry] = useState('')
   const [showLicenseWarning, setShowLicenseWarning] = useState(false)
   const [isEditingLicense, setIsEditingLicense] = useState(false)
 
-  // Mock deliveries assigned to this driver
-  useEffect(() => {
-    const mockDeliveries: Delivery[] = [
-      {
-        id: 'D001',
-        containerNumber: 'VC-20-001',
-        containerType: '6m Standard',
-        customerName: 'Construction Plus Inc.',
-        customerPhone: '+27 82 123 4567',
-        customerEmail: 'john.smith@constructionplus.co.za',
-        deliveryAddress: '123 Main Street, Industrial Area',
-        deliveryCity: 'George',
-        deliveryProvince: 'Western Cape',
-        coordinates: {
-          lat: -33.9715,
-          lng: 22.4617
-        },
-        scheduledDate: '2024-01-20T08:00:00Z',
-        status: 'pending',
-        driverName: user?.name || 'Mike Johnson',
-        driverPhone: '+27 82 555 1234',
-        notes: 'Deliver to construction site - contact John Smith on arrival',
-        serialNumber: 'VC20001-2024',
-        qrCode: 'VC20001-2024-QR'
-      },
-      {
-        id: 'D002',
-        containerNumber: 'VC-40-002',
-        containerType: '12m High Cube',
-        customerName: 'Global Logistics Solutions',
-        customerPhone: '+27 82 234 5678',
-        customerEmail: 'maria.garcia@globallogistics.co.za',
-        deliveryAddress: '456 Harbour Road, Port Area',
-        deliveryCity: 'Cape Town',
-        deliveryProvince: 'Western Cape',
-        coordinates: {
-          lat: -33.9249,
-          lng: 18.4241
-        },
-        scheduledDate: '2024-01-21T10:00:00Z',
-        status: 'in-transit',
-        driverName: user?.name || 'Mike Johnson',
-        driverPhone: '+27 82 555 1234',
-        notes: 'Port delivery - security clearance required',
-        serialNumber: 'VC40002-2024',
-        qrCode: 'VC40002-2024-QR'
-      }
-    ]
-    setDeliveries(mockDeliveries)
-  }, [user])
+  // Fetch deliveries from API
+  const { data: deliveriesData = [], isLoading: deliveriesLoading } = useAssignedOrders()
+  const startOrderMutation = useStartOrder()
+  const completeOrderMutation = useCompleteOrder()
+  
+  // Transform API deliveries to match component interface
+  const deliveries: Delivery[] = deliveriesData.map((delivery: any) => ({
+    id: delivery.id || delivery.orderId,
+    containerNumber: delivery.containerNumber || `VC-${delivery.orderId}`,
+    containerType: delivery.containerType || 'Unknown',
+    customerName: delivery.customerName,
+    customerPhone: delivery.customerPhone,
+    customerEmail: delivery.customerEmail,
+    deliveryAddress: delivery.deliveryAddress,
+    deliveryCity: delivery.deliveryCity,
+    deliveryProvince: delivery.deliveryProvince,
+    coordinates: delivery.coordinates || {
+      lat: -30.5595,
+      lng: 22.9375
+    },
+    scheduledDate: delivery.scheduledDate,
+    status: delivery.status,
+    driverName: delivery.driverName || user?.name || '',
+    driverPhone: delivery.driverPhone || '',
+    notes: delivery.notes || '',
+    serialNumber: delivery.serialNumber,
+    qrCode: delivery.qrCode
+  }))
 
   // Load license expiry date and check for warnings
   useEffect(() => {
@@ -157,22 +135,22 @@ const DriverDashboard = () => {
     })
   }
 
-  const startDelivery = (deliveryId: string) => {
-    setDeliveries(prev => prev.map(delivery => 
-      delivery.id === deliveryId 
-        ? { ...delivery, status: 'in-transit' as const }
-        : delivery
-    ))
-    setIsTracking(true)
+  const startDelivery = async (deliveryId: string) => {
+    try {
+      await startOrderMutation.mutateAsync(deliveryId)
+      setIsTracking(true)
+    } catch (error) {
+      console.error('Error starting delivery:', error)
+    }
   }
 
-  const completeDelivery = (deliveryId: string) => {
-    setDeliveries(prev => prev.map(delivery => 
-      delivery.id === deliveryId 
-        ? { ...delivery, status: 'delivered' as const }
-        : delivery
-    ))
-    setIsTracking(false)
+  const completeDelivery = async (deliveryId: string) => {
+    try {
+      await completeOrderMutation.mutateAsync(deliveryId)
+      setIsTracking(false)
+    } catch (error) {
+      console.error('Error completing delivery:', error)
+    }
   }
 
   const navigateToDelivery = (delivery: Delivery) => {

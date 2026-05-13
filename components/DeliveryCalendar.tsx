@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Calendar, Clock, User, Package, ChevronLeft, ChevronRight, Grid3X3, List } from 'lucide-react';
+import { useScheduledDeliveries } from '@/lib/api/hooks';
+import { ScheduledDeliveryDto } from '@/lib/api/services';
 
 interface Delivery {
   id: string;
@@ -24,67 +26,65 @@ const DeliveryCalendar: React.FC<DeliveryCalendarProps> = ({ deliveries = [] }) 
   const [currentMonth, setCurrentMonth] = useState<Date[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('week');
 
-  // Sample data if none provided
-  const sampleDeliveries: Delivery[] = [
-    {
-      id: '1',
-      date: new Date().toISOString().split('T')[0],
-      time: '09:00',
-      customer: 'John Smith',
-      details: 'Container delivery to warehouse'
-    },
-    {
-      id: '2',
-      date: new Date().toISOString().split('T')[0],
-      time: '14:30',
-      customer: 'Sarah Johnson',
-      details: 'Equipment pickup and transport'
-    },
-    {
-      id: '3',
-      date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '10:15',
-      customer: 'Mike Wilson',
-      details: 'Bulk container delivery'
-    },
-    {
-      id: '4',
-      date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '16:00',
-      customer: 'Lisa Brown',
-      details: 'Express delivery service'
-    },
-    {
-      id: '5',
-      date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '08:30',
-      customer: 'David Lee',
-      details: 'Container return and pickup'
-    },
-    {
-      id: '6',
-      date: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '11:45',
-      customer: 'Emma Davis',
-      details: 'Scheduled maintenance delivery'
-    },
-    {
-      id: '7',
-      date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '13:20',
-      customer: 'Robert Taylor',
-      details: 'Multi-stop delivery route'
-    },
-    {
-      id: '8',
-      date: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      time: '15:30',
-      customer: 'Jennifer White',
-      details: 'Priority delivery service'
+  // Calculate date range based on view mode
+  const dateRange = useMemo(() => {
+    const start = new Date(currentDate);
+    const end = new Date(currentDate);
+    
+    switch (viewMode) {
+      case 'day':
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+        break;
+      case 'week':
+        // Start from beginning of week (Sunday)
+        const dayOfWeek = start.getDay();
+        start.setDate(start.getDate() - dayOfWeek);
+        start.setHours(0, 0, 0, 0);
+        // End at end of week (Saturday)
+        end.setDate(start.getDate() + 6);
+        end.setHours(23, 59, 59, 999);
+        break;
+      case 'month':
+        // Start from first day of month
+        start.setDate(1);
+        start.setHours(0, 0, 0, 0);
+        // End at last day of month
+        end.setMonth(end.getMonth() + 1);
+        end.setDate(0);
+        end.setHours(23, 59, 59, 999);
+        break;
     }
-  ];
+    
+    return {
+      start: start.toISOString(),
+      end: end.toISOString(),
+    };
+  }, [currentDate, viewMode]);
 
-  const deliveryData = deliveries.length > 0 ? deliveries : sampleDeliveries;
+  // Fetch scheduled deliveries from API
+  const { data: scheduledDeliveriesData = [], isLoading: isLoadingDeliveries } = useScheduledDeliveries(
+    dateRange.start,
+    dateRange.end
+  );
+
+  // Map API data to component format
+  const apiDeliveries: Delivery[] = useMemo(() => {
+    return scheduledDeliveriesData.map((item: ScheduledDeliveryDto) => ({
+      id: String(item.orderId),
+      date: item.day,
+      time: item.time,
+      customer: item.customerName,
+      details: item.addressLine,
+    }));
+  }, [scheduledDeliveriesData]);
+
+  // Use API data if available, otherwise use provided deliveries, otherwise use empty array
+  const deliveryData = apiDeliveries.length > 0 
+    ? apiDeliveries 
+    : deliveries.length > 0 
+    ? deliveries 
+    : [];
 
   // Generate week array starting from current date
   useEffect(() => {
@@ -209,7 +209,12 @@ const DeliveryCalendar: React.FC<DeliveryCalendarProps> = ({ deliveries = [] }) 
             </h4>
           </div>
           
-          {dayDeliveries.length === 0 ? (
+          {isLoadingDeliveries ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+              <p className="text-gray-500">Loading deliveries...</p>
+            </div>
+          ) : dayDeliveries.length === 0 ? (
             <div className="text-center py-8">
               <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
               <p className="text-gray-500">No deliveries scheduled for this day</p>
@@ -473,6 +478,15 @@ const DeliveryCalendar: React.FC<DeliveryCalendarProps> = ({ deliveries = [] }) 
           
           {(() => {
             const dayDeliveries = getDeliveriesForDate(selectedDate);
+            
+            if (isLoadingDeliveries) {
+              return (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+                  <p className="text-gray-500">Loading deliveries...</p>
+                </div>
+              );
+            }
             
             if (dayDeliveries.length === 0) {
               return (
