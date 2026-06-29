@@ -52,10 +52,10 @@ export default function PublicHome() {
   ]
 
   const stats = [
-    { label: 'Happy Customers', value: '500+' },
-    { label: 'Containers Delivered', value: '2,500+' },
-    { label: 'Cities Covered', value: '25+' },
-    { label: 'Years Experience', value: '10+' }
+    { label: 'Years Experience', value: '20' },
+    { label: 'Regions Served', value: '4' },
+    { label: 'Industries Served', value: '7+' },
+    { label: 'Branches & Depots', value: '5' }
   ]
 
   return (
@@ -65,11 +65,11 @@ export default function PublicHome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
-              Professional Container
-              <span className="block text-secondary-200">Rental & Sales</span>
+              No Room for Compromise
+              <span className="block text-secondary-200">Only Quality Containers</span>
             </h1>
             <p className="text-xl sm:text-2xl text-primary-100 mb-8 max-w-3xl mx-auto">
-              High-quality shipping containers for storage, transport, and custom conversions across South Africa
+              Your search for high-quality container rentals ends here. Topshell delivers the best service and value for your money, guaranteed.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -112,10 +112,10 @@ export default function PublicHome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Valley Containers?
+              Why Choose Topshell?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We provide comprehensive container solutions with unmatched service quality and reliability
+              Nearly 20 years' experience and a one-stop shop for complete site establishment — best service and value for your money, guaranteed
             </p>
           </div>
           
@@ -192,7 +192,7 @@ export default function PublicHome() {
             Ready to Get Started?
           </h2>
           <p className="text-xl text-primary-100 mb-8 max-w-3xl mx-auto">
-            Join thousands of satisfied customers who trust Valley Containers for their storage and transport needs
+            Join the businesses across the Western Cape, Southern Cape, Gauteng and Mpumalanga who trust Topshell for the best value, guaranteed
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -202,7 +202,7 @@ export default function PublicHome() {
               Sign In to Your Account
             </Link>
             <a
-              href="mailto:info@valleycontainers.co.za?subject=Quote Request&body=Hi, I would like to request a quote for container rental or purchase. Please contact me with more information."
+              href="mailto:rental@topshell.co.za?subject=Quote Request&body=Hi, I would like to request a quote for container rental or purchase. Please contact me with more information."
               className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-4 px-8 rounded-lg transition-colors duration-200 text-lg inline-block text-center"
             >
               Get a Quote

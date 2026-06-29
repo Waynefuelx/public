@@ -183,7 +183,7 @@ const AdminPage = () => {
     const initialDeliveries: Delivery[] = [
       {
         id: 'D001',
-        containerNumber: 'VC-20-001',
+        containerNumber: 'TS-20-001',
         containerType: '6m Standard',
         customerName: 'Construction Plus Inc.',
         customerPhone: '+27 82 123 4567',
@@ -200,12 +200,12 @@ const AdminPage = () => {
         driverName: 'Mike Johnson',
         driverPhone: '+27 82 555 1234',
         notes: 'Deliver to construction site - contact John Smith on arrival',
-        serialNumber: 'VC20001-2024',
-        qrCode: 'VC20001-2024-QR'
+        serialNumber: 'TS20001-2024',
+        qrCode: 'TS20001-2024-QR'
       },
       {
         id: 'D002',
-        containerNumber: 'VC-40-002',
+        containerNumber: 'TS-40-002',
         containerType: '12m High Cube',
         customerName: 'Global Logistics Solutions',
         customerPhone: '+27 82 234 5678',
@@ -222,8 +222,8 @@ const AdminPage = () => {
         driverName: 'Tom Davis',
         driverPhone: '+27 82 555 2345',
         notes: 'Port delivery - security clearance required',
-        serialNumber: 'VC40002-2024',
-        qrCode: 'VC40002-2024-QR'
+        serialNumber: 'TS40002-2024',
+        qrCode: 'TS40002-2024-QR'
       }
     ]
     setDeliveries(initialDeliveries)
@@ -419,7 +419,7 @@ const AdminPage = () => {
 
   // Function to generate tracking number
   const generateTrackingNumber = () => {
-    const prefix = 'VC'
+    const prefix = 'TS'
     const timestamp = Date.now().toString().slice(-6)
     const random = Math.random().toString(36).substring(2, 5).toUpperCase()
     return `${prefix}${timestamp}${random}`
@@ -474,7 +474,7 @@ const AdminPage = () => {
     // Move order to drivers tab by creating a delivery entry
     const newDelivery: Delivery = {
       id: `D${String(deliveries.length + 1).padStart(3, '0')}`,
-      containerNumber: `VC-${order.containerId.toUpperCase()}`,
+      containerNumber: `TS-${order.containerId.toUpperCase()}`,
       containerType: order.containerType,
       customerName: order.customerName,
       customerPhone: order.customerPhone,
@@ -510,7 +510,7 @@ const AdminPage = () => {
   const containers: Container[] = [
     {
       id: 'C001',
-      containerNumber: 'VC-20-001',
+      containerNumber: 'TS-20-001',
       containerType: '6m Standard',
       customerName: 'Construction Plus Inc.',
       customerEmail: 'john.smith@constructionplus.co.za',
@@ -533,7 +533,7 @@ const AdminPage = () => {
     },
     {
       id: 'C002',
-      containerNumber: 'VC-40-002',
+      containerNumber: 'TS-40-002',
       containerType: '12m High Cube',
       customerName: 'Global Logistics Solutions',
       customerEmail: 'maria.garcia@globallogistics.co.za',
@@ -556,7 +556,7 @@ const AdminPage = () => {
     },
     {
       id: 'C003',
-      containerNumber: 'VC-20-003',
+      containerNumber: 'TS-20-003',
               containerType: '6m Refrigerated',
       customerName: 'Fresh Foods Ltd',
       customerEmail: 'info@freshfoods.co.za',
@@ -579,7 +579,7 @@ const AdminPage = () => {
     },
     {
       id: 'C004',
-      containerNumber: 'VC-40-004',
+      containerNumber: 'TS-40-004',
               containerType: '12m Standard',
       customerName: 'Mining Solutions Corp',
       customerEmail: 'contact@miningsolutions.co.za',
@@ -602,7 +602,7 @@ const AdminPage = () => {
     },
     {
       id: 'C005',
-      containerNumber: 'VC-20-005',
+      containerNumber: 'TS-20-005',
       containerType: '6m Standard',
       customerName: 'Event Productions LLC',
       customerEmail: 'david.wilson@eventproductions.co.za',
@@ -915,7 +915,7 @@ const AdminPage = () => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:h-16 gap-4 sm:gap-0">
             <div className="min-w-0 flex-1">
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">Admin Panel</h1>
-              <p className="text-sm text-gray-600 truncate">Valley Containers Staff Portal</p>
+              <p className="text-sm text-gray-600 truncate">Topshell Container Rentals Staff Portal</p>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
               <button 
@@ -1077,7 +1077,7 @@ const AdminPage = () => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-4">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">Container Locations</h3>
-                  <p className="text-sm text-gray-600">Track all Valley Containers across South Africa</p>
+                  <p className="text-sm text-gray-600">Track all Topshell containers across South Africa</p>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
                   <div className="flex items-center gap-2">
@@ -2453,7 +2453,7 @@ const AdminPage = () => {
                   </button>
                   <button
                     onClick={() => {
-                      setScannedSerialNumber('VC20001-2024-QR')
+                      setScannedSerialNumber('TS20001-2024-QR')
                       setShowQRScanner(false)
                     }}
                     className="btn-primary flex-1"

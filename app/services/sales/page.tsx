@@ -1,10 +1,10 @@
 'use client'
 
 
-import { 
-  Building2, 
-  CheckCircle, 
-  ArrowRight, 
+import {
+  Building2,
+  CheckCircle,
+  ArrowRight,
   Star,
   Package,
   Shield,
@@ -13,75 +13,30 @@ import {
   Clock,
   MapPin
 } from 'lucide-react'
+import * as Icons from 'lucide-react'
 import Link from 'next/link'
+import { siteConfig, purchaseProducts } from '@/lib/site-config'
+
+// Quote mailto link, built from the central site config.
+const quoteMailto = `mailto:${siteConfig.company.primaryEmail}?subject=Container Sales Quote Request&body=Hi, I would like to request a quote for container purchase. Please contact me with more information about pricing and availability.`
 
 const SalesServicesPage = () => {
-  const salesOptions = [
-    {
-      id: 1,
-      name: 'New Containers',
-      description: 'Brand new containers with full manufacturer warranty and certification',
-      sizes: ['2m', '3m', '6m', '12m', '12m HC'],
-      pricing: 'From R25,000',
-      features: [
-        'Full manufacturer warranty',
-        'ISO certified',
-        'Multiple size options',
-        'Custom modifications available',
-        'Delivery included'
-      ],
-      icon: Building2,
-      popular: true
-    },
-    {
-      id: 2,
-      name: 'Used Containers',
-      description: 'Quality pre-owned containers at competitive prices',
-      sizes: ['2m', '3m', '6m', '12m'],
-      pricing: 'From R15,000',
-      features: [
-        'Quality inspected',
-        'Good condition guarantee',
-        'Cost-effective option',
-        'Multiple sizes available',
-        'Delivery available'
-      ],
-      icon: Building2,
-      popular: true
-    },
-    {
-      id: 3,
-      name: 'Modified Containers',
-      description: 'Custom-converted containers for specific applications',
-      sizes: ['6m', '12m'],
-      pricing: 'Custom quote',
-      features: [
-        'Custom design & build',
-        'Professional installation',
-        'Quality materials',
-        'Compliance certified',
-        'Project management'
-      ],
-      icon: Wrench,
-      popular: false
-    },
-    {
-      id: 4,
-      name: 'Bulk Orders',
-      description: 'Volume discounts for large orders and corporate clients',
-      sizes: ['Any size'],
-      pricing: 'Volume pricing',
-      features: [
-        'Volume discounts',
-        'Priority production',
-        'Dedicated support',
-        'Flexible payment terms',
-        'Corporate accounts'
-      ],
-      icon: Package,
-      popular: false
-    }
-  ]
+  // Sales catalog, sourced from the central site config (New 6m / Used 6m /
+  // Custom Modified). Each card keeps the same shape the markup expects.
+  const salesOptions = purchaseProducts
+    .filter((product) => product.category === 'sales')
+    .map((product) => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      sizes: product.sizes,
+      pricing: product.purchasePrice
+        ? `From R${product.purchasePrice.toLocaleString()}`
+        : 'Custom quote',
+      features: product.features,
+      icon: (Icons as any)[product.icon] ?? Icons.Package,
+      popular: product.popular ?? false,
+    }))
 
   const benefits = [
     {
@@ -128,8 +83,8 @@ const SalesServicesPage = () => {
             <div 
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
             >
-              <a 
-                href="mailto:info@valleycontainers.co.za?subject=Container Sales Quote Request&body=Hi, I would like to request a quote for container purchase. Please contact me with more information about pricing and availability."
+              <a
+                href={quoteMailto}
                 className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-100 w-full sm:w-auto inline-block text-center"
               >
                 Get Quote
@@ -150,10 +105,10 @@ const SalesServicesPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Buy from Valley Containers?
+              Why Buy from {siteConfig.company.name}?
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-              Experience the Valley Containers difference with our quality containers and exceptional service.
+              Experience the {siteConfig.company.name} difference with our quality containers and exceptional service.
             </p>
           </div>
 
@@ -227,7 +182,7 @@ const SalesServicesPage = () => {
                   <div className="space-y-2 mb-6">
                     {option.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-primary-600 flex-shrink-0" />
                         <span className="text-sm text-gray-700">{feature}</span>
                       </div>
                     ))}
@@ -240,7 +195,7 @@ const SalesServicesPage = () => {
                   </div>
 
                   <a
-                    href="mailto:info@valleycontainers.co.za?subject=Container Sales Quote Request&body=Hi, I would like to request a quote for container purchase. Please contact me with more information about pricing and availability."
+                    href={quoteMailto}
                     className="btn-primary w-full text-center group-hover:bg-primary-600 transition-colors duration-200 inline-block"
                   >
                     Get Quote
@@ -317,8 +272,8 @@ const SalesServicesPage = () => {
             Contact our sales team today to discuss your container needs and get a personalized quote.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <a 
-              href="mailto:info@valleycontainers.co.za?subject=Container Sales Quote Request&body=Hi, I would like to request a quote for container purchase. Please contact me with more information about pricing and availability."
+            <a
+              href={quoteMailto}
               className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-500 hover:bg-secondary-100 w-full sm:w-auto inline-block text-center"
             >
               Get Quote

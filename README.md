@@ -1,4 +1,4 @@
-# Valley Containers - Rental & Sales Management App
+# Topshell Container Rentals - Rental & Sales Management App
 
 A comprehensive container rental, sales, and logistics management system built with Next.js, TypeScript, and Tailwind CSS.
 
@@ -32,7 +32,7 @@ A comprehensive container rental, sales, and logistics management system built w
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: Next.js 14, React 18, TypeScript
+- **Frontend**: Next.js 15, React 18, TypeScript
 - **Styling**: Tailwind CSS with custom design system
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
@@ -44,7 +44,7 @@ A comprehensive container rental, sales, and logistics management system built w
 ## 📁 Project Structure
 
 ```
-Valley-containers-demo/
+topshell-container-rentals/
 ├── app/                    # Next.js app directory
 │   ├── globals.css        # Global styles and Tailwind imports
 │   ├── layout.tsx         # Root layout with navigation
@@ -79,7 +79,7 @@ Valley-containers-demo/
 
 1. **Clone the repository**
    ```bash
-   cd Valley-containers-demo
+   cd topshell-container-rentals
    ```
 
 2. **Install dependencies**
@@ -118,7 +118,7 @@ npm start
 
 ### Container Tracking
 - Navigate to `/track` page
-- Use any tracking number (e.g., VC-2024-001)
+- Use any tracking number (e.g., TS-2024-001)
 - View real-time delivery status and timeline
 
 ### Admin Panel
@@ -136,21 +136,22 @@ npm start
 - View detailed specifications and pricing for each container
 - Access booking forms directly from rental listings
 
-### **Pricing Structure (South African Rand)**
-- **Storage Containers**: R150/day starting
-- **Office Containers**: R450/day starting  
-- **VIP Container Office**: R750/day starting
-- **Refrigeration/Freezer**: R850/day starting
-- **Split Container**: R300/day starting
-- **Elite Mobile Container**: R600/day starting
-- **Ablution Container**: R400/day starting
-- **Pavilion Container**: R500/day starting
-- **Sleeper Container**: R350/day starting
+### **Indicative Rental Pricing (South African Rand, excl. VAT)**
+- **3m Storage Container**: from R550/month
+- **6m Storage Container**: from R850/month
+- **6m Insulated Office (with aircon)**: from R2,200/month
+- **8-Bed Sleeper Unit**: from R3,200/month
+- **Ablution Facilities**: from R1,450/month
+- **6m Canteen**: from R2,400/month
+- **6m Refrigeration Unit**: from R3,500/month
+- **Security Hut**: from R950/month
+
+> **Special offer:** Insulated office (with energy-saving aircon) + a 6m storage container for **R2,999/month** (excl. VAT & transport, incl. 20km free transport) — Western & Southern Cape.
 
 ## 🎨 Design System
 
 ### Color Palette
-- **Primary**: Forest Green (#006240) for main actions and branding, matching container exteriors
+- **Primary**: Deep Navy (#1E3A5F) for main actions and branding, matching the Topshell logo
 - **Secondary**: Light Gray (#F2F2F2) for UI backgrounds, cards, and sections
 - **Accent**: Bright White (#FFFFFF) for logos and contrast elements
 - **Text**: Dark Gray (#171717) for optimal readability
@@ -257,9 +258,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📞 Support
 
 For support and questions:
-- **Email**: info@valleycontainers.co.za
-- **Phone**: [\+27 86 187 8487](tel:+27 86 187 8487)
-- **Documentation**: [docs.valleycontainers.co.za](https://docs.valleycontainers.co.za)
+- **Email**: rental@topshell.co.za
+- **Phone**: [076 770 4500](tel:0767704500)
+- **Website**: [topshell.co.za](https://topshell.co.za)
 
 ## 🙏 Acknowledgments
 
@@ -270,4 +271,4 @@ For support and questions:
 
 ---
 
-**Built with ❤️ for Valley Containers**
+**Built with ❤️ for Topshell Container Rentals**

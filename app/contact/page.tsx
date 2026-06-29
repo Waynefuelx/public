@@ -14,8 +14,10 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import { siteConfig } from '@/lib/site-config'
 
 const ContactPage = () => {
+  const headOffice = siteConfig.regions[0] // Western Cape head office
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -78,38 +80,37 @@ const ContactPage = () => {
     {
       icon: Phone,
       title: 'Phone',
-      details: ['+27 11 123 4567', '+27 82 123 4567'],
-      color: 'text-blue-600'
+      details: [siteConfig.company.primaryPhone],
+      color: 'text-primary-600'
     },
     {
       icon: Mail,
       title: 'Email',
-              details: [
-          { email: 'info@valleycontainers.co.za', label: 'info@valleycontainers.co.za' },
-          { email: 'sales@valleycontainers.co.za', label: 'sales@valleycontainers.co.za' }
-        ],
-      color: 'text-green-600'
+      details: [
+        { email: siteConfig.company.primaryEmail, label: siteConfig.company.primaryEmail }
+      ],
+      color: 'text-primary-600'
     },
     {
       icon: MapPin,
       title: 'Head Office',
-      details: ['123 Container Street', 'Johannesburg, 2000', 'South Africa'],
-      color: 'text-red-600'
+      details: [...headOffice.addressLines, 'South Africa'],
+      color: 'text-primary-600'
     },
     {
       icon: Clock,
       title: 'Business Hours',
-      details: ['Mon-Fri: 8:00 AM - 6:00 PM', 'Sat: 9:00 AM - 2:00 PM', 'Sun: Closed'],
-      color: 'text-purple-600'
+      details: [headOffice.hours],
+      color: 'text-primary-600'
     }
   ]
 
   const services = [
     { value: 'general', label: 'General Inquiry' },
-    { value: 'rental', label: 'Container Rental' },
+    { value: 'rental', label: 'Container Rentals' },
+    { value: 'custom', label: 'Custom Containers & Conversions' },
+    { value: 'storage', label: 'Self-Storage' },
     { value: 'sales', label: 'Container Sales' },
-    { value: 'custom', label: 'Custom Solutions' },
-    { value: 'logistics', label: 'Logistics & Delivery' },
     { value: 'support', label: 'Technical Support' }
   ]
 
@@ -207,18 +208,18 @@ const ContactPage = () => {
             <div
 
 
-              className="bg-green-50 border border-green-200 rounded-xl p-8 text-center"
+              className="bg-primary-50 border border-primary-200 rounded-xl p-8 text-center"
             >
-              <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-green-800 mb-2">
+              <CheckCircle className="w-16 h-16 text-primary-500 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-primary-800 mb-2">
                 Message Sent Successfully!
               </h3>
-              <p className="text-green-700 mb-6">
+              <p className="text-primary-700 mb-6">
                 Thank you for contacting us. We'll get back to you within 24 hours.
               </p>
               <button
                 onClick={() => setIsSubmitted(false)}
-                className="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
+                className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
               >
                 Send Another Message
               </button>
@@ -356,68 +357,67 @@ const ContactPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Visit Our Branches
+              Visit Our Regions
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              We have multiple locations across South Africa to serve you better.
+              Four regions across the Western &amp; Southern Cape, Gauteng and Mpumalanga to serve you better.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                city: 'Johannesburg',
-                address: '123 Container Street, Johannesburg, 2000',
-                phone: '+27 11 123 4567',
-                email: 'jhb@valleycontainers.co.za'
-              },
-              {
-                city: 'Cape Town',
-                address: '456 Harbour Road, Cape Town, 8001',
-                phone: '+27 21 123 4567',
-                email: 'cpt@valleycontainers.co.za'
-              },
-              {
-                city: 'Durban',
-                address: '789 Port Avenue, Durban, 4001',
-                phone: '+27 31 123 4567',
-                email: 'durban@valleycontainers.co.za'
-              }
-            ].map((branch, index) => (
+            {siteConfig.regions.map((region) => (
               <div
-                key={index}
+                key={region.id}
                 className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-200"
               >
                 <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Building2 className="w-8 h-8 text-primary-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">
-                  {branch.city}
+                <h3 className="text-xl font-semibold text-gray-900 mb-1 text-center">
+                  {region.name}
                 </h3>
+                <p className="text-sm text-gray-500 mb-4 text-center">{region.city}</p>
                 <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-primary-600 flex-shrink-0 mt-1" />
-                    <p className="text-gray-600 text-sm">{branch.address}</p>
-                  </div>
+                  {/* Address(es) — Southern Cape has two depots */}
+                  {region.depots ? (
+                    region.depots.map((depot) => (
+                      <div key={depot.name} className="flex items-start gap-3">
+                        <MapPin className="w-5 h-5 text-primary-600 flex-shrink-0 mt-1" />
+                        <p className="text-gray-600 text-sm">
+                          <span className="font-medium text-gray-900">{depot.name}: </span>
+                          {depot.addressLines.join(', ')}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex items-start gap-3">
+                      <MapPin className="w-5 h-5 text-primary-600 flex-shrink-0 mt-1" />
+                      <p className="text-gray-600 text-sm">{region.addressLines.join(', ')}</p>
+                    </div>
+                  )}
                   <div className="flex items-center gap-3">
                     <Phone className="w-5 h-5 text-primary-600" />
-                    <a 
-                      href={`tel:${branch.phone}`}
+                    <a
+                      href={`tel:${region.phone}`}
                       className="text-gray-600 text-sm hover:text-primary-600 transition-colors duration-200"
-                      title={`Call ${branch.phone}`}
+                      title={`Call ${region.phone}`}
                     >
-                      {branch.phone}
+                      {region.phone}
                     </a>
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail className="w-5 h-5 text-primary-600" />
-                                            <a 
-                          href={`mailto:${branch.email}`}
-                          className="text-gray-600 text-sm hover:text-primary-700 transition-colors duration-200"
-                          title={`Click to email ${branch.email}`}
-                        >
-                      {branch.email}
+                    <a
+                      href={`mailto:${region.email}`}
+                      className="text-gray-600 text-sm hover:text-primary-700 transition-colors duration-200 break-all"
+                      title={`Click to email ${region.email}`}
+                    >
+                      {region.email}
                     </a>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-5 h-5 text-primary-600" />
+                    <span className="text-gray-600 text-sm">{region.hours}</span>
                   </div>
                 </div>
               </div>
@@ -429,7 +429,7 @@ const ContactPage = () => {
               href="/branches"
               className="bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center gap-2 text-lg"
             >
-              View All Branches
+              View All Regions
               <MapPin className="w-5 h-5" />
             </Link>
           </div>
@@ -447,7 +447,7 @@ const ContactPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <a
-              href="mailto:info@valleycontainers.co.za?subject=Quote Request&body=Hi, I would like to request a quote for container rental or purchase. Please contact me with more information."
+              href={`mailto:${siteConfig.company.primaryEmail}?subject=Quote Request&body=Hi, I would like to request a quote for container rental or purchase. Please contact me with more information.`}
               className="bg-white text-primary-500 hover:bg-secondary-100 font-medium py-3 px-8 rounded-lg transition-colors duration-200 text-lg w-full sm:w-auto inline-block text-center"
             >
               Get Quote

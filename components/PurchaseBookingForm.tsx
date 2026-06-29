@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { 
-  Truck, 
-  Calendar, 
-  MapPin, 
-  CreditCard, 
+import {
+  Truck,
+  Calendar,
+  MapPin,
+  CreditCard,
   FileText,
   CheckCircle,
   AlertCircle,
@@ -16,6 +16,7 @@ import {
   Home
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { purchaseProducts, getProductById } from '@/lib/site-config'
 
 interface PurchaseFormData {
   serviceType: 'purchase'
@@ -45,16 +46,50 @@ interface ContainerType {
   image: string
 }
 
-const PurchaseBookingForm = ({ 
-  onSuccess, 
-  selectedContainer: initialSelectedContainer 
-}: { 
+// Map a site-config product into the form's ContainerType shape (purchase price).
+const toContainerType = (product: ReturnType<typeof getProductById>): ContainerType | null => {
+  if (!product) return null
+  return {
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    dimensions: product.dimensions || product.sizes.join(', '),
+    capacity: product.capacity || '—',
+    price: product.purchasePrice || 0,
+    image: product.image,
+  }
+}
+
+// Resolve the initial container: prefer a ?container=<id> URL param (canonical
+// data from siteConfig), then fall back to the passed-in prop.
+const resolveInitialContainer = (
+  initial?: ContainerType | null
+): ContainerType | null => {
+  if (typeof window !== 'undefined') {
+    const id = new URLSearchParams(window.location.search).get('container')
+    if (id) {
+      const resolved = toContainerType(getProductById(id))
+      if (resolved) return resolved
+    }
+  }
+  if (initial) {
+    return toContainerType(getProductById(initial.id)) || initial
+  }
+  return null
+}
+
+const PurchaseBookingForm = ({
+  onSuccess,
+  selectedContainer: initialSelectedContainer
+}: {
   onSuccess: () => void
   selectedContainer?: ContainerType | null
 }) => {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [selectedContainer, setSelectedContainer] = useState<ContainerType | null>(initialSelectedContainer || null)
+  const [selectedContainer, setSelectedContainer] = useState<ContainerType | null>(
+    resolveInitialContainer(initialSelectedContainer)
+  )
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<PurchaseFormData>()
   const watchServiceType = watch('serviceType')
@@ -68,36 +103,16 @@ const PurchaseBookingForm = ({
     }
   }, [selectedContainer, setValue])
 
-  // Container types for purchase
-  const containerTypes: ContainerType[] = [
-    {
-      id: 'new-container',
-      name: 'New Container',
-      description: 'Brand new container with full warranty',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 25000,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png'
-    },
-    {
-      id: 'used-container',
-      name: 'Used Container',
-      description: 'Quality pre-owned container at competitive price',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 15000,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png'
-    },
-    {
-      id: 'modified-container',
-      name: 'Modified Container',
-      description: 'Custom-converted container for specific needs',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 30000,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png'
-    }
-  ]
+  // Purchasable container types, sourced from the central site config.
+  const containerTypes: ContainerType[] = purchaseProducts.map((product) => ({
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    dimensions: product.dimensions || product.sizes.join(', '),
+    capacity: product.capacity || '—',
+    price: product.purchasePrice || 0,
+    image: product.image,
+  }))
 
   const onSubmit = async (data: PurchaseFormData) => {
     setIsSubmitting(true)

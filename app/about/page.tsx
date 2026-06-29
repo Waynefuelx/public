@@ -22,9 +22,9 @@ import Link from 'next/link'
 
 const AboutPage = () => {
   const stats = [
-    { number: '15+', label: 'Years Experience', icon: Award },
-    { number: '1000+', label: 'Happy Customers', icon: Heart },
-    { number: '50+', label: 'Team Members', icon: Users },
+    { number: '20', label: 'Years Experience', icon: Award },
+    { number: '4', label: 'Regions Served', icon: Globe },
+    { number: '7+', label: 'Industries Served', icon: Building2 },
     { number: '24/7', label: 'Support Available', icon: Clock }
   ]
 
@@ -51,7 +51,7 @@ const AboutPage = () => {
       title: 'Reliability',
       description: 'You can count on us to deliver on time, every time.',
       icon: CheckCircle,
-      color: 'text-green-600'
+      color: 'text-primary-600'
     }
   ]
 
@@ -84,34 +84,34 @@ const AboutPage = () => {
 
   const milestones = [
     {
-      year: '2008',
-      title: 'Company Founded',
-      description: 'Started with a vision to revolutionize container solutions in South Africa'
+      year: '2005',
+      title: 'Topshell Founded',
+      description: 'Started in Cape Town with a simple promise: the best service and value for your money, guaranteed'
     },
     {
-      year: '2012',
-      title: 'First Major Contract',
-      description: 'Secured our first corporate client, marking significant growth'
+      year: '2010',
+      title: 'Southern Cape Expansion',
+      description: 'Opened depots in George and Mossel Bay to serve the growing Southern Cape market'
     },
     {
-      year: '2015',
-      title: 'Expansion Phase',
-      description: 'Opened multiple branches across major cities'
+      year: '2014',
+      title: 'In-House Manufacturing & Conversions',
+      description: 'Established our own CAD design, engineering, manufacturing and conversion workshops'
     },
     {
-      year: '2018',
-      title: 'Innovation Hub',
-      description: 'Launched custom container modification services'
+      year: '2017',
+      title: 'Gauteng & Mpumalanga',
+      description: 'Extended our footprint to Midrand and Secunda, reaching clients across Gauteng and Mpumalanga'
     },
     {
-      year: '2021',
-      title: 'Digital Transformation',
-      description: 'Implemented advanced booking and tracking systems'
+      year: '2020',
+      title: 'Self-Storage Launched',
+      description: 'Opened self-storage facilities in Blackheath and Stellenbosch in the Western Cape'
     },
     {
       year: '2024',
-      title: 'Market Leader',
-      description: 'Recognized as the leading container solution provider in the region'
+      title: 'Nearly Two Decades of Quality',
+      description: 'Trusted across multiple industries as a verified member of the Cape Chamber of Commerce and Industry'
     }
   ]
 
@@ -125,14 +125,15 @@ const AboutPage = () => {
             <h1 
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6"
             >
-              About Valley Containers
-              <span className="block text-primary-100">Your Trusted Partner Since 2008</span>
+              About Topshell Container Rentals
+              <span className="block text-primary-100">Your Trusted Partner Since 2005</span>
             </h1>
-            <p 
+            <p
               className="text-lg sm:text-xl md:text-2xl text-primary-50 mb-6 sm:mb-8 max-w-3xl mx-auto px-4"
             >
-              We're more than just a container company. We're innovators, problem-solvers, 
-              and your partners in building success stories across South Africa.
+              We're more than just a container company. With nearly 20 years' experience,
+              we deliver the best service and value for your money, guaranteed — across the
+              Western Cape, Southern Cape, Gauteng and Mpumalanga.
             </p>
             <div 
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
@@ -190,19 +191,20 @@ const AboutPage = () => {
               </h2>
               <div className="space-y-4 text-gray-600">
                 <p>
-                  Founded in 2008, Valley Containers began with a simple mission: to provide 
-                  innovative, reliable container solutions that help businesses and individuals 
-                  achieve their goals.
+                  Founded in 2005 in Cape Town, Topshell Container Rentals began with a simple
+                  promise: to deliver the best service and value for your money, guaranteed. No
+                  room for compromise — only quality containers.
                 </p>
                 <p>
-                  What started as a small operation in Johannesburg has grown into South Africa's 
-                  leading container solution provider, serving clients across the country with 
-                  unmatched quality and service.
+                  What started in the Western Cape has grown into a trusted name across the
+                  Southern Cape, Gauteng and Mpumalanga, with two branches and three depots and
+                  our own crane trucks handling every delivery and collection.
                 </p>
                 <p>
-                  Today, we're proud to have helped thousands of customers transform their 
-                  spaces and operations with our versatile container solutions, from basic 
-                  storage to sophisticated office complexes.
+                  Today, after nearly 20 years and with in-house CAD design, engineering,
+                  manufacturing and conversion workshops, we're proud to serve clients in
+                  education, healthcare, renewable energy, electrical engineering, water
+                  treatment, retail and FMCG — a one-stop shop for complete site establishment.
                 </p>
               </div>
             </div>
@@ -216,9 +218,14 @@ const AboutPage = () => {
                   <Building2 className="w-16 h-16 mx-auto mb-4 text-primary-100" />
                   <h3 className="text-2xl font-bold mb-2">Our Mission</h3>
                   <p className="text-primary-50">
-                    To provide innovative, sustainable container solutions that empower 
-                    businesses and communities to grow and succeed.
+                    To be your one-stop shop for complete site establishment — delivering
+                    quality container solutions with the best service and value for your money,
+                    guaranteed.
                   </p>
+                  <div className="mt-6 pt-6 border-t border-primary-400 flex items-center justify-center gap-2 text-sm text-primary-50">
+                    <Award className="w-5 h-5 text-primary-100 flex-shrink-0" />
+                    <span>Verified Member of the Cape Chamber of Commerce and Industry</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -267,7 +274,7 @@ const AboutPage = () => {
               Meet Our Team
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-              The passionate professionals behind Valley Containers' success.
+              The passionate professionals behind Topshell's success.
             </p>
           </div>
 
@@ -303,7 +310,7 @@ const AboutPage = () => {
               Our Journey
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-              Key milestones that shaped Valley Containers into what we are today.
+              Key milestones that shaped Topshell into what we are today.
             </p>
           </div>
 
@@ -350,8 +357,8 @@ const AboutPage = () => {
             Ready to Work With Us?
           </h2>
           <p className="text-lg sm:text-xl text-primary-50 mb-6 sm:mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied customers who trust Valley Containers for their 
-            container solutions.
+            Join the businesses across the Western Cape, Southern Cape, Gauteng and Mpumalanga
+            who trust Topshell for the best value, guaranteed.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Link 

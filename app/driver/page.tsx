@@ -56,7 +56,7 @@ const DriverDashboard = () => {
     const mockDeliveries: Delivery[] = [
       {
         id: 'D001',
-        containerNumber: 'VC-20-001',
+        containerNumber: 'TS-20-001',
         containerType: '6m Standard',
         customerName: 'Construction Plus Inc.',
         customerPhone: '+27 82 123 4567',
@@ -73,12 +73,12 @@ const DriverDashboard = () => {
         driverName: user?.name || 'Mike Johnson',
         driverPhone: '+27 82 555 1234',
         notes: 'Deliver to construction site - contact John Smith on arrival',
-        serialNumber: 'VC20001-2024',
-        qrCode: 'VC20001-2024-QR'
+        serialNumber: 'TS20001-2024',
+        qrCode: 'TS20001-2024-QR'
       },
       {
         id: 'D002',
-        containerNumber: 'VC-40-002',
+        containerNumber: 'TS-40-002',
         containerType: '12m High Cube',
         customerName: 'Global Logistics Solutions',
         customerPhone: '+27 82 234 5678',
@@ -95,8 +95,8 @@ const DriverDashboard = () => {
         driverName: user?.name || 'Mike Johnson',
         driverPhone: '+27 82 555 1234',
         notes: 'Port delivery - security clearance required',
-        serialNumber: 'VC40002-2024',
-        qrCode: 'VC40002-2024-QR'
+        serialNumber: 'TS40002-2024',
+        qrCode: 'TS40002-2024-QR'
       }
     ]
     setDeliveries(mockDeliveries)

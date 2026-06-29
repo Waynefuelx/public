@@ -212,7 +212,7 @@ const CustomSolutionsPage = () => {
                   <div className="space-y-2 mb-6">
                     {service.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-primary-600 flex-shrink-0" />
                         <span className="text-sm text-gray-700">{feature}</span>
                       </div>
                     ))}
@@ -225,7 +225,7 @@ const CustomSolutionsPage = () => {
                   </div>
 
                   <a
-                    href="mailto:info@valleycontainers.co.za?subject=Custom Container Quote Request&body=Hi, I would like to request a quote for custom container solutions. Please contact me with more information about your custom services and pricing."
+                    href="mailto:rental@topshell.co.za?subject=Custom Container Quote Request&body=Hi, I would like to request a quote for custom container solutions. Please contact me with more information about your custom services and pricing."
                     className="btn-primary w-full text-center group-hover:bg-primary-600 transition-colors duration-200 inline-block"
                   >
                     Get Quote
@@ -315,7 +315,7 @@ const CustomSolutionsPage = () => {
               Why Choose Our Custom Solutions?
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-              Experience the Valley Containers difference with our custom conversion expertise.
+              Experience the Topshell difference with our in-house CAD design, engineering and conversion expertise.
             </p>
           </div>
 
@@ -328,7 +328,7 @@ const CustomSolutionsPage = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Expert Craftsmanship</h3>
               <p className="text-gray-600">
-                30+ years of experience in container modifications and custom solutions.
+                Nearly 20 years of experience in container modifications, conversions and custom solutions.
               </p>
             </div>
 

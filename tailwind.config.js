@@ -12,16 +12,16 @@ module.exports = {
       },
       colors: {
         primary: {
-          50: '#e6f2ed',
-          100: '#ccf0e0',
-          200: '#99e0c1',
-          300: '#66d1a2',
-          400: '#33c183',
-          500: '#006240', // Forest Green - Main brand color
-          600: '#005235',
-          700: '#00412a',
-          800: '#003120',
-          900: '#002015',
+          50: '#eef1f6',
+          100: '#E3E9F0',
+          200: '#c2cdde',
+          300: '#9aabc6',
+          400: '#5c7396',
+          500: '#1E3A5F', // Deep Navy - Topshell main brand color
+          600: '#16263F',
+          700: '#111d30',
+          800: '#0c1424',
+          900: '#070d18',
         },
         secondary: {
           50: '#fafafa',

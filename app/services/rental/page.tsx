@@ -135,7 +135,7 @@ const RentalServicesPage = () => {
                 Start Renting Now
               </Link>
               <a 
-                href="mailto:info@valleycontainers.co.za?subject=Container Rental Quote Request&body=Hi, I would like to request a quote for container rental services. Please contact me with more information about pricing and availability."
+                href="mailto:rental@topshell.co.za?subject=Container Rental Quote Request&body=Hi, I would like to request a quote for container rental services. Please contact me with more information about pricing and availability."
                 className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 border-white text-white hover:bg-white hover:text-primary-500 w-full sm:w-auto inline-block text-center"
               >
                 Get Quote
@@ -153,7 +153,7 @@ const RentalServicesPage = () => {
               Why Choose Our Rental Service?
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-              Experience the Valley Containers difference with our comprehensive rental solutions.
+              Experience the Topshell difference — nearly 20 years' experience and the best value for your money, guaranteed.
             </p>
           </div>
 
@@ -227,7 +227,7 @@ const RentalServicesPage = () => {
                   <div className="space-y-2 mb-6">
                     {option.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-primary-600 flex-shrink-0" />
                         <span className="text-sm text-gray-700">{feature}</span>
                       </div>
                     ))}
@@ -324,7 +324,7 @@ const RentalServicesPage = () => {
               Start Renting
             </Link>
             <a 
-              href="mailto:info@valleycontainers.co.za?subject=Container Rental Quote Request&body=Hi, I would like to request a quote for container rental services. Please contact me with more information about pricing and availability."
+              href="mailto:rental@topshell.co.za?subject=Container Rental Quote Request&body=Hi, I would like to request a quote for container rental services. Please contact me with more information about pricing and availability."
               className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto inline-block text-center"
             >
               Get Quote

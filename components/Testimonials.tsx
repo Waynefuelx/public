@@ -7,56 +7,56 @@ const Testimonials = () => {
   const testimonials = [
     {
       id: 1,
-      name: 'Sarah Johnson',
-      company: 'Construction Plus Inc.',
-      role: 'Project Manager',
+      name: 'Riaan Botha',
+      company: 'Cape Coastal Construction',
+      role: 'Site Manager',
       rating: 5,
-      content: 'Valley Containers has been our go-to partner for all our construction storage needs. Their delivery is always on time, and the containers are in excellent condition. The tracking system is fantastic - we always know exactly when our containers will arrive.',
+      content: 'Topshell has been our go-to partner for site offices and storage across our Western Cape projects. Their crane trucks delivered and set up everything on time, and the units were in excellent condition. Best value for our money, no question.',
       avatar: '/api/placeholder/60/60'
     },
     {
       id: 2,
-      name: 'Michael Chen',
-      company: 'Global Logistics Solutions',
-      role: 'Operations Director',
+      name: 'Thandeka Nkosi',
+      company: 'Highveld Mining Services',
+      role: 'Procurement Manager',
       rating: 5,
-      content: 'We\'ve been working with Valley Containers for over 3 years now. Their service is consistently excellent, and their staff is incredibly responsive. The online booking system saves us hours of paperwork, and their real-time tracking gives our clients peace of mind.',
+      content: 'We\'ve worked with Topshell for several years now on our Mpumalanga operations. Their 8-bed sleeper units and ablution facilities are exactly what our teams need on remote sites. Reliable delivery, quality builds and genuinely competitive pricing.',
       avatar: '/api/placeholder/60/60'
     },
     {
       id: 3,
-      name: 'Emily Rodriguez',
-      company: 'Event Productions LLC',
-      role: 'CEO',
+      name: 'Megan Pretorius',
+      company: 'Stellenbosch Events Co.',
+      role: 'Operations Director',
       rating: 5,
-      content: 'For our large-scale events, we need reliable storage solutions. Valley Containers has never let us down. Their containers are clean, secure, and delivered exactly when promised. The customer service team is always helpful and professional.',
+      content: 'For our large-scale events we need clean, secure units delivered exactly when promised. Topshell has never let us down. Their custom-branded containers looked fantastic and collection afterwards was just as smooth as the delivery.',
       avatar: '/api/placeholder/60/60'
     },
     {
       id: 4,
-      name: 'David Thompson',
-      company: 'Marine Supply Co.',
-      role: 'Warehouse Manager',
+      name: 'David Williams',
+      company: 'Sunfields Renewable Energy',
+      role: 'Project Lead',
       rating: 5,
-      content: 'The quality of Valley Containers\' products is outstanding. We use their refrigerated containers for storing sensitive marine equipment, and the temperature control is perfect. Their maintenance team is also very responsive when we need service.',
+      content: 'Topshell understands the renewable energy sector. They kitted out our solar farm with offices, a canteen and security huts as a complete site establishment package. The quality and on-site support were outstanding from start to finish.',
       avatar: '/api/placeholder/60/60'
     },
     {
       id: 5,
-      name: 'Lisa Wang',
-      company: 'Retail Storage Solutions',
-      role: 'Operations Manager',
+      name: 'Naledi Mokoena',
+      company: 'Freshline Retail Group',
+      role: 'Logistics Manager',
       rating: 5,
-      content: 'We manage storage for multiple retail clients, and Valley Containers makes it easy. Their online portal lets us track all our containers in one place, and the automated invoicing saves us countless hours. Highly recommended!',
+      content: 'We rely on Topshell for refrigeration units and storage across our stores. Their team is responsive, the units are spotless, and the value for money is the best we\'ve found. Highly recommended for any retail or FMCG operation.',
       avatar: '/api/placeholder/60/60'
     },
     {
       id: 6,
-      name: 'Robert Martinez',
-      company: 'Industrial Equipment Corp.',
-      role: 'Logistics Coordinator',
+      name: 'Pieter van Zyl',
+      company: 'George Primary Academy',
+      role: 'School Bursar',
       rating: 5,
-      content: 'Valley Containers understands industrial needs. Their containers are built to handle heavy equipment, and their delivery team knows how to work around our schedule. The real-time updates help us coordinate with our production team perfectly.',
+      content: 'When we needed extra classrooms fast, Topshell converted containers to our exact spec and delivered them to George ahead of schedule. The in-house engineering really shows in the finish. Quality work and excellent service throughout.',
       avatar: '/api/placeholder/60/60'
     }
   ]
@@ -80,8 +80,8 @@ const Testimonials = () => {
             What Our Customers Say
           </h2>
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-            Don't just take our word for it. Here's what our valued customers have to say about 
-            their experience with Valley Containers.
+            Don't just take our word for it. Here's what our valued customers have to say about
+            their experience with Topshell.
           </p>
         </div>
 
@@ -156,8 +156,8 @@ const Testimonials = () => {
               Ready to Experience the Difference?
             </h3>
             <p className="text-gray-600 mb-6">
-              Join thousands of satisfied customers who trust Valley Containers for their 
-              storage and logistics needs.
+              Join the businesses across the Western Cape, Southern Cape, Gauteng and Mpumalanga
+              who trust Topshell for the best value, guaranteed.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="btn-primary">

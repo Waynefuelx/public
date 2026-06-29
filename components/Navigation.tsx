@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
+import { siteConfig } from '@/lib/site-config'
 
 import { 
   Menu, 
@@ -49,6 +50,7 @@ const Navigation = () => {
         { name: 'Home', href: '/' },
         { name: 'Containers', href: '/containers' },
         { name: 'Conversions', href: '/services' },
+        { name: 'Special Offers', href: '/special-offers' },
         { name: 'Branches', href: '/branches' },
         { name: 'About', href: '/about' },
         { name: 'Contact', href: '/contact' },
@@ -77,11 +79,12 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">V</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">Valley Containers</span>
+            <Link href="/" className="flex items-center">
+              <img
+                src={siteConfig.assets.logoHeaderDark}
+                alt={siteConfig.company.name}
+                className="h-9 sm:h-11 w-auto"
+              />
             </Link>
           </div>
 

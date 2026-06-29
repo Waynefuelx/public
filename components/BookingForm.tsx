@@ -3,17 +3,18 @@
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { 
-  Truck, 
-  Calendar, 
-  MapPin, 
-  CreditCard, 
+import {
+  Truck,
+  Calendar,
+  MapPin,
+  CreditCard,
   FileText,
   CheckCircle,
   AlertCircle,
   Package
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { rentalProducts, getProductById } from '@/lib/site-config'
 
 interface BookingFormData {
   serviceType: 'rental' | 'purchase' | 'quote'
@@ -43,16 +44,53 @@ interface ContainerType {
   category?: string
 }
 
-const BookingForm = ({ 
-  onSuccess, 
-  selectedContainer: initialSelectedContainer 
-}: { 
+// Map a site-config product into the form's ContainerType shape.
+const toContainerType = (product: ReturnType<typeof getProductById>): ContainerType | null => {
+  if (!product) return null
+  return {
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    dimensions: product.dimensions || product.sizes.join(', '),
+    capacity: product.capacity || '—',
+    price: product.monthlyPrice || 0,
+    image: product.image,
+    category: product.category,
+  }
+}
+
+// Resolve the initial container: prefer a ?container=<id> URL param (canonical
+// data from siteConfig), then fall back to the passed-in prop.
+const resolveInitialContainer = (
+  initial?: ContainerType | null
+): ContainerType | null => {
+  if (typeof window !== 'undefined') {
+    const id = new URLSearchParams(window.location.search).get('container')
+    if (id) {
+      const resolved = toContainerType(getProductById(id))
+      if (resolved) return resolved
+    }
+  }
+  // If a prop was passed, re-resolve it through siteConfig when possible so
+  // ids/prices/names stay consistent with the catalog.
+  if (initial) {
+    return toContainerType(getProductById(initial.id)) || initial
+  }
+  return null
+}
+
+const BookingForm = ({
+  onSuccess,
+  selectedContainer: initialSelectedContainer
+}: {
   onSuccess: () => void
   selectedContainer?: ContainerType | null
 }) => {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [selectedContainer, setSelectedContainer] = useState<ContainerType | null>(initialSelectedContainer || null)
+  const [selectedContainer, setSelectedContainer] = useState<ContainerType | null>(
+    resolveInitialContainer(initialSelectedContainer)
+  )
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<BookingFormData>()
   const watchServiceType = watch('serviceType')
@@ -65,99 +103,17 @@ const BookingForm = ({
     }
   }, [selectedContainer, setValue])
 
-  // Container types that match the rental page data
-  const containerTypes: ContainerType[] = [
-    {
-      id: '6m-storage',
-      name: '6m Storage Container',
-      description: 'Versatile storage container perfect for secure storage, moving, and general cargo.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 125,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png'
-    },
-    {
-      id: '6m-office',
-      name: '6m Office Container',
-      description: 'Professional office space container, perfect for construction sites, events, and temporary workspaces.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 450,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png'
-    },
-    {
-      id: '6m-vip-office',
-      name: '6m VIP Container Office',
-      description: 'Premium office container with enhanced amenities and professional finish.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 550,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png'
-    },
-    {
-      id: '6m-refrigeration',
-      name: '6m Refrigeration Container',
-      description: 'Temperature controlled container for perishable goods, food, and pharmaceuticals.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '33.1 cu m',
-      price: 200,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png'
-    },
-    {
-      id: '3m-storage',
-      name: '3m Storage Container',
-      description: 'Compact storage container perfect for small spaces and limited storage needs.',
-      dimensions: '3m × 2.4m × 2.6m',
-      capacity: '18.7 cu m',
-      price: 75,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/3m-storage-container.png'
-    },
-    {
-      id: '6m-split',
-      name: '6m Split Container',
-      description: 'Divided container offering multiple compartments for organized storage.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 175,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png'
-    },
-    {
-      id: 'elite-mobile-office',
-      name: 'Elite Mobile Site Office',
-      description: 'Premium mobile office solution with advanced features and professional finish.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 600,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png'
-    },
-    {
-      id: '3m-ablution',
-      name: '3m Ablution Container',
-      description: 'Sanitation container with bathroom and shower facilities for construction sites and events.',
-      dimensions: '3m × 2.4m × 2.6m',
-      capacity: '18.7 cu m',
-      price: 100,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png'
-    },
-    {
-      id: '6m-pavilion',
-      name: '6m Pavilion Container',
-      description: 'Open-sided container perfect for events, exhibitions, and temporary structures.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 150,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png'
-    },
-    {
-      id: '6m-sleeper',
-      name: '6m Sleeper Container',
-      description: 'Sleeping accommodation container with beds and basic amenities for workers.',
-      dimensions: '6m × 2.4m × 2.6m',
-      capacity: '37.4 cu m',
-      price: 200,
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png'
-    }
-  ]
+  // Rental container types, sourced from the central site config.
+  const containerTypes: ContainerType[] = rentalProducts.map((product) => ({
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    dimensions: product.dimensions || product.sizes.join(', '),
+    capacity: product.capacity || '—',
+    price: product.monthlyPrice || 0,
+    image: product.image,
+    category: product.category,
+  }))
 
   const onSubmit = async (data: BookingFormData) => {
     setIsSubmitting(true)

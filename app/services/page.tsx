@@ -2,12 +2,12 @@
 
 import { useState } from 'react'
 
-import { 
-  Wrench, 
-  Building2, 
-  Package, 
-  Users, 
-  Coffee, 
+import {
+  Wrench,
+  Building2,
+  Package,
+  Users,
+  Coffee,
   GraduationCap,
   Truck,
   Sun,
@@ -18,17 +18,100 @@ import {
   MapPin,
   Phone,
   Mail,
-  Clock
+  Clock,
+  HeartPulse,
+  Zap,
+  ShoppingCart,
+  Boxes
 } from 'lucide-react'
 import Link from 'next/link'
 import BranchLocationModal from '@/components/BranchLocationModal'
 import ConversionQuoteModal from '@/components/ConversionQuoteModal'
+import { siteConfig } from '@/lib/site-config'
+
+// Resolve industry icon-name strings (from siteConfig) to lucide components.
+const industryIconMap: Record<string, any> = {
+  GraduationCap,
+  HeartPulse,
+  Sun,
+  Zap,
+  Droplets,
+  ShoppingCart,
+  Truck,
+}
 
 const ConversionsPage = () => {
   const [isBranchModalOpen, setIsBranchModalOpen] = useState(false)
   const [isConversionQuoteModalOpen, setIsConversionQuoteModalOpen] = useState(false)
   const [selectedConversionType, setSelectedConversionType] = useState<string>('')
-  
+
+  const { company } = siteConfig
+
+  // Topshell's core service offerings.
+  const coreServices = [
+    {
+      id: 1,
+      name: 'Container Rentals',
+      description: 'Flexible monthly rentals of on-site storage, offices, accommodation, ablutions, canteens and more — delivered and set up on your site.',
+      icon: Package,
+      features: [
+        'On-site storage & offices',
+        'Accommodation & ablutions',
+        'Flexible monthly terms',
+        'On-site delivery & collection',
+        'Best value, guaranteed'
+      ],
+      image: '/products/storage-6m.webp',
+      popular: true
+    },
+    {
+      id: 2,
+      name: 'Custom Containers & Conversions',
+      description: 'Built to your spec by our in-house CAD design, engineering and conversion workshops — from site offices to specialised facilities.',
+      icon: Wrench,
+      features: [
+        'In-house CAD design',
+        'Engineering & conversion workshops',
+        'Electrical & plumbing fitted',
+        'Tested ready-to-use on delivery',
+        'Multi-industry experience'
+      ],
+      image: '/products/custom.png',
+      popular: true
+    },
+    {
+      id: 3,
+      name: 'Self-Storage',
+      description: 'Secure, affordable self-storage in steel containers — short or long term, with easy access whenever you need it.',
+      icon: Boxes,
+      features: [
+        'Secure steel units',
+        'Short & long term',
+        'Easy access',
+        'Wind & watertight',
+        'Affordable rates'
+      ],
+      image: '/products/self-storage.png',
+      popular: false
+    },
+    {
+      id: 4,
+      name: 'Container Sales',
+      description: 'New and pre-owned shipping containers for sale, delivered across South Africa — conversion-ready and built to last.',
+      icon: ShoppingCart,
+      features: [
+        'New & used containers',
+        'Wind & watertight',
+        'Delivered nationwide',
+        'Conversion-ready',
+        'Graded & inspected'
+      ],
+      image: '/products/storage-6m.webp',
+      popular: false
+    }
+  ]
+
+  // Container conversions Topshell delivers from its in-house workshops.
   const conversionTypes = [
     {
       id: 1,
@@ -42,7 +125,7 @@ const ConversionsPage = () => {
         'Security features',
         'Quick setup & removal'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png',
+      image: '/products/office-insulated.png',
       popular: true
     },
     {
@@ -57,7 +140,7 @@ const ConversionsPage = () => {
         'Customizable layouts',
         'Cost-effective solution'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png',
+      image: '/products/office-split.png',
       popular: false
     },
     {
@@ -72,7 +155,7 @@ const ConversionsPage = () => {
         'Custom shelving',
         'Accessibility features'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png',
+      image: '/products/storage-shed.png',
       popular: false
     },
     {
@@ -87,7 +170,7 @@ const ConversionsPage = () => {
         'Security features',
         'Flexible configurations'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6-m-sleeper-container-2.png',
+      image: '/products/sleeper.png',
       popular: true
     },
     {
@@ -102,7 +185,7 @@ const ConversionsPage = () => {
         'Water management',
         'Easy maintenance'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/Ablution-Container.png',
+      image: '/products/ablution-6m.png',
       popular: false
     },
     {
@@ -117,7 +200,7 @@ const ConversionsPage = () => {
         'Ventilation systems',
         'Mobile capability'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png',
+      image: '/products/office-uninsulated.png',
       popular: false
     },
     {
@@ -132,28 +215,28 @@ const ConversionsPage = () => {
         'Safety features',
         'Easy maintenance'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/container-conversions-5.webp',
+      image: '/products/conference-pod.png',
       popular: false
     },
     {
       id: 8,
-      name: 'Soup Kitchens',
-      description: 'Food service facilities converted from containers for community feeding programs.',
-      icon: Users,
+      name: 'Canteens & Soup Kitchens',
+      description: 'Food service facilities converted from containers for site canteens and community feeding programs.',
+      icon: Coffee,
       features: [
         'Kitchen equipment',
         'Serving areas',
         'Storage space',
         'Hygiene facilities',
-        'Community access'
+        'Stainless-steel worktops'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/container-conversions-3.png_1-400x284.webp',
+      image: '/products/canteen.png',
       popular: false
     },
     {
       id: 9,
       name: 'Remote Solar Grids',
-      description: 'Solar power installations integrated into containers for off-grid energy solutions.',
+      description: 'Solar power installations integrated into containers for off-grid renewable energy solutions.',
       icon: Sun,
       features: [
         'Solar panel integration',
@@ -162,22 +245,22 @@ const ConversionsPage = () => {
         'Monitoring systems',
         'Off-grid capability'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/03/container-conversions-7-400x284.webp',
+      image: '/products/security-hut.png',
       popular: false
     },
     {
       id: 10,
-      name: 'Coffee Shops',
-      description: 'Mobile coffee shop solutions converted from containers for events and permanent locations.',
-      icon: Coffee,
+      name: 'Refrigeration Units',
+      description: 'Walk-in refrigeration units converted from containers for reliable on-site cold storage.',
+      icon: Droplets,
       features: [
-        'Coffee equipment',
-        'Serving counter',
-        'Storage space',
-        'Customer seating',
-        'Mobile operation'
+        'Walk-in cold storage',
+        'Temperature controlled',
+        'Heavy-duty insulation',
+        'Reliable refrigeration',
+        'Mobile deployment'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png',
+      image: '/products/refrigeration.png',
       popular: false
     },
     {
@@ -192,7 +275,7 @@ const ConversionsPage = () => {
         'Mobile deployment',
         'Custom graphics'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png',
+      image: '/products/conference-pod.png',
       popular: false
     },
     {
@@ -207,69 +290,16 @@ const ConversionsPage = () => {
         'Monitoring equipment',
         'Mobile deployment'
       ],
-      image: 'https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_refrigeration.png',
+      image: '/products/storage-shed.png',
       popular: false
     }
   ]
 
-  const branches = [
-    {
-      name: 'George Branch',
-      city: 'George',
-      province: 'Western Cape',
-      phone: '+27 44 878 0878',
-      email: 'info@valleycontainers.co.za',
-      hours: 'Mon-Fri: 8:00 AM - 5:00 PM'
-    },
-    {
-      name: 'Cape Town Branch',
-      city: 'Cape Town',
-      province: 'Western Cape',
-      phone: '+27 72 211 1052',
-      email: 'cpt@valleycontainers.co.za',
-      hours: 'Mon-Fri: 8:00 AM - 5:00 PM'
-    },
-    {
-      name: 'Mossel Bay Branch',
-      city: 'Mossel Bay',
-      province: 'Western Cape',
-      phone: '+27 (0)44 695 2555',
-      email: 'msb@valleycontainers.co.za',
-      hours: 'Mon-Fri: 8:00 AM - 5:00 PM'
-    },
-    {
-      name: 'Gqeberha Branch',
-      city: 'Gqeberha',
-      province: 'Eastern Cape',
-      phone: '+27 (0) 61 451 8829',
-      email: 'sales@valleycontainers.co.za',
-      hours: 'Mon-Fri: 8:00 AM - 5:00 PM'
-    },
-    {
-      name: 'Kimberley Branch',
-      city: 'Kimberley',
-      province: 'Northern Cape',
-      phone: '+27 (0)53 831 1554',
-      email: 'kimberley@valleycontainers.co.za',
-      hours: 'Mon-Fri: 8:00 AM - 5:00 PM'
-    },
-    {
-      name: 'Johannesburg Branch',
-      city: 'Johannesburg',
-      province: 'Gauteng',
-      phone: '+27 71 371 2972',
-      email: 'jhb@valleycontainers.co.za',
-      hours: 'Mon-Fri: 8:00 AM - 5:00 PM'
-    },
-    {
-      name: 'Mauritius Branch',
-      city: 'Mauritius',
-      province: 'International',
-      phone: '+230 606 7684',
-      email: 'info@valleycontainersma.mu',
-      hours: 'Mon-Fri: 8:00 AM - 5:00 PM'
-    }
-  ]
+  // Industries Topshell serves — sourced from the central config so the
+  // services and containers pages stay in sync.
+  const industries = siteConfig.industries
+
+  const regions = siteConfig.regions
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -278,25 +308,22 @@ const ConversionsPage = () => {
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-32">
           <div className="text-center">
-            <h1 
-
+            <h1
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6"
             >
-              Container Conversions
-              <span className="block text-primary-100">Custom Solutions</span>
+              Our Services
+              <span className="block text-primary-100">Rentals · Conversions · Self-Storage · Sales</span>
             </h1>
-            <p 
-
+            <p
               className="text-lg sm:text-xl md:text-2xl text-primary-50 mb-6 sm:mb-8 max-w-3xl mx-auto px-4"
             >
-              Valley Containers has over a decade of container conversion experience. 
-              Transform standard containers into versatile, functional spaces.
+              With around {company.yearsExperience} years' experience, {company.name} delivers container rentals,
+              custom conversions, self-storage and sales — backed by in-house CAD design and engineering workshops.
             </p>
-            <div 
-
+            <div
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
             >
-              <button 
+              <button
                 onClick={() => {
                   setSelectedConversionType('')
                   setIsConversionQuoteModalOpen(true)
@@ -305,7 +332,7 @@ const ConversionsPage = () => {
               >
                 Get A Quote
               </button>
-              <button 
+              <button
                 onClick={() => setIsBranchModalOpen(true)}
                 className="btn-secondary text-base sm:text-lg px-6 sm:px-8 py-3 border-white text-primary-500 hover:bg-white hover:text-primary-500 w-full sm:w-auto"
               >
@@ -316,31 +343,58 @@ const ConversionsPage = () => {
         </div>
       </section>
 
-      {/* Introduction Section */}
+      {/* Core Services Section */}
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 
-
-              className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6"
-            >
-              CUSTOM CONTAINERS
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              What We Do
             </h2>
-            <p 
-
-              className="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed"
-            >
-              You can transform a standard containers into versatile, functional spaces with our expert container conversions near me. 
-              Whatever your need for modified shipping containers is, we can bring your vision to life. Our team specialises in 
-              creating custom shipping containers tailored to your specific needs, handling everything from design to sourcing 
-              appliances and furniture.
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+              Four core services to cover every container need — all with {company.tagline.toLowerCase()}.
             </p>
-            <div 
+          </div>
 
-              className="bg-primary-50 border border-primary-200 rounded-lg p-6"
-            >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {coreServices.map((service) => (
+              <div
+                key={service.id}
+                className="bg-gray-50 rounded-xl border border-gray-100 p-6 sm:p-8 hover:border-primary-300 transition-colors duration-200"
+              >
+                <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
+                  <service.icon className="w-6 h-6 text-primary-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{service.name}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">{service.description}</p>
+                <div className="space-y-2">
+                  {service.features.map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary-500 flex-shrink-0" />
+                      <span className="text-sm text-gray-700">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Introduction Section */}
+      <section className="py-16 sm:py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+              CUSTOM CONTAINERS & CONVERSIONS
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed">
+              Transform a standard container into a versatile, functional space with our expert in-house conversions.
+              Whatever your need for modified shipping containers, our CAD design, engineering and conversion workshops
+              bring your vision to life — handling everything from design to sourcing appliances and furniture.
+            </p>
+            <div className="bg-primary-50 border border-primary-200 rounded-lg p-6">
               <p className="text-primary-800 font-medium">
-                All modified shipping container are thoroughly tested, including electrical and plumbing, 
+                Every modified container is thoroughly tested, including electrical and plumbing,
                 to ensure it's ready for immediate use upon delivery.
               </p>
             </div>
@@ -349,20 +403,14 @@ const ConversionsPage = () => {
       </section>
 
       {/* Conversion Types Section */}
-      <section className="py-16 sm:py-20 bg-gray-50">
+      <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 sm:mb-16">
-            <h2 
-
-              className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4"
-            >
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Types of Shipping Container Conversions
             </h2>
-            <p 
-
-              className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto"
-            >
-              From office spaces to specialized facilities, we can convert containers for any purpose.
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+              From office spaces to specialised facilities, we can convert containers for any purpose.
             </p>
           </div>
 
@@ -370,13 +418,12 @@ const ConversionsPage = () => {
             {conversionTypes.map((conversion, index) => (
               <div
                 key={conversion.id}
-
                 className="bg-white rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden group"
               >
                 {/* Conversion Image */}
                 <div className="w-full h-48 bg-gray-200 overflow-hidden">
-                  <img 
-                    src={conversion.image} 
+                  <img
+                    src={conversion.image}
                     alt={conversion.name}
                     className="w-full h-full object-contain scale-110 group-hover:scale-115 transition-transform duration-300"
                     onError={(e) => {
@@ -391,7 +438,7 @@ const ConversionsPage = () => {
                     <conversion.icon className="w-16 h-16 text-gray-400" />
                   </div>
                 </div>
-                
+
                 {/* Conversion Header */}
                 <div className="p-6 sm:p-8">
                   <div className="flex items-start justify-between mb-4">
@@ -419,15 +466,15 @@ const ConversionsPage = () => {
                   <div className="space-y-2 mb-6">
                     {conversion.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-primary-500 flex-shrink-0" />
                         <span className="text-sm text-gray-700">{feature}</span>
                       </div>
                     ))}
                   </div>
 
                   {/* Action Button */}
-                  <a 
-                    href="mailto:info@valleycontainers.co.za?subject=Container Services Quote Request&body=Hi, I would like to request a quote for container services. Please contact me with more information about your services and pricing."
+                  <a
+                    href={`mailto:${company.primaryEmail}?subject=Container Services Quote Request&body=Hi, I would like to request a quote for container services. Please contact me with more information about your services and pricing.`}
                     className="bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 w-full text-center inline-flex items-center justify-center group"
                   >
                     Get Quote
@@ -440,37 +487,58 @@ const ConversionsPage = () => {
         </div>
       </section>
 
+      {/* Industries Section */}
+      <section className="py-16 sm:py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Industries We Serve
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+              From education to FMCG, our containers and conversions support a wide range of sectors.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 sm:gap-6">
+            {industries.map((industry) => {
+              const Icon = industryIconMap[industry.icon] ?? Boxes
+              return (
+                <div
+                  key={industry.name}
+                  className="bg-white rounded-xl border border-gray-100 p-4 sm:p-6 text-center hover:border-primary-300 transition-colors duration-200"
+                >
+                  <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <Icon className="w-6 h-6 text-primary-600" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-800">{industry.name}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Contact Section */}
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 
-
-              className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6"
-            >
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
               Get in touch with us
             </h2>
-            <p 
-
-              className="text-lg sm:text-xl text-gray-600 mb-8"
-            >
-              Contact us by phone for immediate live assistance – or send us an email. 
+            <p className="text-lg sm:text-xl text-gray-600 mb-8">
+              Contact us by phone for immediate live assistance – or send us an email.
               We'll get back to you as soon as we can.
             </p>
-            <p 
-
-              className="text-lg text-gray-700"
-            >
-              Get in touch with any of our branches to arrange a visit to our depot or to discuss your specific requirements.
+            <p className="text-lg text-gray-700">
+              Get in touch with any of our regions to arrange a visit to our depot or to discuss your specific requirements.
             </p>
           </div>
 
-          {/* Branches Grid */}
+          {/* Regions Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {branches.map((branch, index) => (
+            {regions.map((region) => (
               <div
-                key={branch.name}
-
+                key={region.id}
                 className="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-primary-300 transition-colors duration-200"
               >
                 <div className="flex items-start gap-4">
@@ -478,36 +546,50 @@ const ConversionsPage = () => {
                     <MapPin className="w-6 h-6 text-primary-600" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {branch.name}
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                      {region.name}
                     </h3>
                     <p className="text-gray-600 mb-3">
-                      {branch.city}, {branch.province}
+                      {region.city}
                     </p>
-                    
+
+                    {/* Address(es) — Southern Cape has two depots */}
+                    {region.depots ? (
+                      <div className="space-y-2 mb-3">
+                        {region.depots.map((depot) => (
+                          <div key={depot.name} className="text-sm text-gray-600">
+                            <span className="font-medium text-gray-900">{depot.name}: </span>
+                            {depot.addressLines.join(', ')}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-600 mb-3">{region.addressLines.join(', ')}</p>
+                    )}
+
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center gap-2">
                         <Phone className="w-4 h-4 text-primary-600" />
-                        <a 
-                          href={`tel:${branch.phone}`}
+                        <a
+                          href={`tel:${region.phone}`}
                           className="text-primary-600 hover:text-primary-800 transition-colors"
                         >
-                          {branch.phone}
+                          {region.phone}
                         </a>
                       </div>
                       <div className="flex items-center gap-2">
                         <Mail className="w-4 h-4 text-primary-600" />
-                        <a 
-                          href={`mailto:${branch.email}`}
-                          className="text-primary-600 hover:text-primary-800 transition-colors"
-                          title={`Click to email ${branch.email}`}
+                        <a
+                          href={`mailto:${region.email}`}
+                          className="text-primary-600 hover:text-primary-800 transition-colors break-all"
+                          title={`Click to email ${region.email}`}
                         >
-                          {branch.email}
+                          {region.email}
                         </a>
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-primary-600" />
-                        <span className="text-gray-600">{branch.hours}</span>
+                        <span className="text-gray-600">{region.hours}</span>
                       </div>
                     </div>
                   </div>
@@ -521,30 +603,21 @@ const ConversionsPage = () => {
       {/* CTA Section */}
       <section className="py-16 sm:py-20 bg-primary-500 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 
-
-            className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4"
-          >
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
             Get your quote today!
           </h2>
-          <p 
-
-            className="text-lg sm:text-xl text-primary-50 mb-6 sm:mb-8 max-w-2xl mx-auto"
-          >
-            Ready to transform your container into something extraordinary? 
+          <p className="text-lg sm:text-xl text-primary-50 mb-6 sm:mb-8 max-w-2xl mx-auto">
+            Ready to transform your container into something extraordinary?
             Contact our team today to discuss your conversion needs.
           </p>
-          <div 
-
-            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
-          >
-            <a 
-              href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+            <a
+              href={`mailto:${company.primaryEmail}?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing.`}
               className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto inline-block text-center"
             >
               Get A Quote
             </a>
-            <button 
+            <button
               onClick={() => setIsBranchModalOpen(true)}
               className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-500 font-medium py-3 px-6 sm:px-8 rounded-lg transition-colors duration-200 text-base sm:text-lg w-full sm:w-auto"
             >
@@ -555,13 +628,13 @@ const ConversionsPage = () => {
       </section>
 
       {/* Branch Location Modal */}
-      <BranchLocationModal 
+      <BranchLocationModal
         isOpen={isBranchModalOpen}
         onClose={() => setIsBranchModalOpen(false)}
       />
 
       {/* Conversion Quote Modal */}
-      <ConversionQuoteModal 
+      <ConversionQuoteModal
         isOpen={isConversionQuoteModalOpen}
         onClose={() => setIsConversionQuoteModalOpen(false)}
         conversionType={selectedConversionType}

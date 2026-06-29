@@ -12,6 +12,7 @@ import {
   AlertCircle
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { siteConfig } from '@/lib/site-config'
 
 const LoginPage = () => {
   const [email, setEmail] = useState('')
@@ -47,9 +48,9 @@ const LoginPage = () => {
   }
 
   const demoCredentials = [
-    { role: 'Customer', email: 'customer@valley.com', password: 'customer123', description: 'Access to buying, renting, tracking, and order history' },
-    { role: 'Driver', email: 'driver@valley.com', password: 'driver123', description: 'View assigned deliveries and location tracking' },
-    { role: 'Admin', email: 'admin@valley.com', password: 'admin123', description: 'Full admin panel access for order management' }
+    { role: 'Customer', email: 'customer@topshell.co.za', password: 'customer123', description: 'Access to buying, renting, tracking, and order history' },
+    { role: 'Driver', email: 'driver@topshell.co.za', password: 'driver123', description: 'View assigned deliveries and location tracking' },
+    { role: 'Admin', email: 'admin@topshell.co.za', password: 'admin123', description: 'Full admin panel access for order management' }
   ]
 
   return (
@@ -57,13 +58,11 @@ const LoginPage = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Logo */}
         <div className="flex justify-center">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary-600 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-2xl sm:text-3xl">V</span>
-          </div>
+          <img src={siteConfig.assets.logoLoginDark} alt={siteConfig.company.name} className="h-14 sm:h-16 w-auto" />
         </div>
-        
-        <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-bold text-gray-900">
-          Valley Containers
+
+        <h2 className="mt-4 sm:mt-6 text-center text-xl sm:text-2xl font-bold text-gray-900">
+          {siteConfig.company.name}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Portal Access

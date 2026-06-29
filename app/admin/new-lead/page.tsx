@@ -701,7 +701,7 @@ const NewLeadPage = () => {
                             <p>Customer will collect from our facility.</p>
                             <p className="mt-1">
                               <strong>Collection Address:</strong><br />
-                              Valley Containers<br />
+                              Topshell Container Rentals<br />
                               [Your facility address]<br />
                               [City, Province, Postal Code]
                             </p>

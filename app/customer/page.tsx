@@ -46,7 +46,7 @@ interface Order {
 }
 
 const CustomerDashboard = () => {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const [activeTab, setActiveTab] = useState('overview')
   const [orders, setOrders] = useState<Order[]>([])
   const [conversionRequest, setConversionRequest] = useState({
@@ -70,10 +70,10 @@ const CustomerDashboard = () => {
         status: 'delivered',
         orderDate: '2024-01-15T10:00:00Z',
         deliveryDate: '2024-01-20T14:00:00Z',
-        trackingNumber: 'VC20001-2024',
+        trackingNumber: 'TS20001-2024',
         totalAmount: 15000,
         customerName: user?.name || 'John Smith',
-        customerEmail: user?.email || 'customer@valley.com',
+        customerEmail: user?.email || 'customer@topshell.co.za',
         customerPhone: '+27 82 123 4567',
         city: 'Cape Town',
         province: 'Western Cape',
@@ -89,10 +89,10 @@ const CustomerDashboard = () => {
         status: 'in-transit',
         orderDate: '2024-01-18T09:30:00Z',
         deliveryDate: '2024-01-25T10:00:00Z',
-        trackingNumber: 'VC40002-2024',
+        trackingNumber: 'TS40002-2024',
         totalAmount: 2500,
         customerName: user?.name || 'John Smith',
-        customerEmail: user?.email || 'customer@valley.com',
+        customerEmail: user?.email || 'customer@topshell.co.za',
         customerPhone: '+27 82 123 4567',
         city: 'Johannesburg',
         province: 'Gauteng',
@@ -110,7 +110,7 @@ const CustomerDashboard = () => {
         deliveryDate: '2024-01-28T08:00:00Z',
         totalAmount: 22000,
         customerName: user?.name || 'John Smith',
-        customerEmail: user?.email || 'customer@valley.com',
+        customerEmail: user?.email || 'customer@topshell.co.za',
         customerPhone: '+27 82 123 4567',
         city: 'Durban',
         province: 'KwaZulu-Natal',
@@ -441,7 +441,10 @@ const CustomerDashboard = () => {
               </div>
               <div className="flex items-center space-x-4 flex-shrink-0 ml-4">
                 <span className="text-sm text-gray-600 break-words hidden sm:inline">{user?.email}</span>
-                <button className="text-sm text-primary-600 hover:text-primary-500 whitespace-nowrap">
+                <button
+                  onClick={() => logout()}
+                  className="text-sm text-primary-600 hover:text-primary-500 whitespace-nowrap"
+                >
                   Logout
                 </button>
               </div>
@@ -578,7 +581,7 @@ const CustomerDashboard = () => {
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                       <div className="relative">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png"
+                          src="/products/storage-6m.webp"
                           alt="Storage Containers"
                           className="w-full h-40 sm:h-48 object-cover"
                         />
@@ -648,7 +651,7 @@ const CustomerDashboard = () => {
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                       <div className="relative">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png"
+                          src="/products/office-uninsulated.png"
                           alt="Office Containers"
                           className="w-full h-40 sm:h-48 object-cover"
                         />
@@ -718,7 +721,7 @@ const CustomerDashboard = () => {
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                       <div className="relative">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png"
+                          src="/products/office-uninsulated.png"
                           alt="New Container"
                           className="w-full h-40 sm:h-48 object-cover"
                         />
@@ -790,7 +793,7 @@ const CustomerDashboard = () => {
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                       <div className="relative">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png"
+                          src="/products/storage-6m.webp"
                           alt="Used Container"
                           className="w-full h-40 sm:h-48 object-cover"
                         />
@@ -862,7 +865,7 @@ const CustomerDashboard = () => {
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                       <div className="relative">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png"
+                          src="/products/office-uninsulated.png"
                           alt="Modified Container"
                           className="w-full h-40 sm:h-48 object-cover"
                         />
@@ -932,7 +935,7 @@ const CustomerDashboard = () => {
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                       <div className="relative">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png"
+                          src="/products/office-uninsulated.png"
                           alt="VIP Container Office"
                           className="w-full h-40 sm:h-48 object-cover"
                         />
@@ -1006,7 +1009,7 @@ const CustomerDashboard = () => {
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                       <div className="relative">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png"
+                          src="/products/storage-6m.webp"
                           alt="Refrigeration / Freezer Container"
                           className="w-full h-40 sm:h-48 object-cover"
                         />
@@ -1076,7 +1079,7 @@ const CustomerDashboard = () => {
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                       <div className="relative">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png"
+                          src="/products/office-uninsulated.png"
                           alt="Event Container"
                           className="w-full h-40 sm:h-48 object-cover"
                         />
@@ -1146,7 +1149,7 @@ const CustomerDashboard = () => {
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                       <div className="relative">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png"
+                          src="/products/storage-6m.webp"
                           alt="Industrial Container"
                           className="w-full h-40 sm:h-48 object-cover"
                         />
@@ -1252,7 +1255,7 @@ const CustomerDashboard = () => {
                       </div>
                       <div className="mb-4">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-office-container.png"
+                          src="/products/office-uninsulated.png"
                           alt="Office Conversions"
                           className="w-full h-auto max-h-48 object-contain rounded-lg shadow-sm"
                           loading="lazy"
@@ -1267,7 +1270,7 @@ const CustomerDashboard = () => {
                         <li>• Security systems</li>
                       </ul>
                       <a 
-                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        href="mailto:rental@topshell.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
                         className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
                       >
                         Request Quote
@@ -1280,7 +1283,7 @@ const CustomerDashboard = () => {
                       </div>
                       <div className="mb-4">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_container.png"
+                          src="/products/storage-6m.webp"
                           alt="Storage Solutions"
                           className="w-full h-auto max-h-48 object-contain rounded-lg shadow-sm"
                           loading="lazy"
@@ -1295,7 +1298,7 @@ const CustomerDashboard = () => {
                         <li>• Loading equipment</li>
                       </ul>
                       <a 
-                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        href="mailto:rental@topshell.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
                         className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
                       >
                         Request Quote
@@ -1308,7 +1311,7 @@ const CustomerDashboard = () => {
                       </div>
                       <div className="mb-4">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/02/vipcontainer.png"
+                          src="/products/security-hut.png"
                           alt="Security Units"
                           className="w-full h-auto max-h-48 object-contain rounded-lg shadow-sm"
                           loading="lazy"
@@ -1323,7 +1326,7 @@ const CustomerDashboard = () => {
                         <li>• Monitoring equipment</li>
                       </ul>
                       <a 
-                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        href="mailto:rental@topshell.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
                         className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
                       >
                         Request Quote
@@ -1336,7 +1339,7 @@ const CustomerDashboard = () => {
                       </div>
                       <div className="mb-4">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/04/Elite-office-unit.png"
+                          src="/products/custom.png"
                           alt="Workshop Spaces"
                           className="w-full h-auto max-h-48 object-contain rounded-lg shadow-sm"
                           loading="lazy"
@@ -1351,7 +1354,7 @@ const CustomerDashboard = () => {
                         <li>• Tool storage</li>
                       </ul>
                       <a 
-                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        href="mailto:rental@topshell.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
                         className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
                       >
                         Request Quote
@@ -1364,7 +1367,7 @@ const CustomerDashboard = () => {
                       </div>
                       <div className="mb-4">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/04/6m-pavilion.png"
+                          src="/products/custom.png"
                           alt="Mobile Units"
                           className="w-full h-auto max-h-48 object-contain rounded-lg shadow-sm"
                           loading="lazy"
@@ -1379,7 +1382,7 @@ const CustomerDashboard = () => {
                         <li>• Weather protection</li>
                       </ul>
                       <a 
-                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        href="mailto:rental@topshell.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
                         className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
                       >
                         Request Quote
@@ -1392,7 +1395,7 @@ const CustomerDashboard = () => {
                       </div>
                       <div className="mb-4">
                         <img
-                          src="https://valleycontainers.co.za/wp-content/uploads/2025/02/storage_office.png"
+                          src="/products/custom.png"
                           alt="Custom Solutions"
                           className="w-full h-auto max-h-48 object-contain rounded-lg shadow-sm"
                           loading="lazy"
@@ -1407,7 +1410,7 @@ const CustomerDashboard = () => {
                         <li>• Expert consultation</li>
                       </ul>
                       <a 
-                        href="mailto:info@valleycontainers.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
+                        href="mailto:rental@topshell.co.za?subject=Container Conversion Quote Request&body=Hi, I would like to request a quote for container conversion services. Please contact me with more information about your conversion options and pricing."
                         className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors inline-block text-center"
                       >
                         Request Quote
@@ -1513,7 +1516,7 @@ const CustomerDashboard = () => {
                       <input 
                         type="text"
                         className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        placeholder="Enter your tracking number (e.g., VC20001-2024)"
+                        placeholder="Enter your tracking number (e.g., TS20001-2024)"
                       />
                       <button className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors">
                         Track

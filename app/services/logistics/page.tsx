@@ -127,7 +127,7 @@ const LogisticsServicesPage = () => {
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
             >
               <a 
-                href="mailto:info@valleycontainers.co.za?subject=Container Logistics Quote Request&body=Hi, I would like to request a quote for container logistics services. Please contact me with more information about pricing and delivery options."
+                href="mailto:rental@topshell.co.za?subject=Container Logistics Quote Request&body=Hi, I would like to request a quote for container logistics services. Please contact me with more information about pricing and delivery options."
                 className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-100 w-full sm:w-auto inline-block text-center"
               >
                 Get Quote
@@ -225,7 +225,7 @@ const LogisticsServicesPage = () => {
                   <div className="space-y-2 mb-6">
                     {service.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-primary-600 flex-shrink-0" />
                         <span className="text-sm text-gray-700">{feature}</span>
                       </div>
                     ))}
@@ -238,7 +238,7 @@ const LogisticsServicesPage = () => {
                   </div>
 
                   <a
-                    href="mailto:info@valleycontainers.co.za?subject=Container Logistics Quote Request&body=Hi, I would like to request a quote for container logistics services. Please contact me with more information about pricing and delivery options."
+                    href="mailto:rental@topshell.co.za?subject=Container Logistics Quote Request&body=Hi, I would like to request a quote for container logistics services. Please contact me with more information about pricing and delivery options."
                     className="btn-primary w-full text-center group-hover:bg-primary-600 transition-colors duration-200 inline-block"
                   >
                     Get Quote
@@ -353,7 +353,7 @@ const LogisticsServicesPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <a 
-              href="mailto:info@valleycontainers.co.za?subject=Container Logistics Quote Request&body=Hi, I would like to request a quote for container logistics services. Please contact me with more information about pricing and delivery options."
+              href="mailto:rental@topshell.co.za?subject=Container Logistics Quote Request&body=Hi, I would like to request a quote for container logistics services. Please contact me with more information about pricing and delivery options."
               className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 bg-white text-primary-500 hover:bg-secondary-100 w-full sm:w-auto inline-block text-center"
             >
               Get Quote

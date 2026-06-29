@@ -28,7 +28,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 const DEMO_USERS = [
   {
     id: '1',
-    email: 'customer@valley.com',
+    email: 'customer@topshell.co.za',
     password: 'customer123',
     name: 'John Smith',
     type: 'customer' as UserType,
@@ -37,7 +37,7 @@ const DEMO_USERS = [
   },
   {
     id: '2',
-    email: 'driver@valley.com',
+    email: 'driver@topshell.co.za',
     password: 'driver123',
     name: 'Mike Johnson',
     type: 'driver' as UserType,
@@ -46,7 +46,7 @@ const DEMO_USERS = [
   },
   {
     id: '3',
-    email: 'admin@valley.com',
+    email: 'admin@topshell.co.za',
     password: 'admin123',
     name: 'Sarah Wilson',
     type: 'admin' as UserType,
@@ -61,13 +61,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Check for stored user session
     try {
-      const storedUser = localStorage.getItem('valley_user')
+      const storedUser = localStorage.getItem('topshell_user')
       if (storedUser) {
         try {
           setUser(JSON.parse(storedUser))
         } catch (error) {
           console.error('Error parsing stored user:', error)
-          localStorage.removeItem('valley_user')
+          localStorage.removeItem('topshell_user')
         }
       }
     } catch (error) {
@@ -99,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       setUser(userData)
       try {
-        localStorage.setItem('valley_user', JSON.stringify(userData))
+        localStorage.setItem('topshell_user', JSON.stringify(userData))
       } catch (error) {
         console.error('Error saving user to localStorage:', error)
       }
@@ -114,7 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null)
     try {
-      localStorage.removeItem('valley_user')
+      localStorage.removeItem('topshell_user')
     } catch (error) {
       console.error('Error removing user from localStorage:', error)
     }

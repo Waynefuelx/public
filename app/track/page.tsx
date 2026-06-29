@@ -47,13 +47,13 @@ const TrackPage = () => {
 
   // Mock tracking data - in real app this would come from API
   const mockTrackingData: TrackingInfo = {
-    containerId: 'VC-2024-001',
+    containerId: 'TS-2024-001',
     status: 'in-transit',
     estimatedDelivery: '2024-01-15T14:00:00Z',
     currentLocation: 'N1 Highway, Johannesburg',
     driverName: 'Mike Johnson',
     driverPhone: '(555) 123-4567',
-    driverEmail: 'mike.johnson@valleycontainers.co.za',
+    driverEmail: 'mike.johnson@topshell.co.za',
     lastUpdate: '2024-01-14T10:30:00Z',
     updates: [
       {
@@ -68,7 +68,7 @@ const TrackPage = () => {
         id: '2',
         timestamp: '2024-01-14T08:15:00Z',
         status: 'Departed Warehouse',
-        location: 'Valley Containers Warehouse, Johannesburg',
+        location: 'Topshell Depot, Midrand',
         description: 'Container has left the warehouse and is on its way to your location.',
         type: 'success'
       },
@@ -76,7 +76,7 @@ const TrackPage = () => {
         id: '3',
         timestamp: '2024-01-14T07:00:00Z',
         status: 'Loading Complete',
-        location: 'Valley Containers Warehouse, Johannesburg',
+        location: 'Topshell Depot, Midrand',
         description: 'Container has been loaded and secured for transport.',
         type: 'success'
       },
@@ -84,7 +84,7 @@ const TrackPage = () => {
         id: '4',
         timestamp: '2024-01-13T16:45:00Z',
         status: 'Confirmed',
-        location: 'Valley Containers Warehouse, Johannesburg',
+        location: 'Topshell Depot, Midrand',
         description: 'Your order has been confirmed and is being prepared for delivery.',
         type: 'info'
       }
@@ -288,7 +288,7 @@ const TrackPage = () => {
     // Simple location mapping - in real app this would use geocoding
     const locationCoords: { [key: string]: { lat: number; lng: number } } = {
       'N1 Highway, Johannesburg': { lat: -26.2041, lng: 28.0473 },
-      'Valley Containers Warehouse, Johannesburg': { lat: -26.2041, lng: 28.0473 },
+      'Topshell Depot, Midrand': { lat: -25.989, lng: 28.128 },
       'Cape Town': { lat: -33.9249, lng: 18.4241 },
       'Durban': { lat: -29.8587, lng: 31.0218 },
       'Pretoria': { lat: -25.7479, lng: 28.2293 },
@@ -396,7 +396,7 @@ const TrackPage = () => {
                 type="text"
                 value={trackingNumber}
                 onChange={(e) => setTrackingNumber(e.target.value)}
-                placeholder="Enter tracking number (e.g., VC-2024-001)"
+                placeholder="Enter tracking number (e.g., TS-2024-001)"
                 className="input-field flex-1"
                 onKeyPress={(e) => e.key === 'Enter' && handleTrack()}
               />
@@ -410,7 +410,7 @@ const TrackPage = () => {
             </div>
 
             <div className="mt-4 text-sm text-gray-500 text-center">
-              <p>Example tracking numbers: VC-2024-001, VC-2024-002, VC-2024-003</p>
+              <p>Example tracking numbers: TS-2024-001, TS-2024-002, TS-2024-003</p>
             </div>
           </div>
         </div>
