@@ -2,21 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-
-import {
-  Truck,
-  Calendar,
-  MapPin,
-  CreditCard,
-  FileText,
-  CheckCircle,
-  AlertCircle,
-  Package,
-  Store,
-  Home
-} from 'lucide-react'
 import toast from 'react-hot-toast'
-import { purchaseProducts, getProductById } from '@/lib/site-config'
+import StepIndicator from '@/components/molecules/StepIndicator'
+import PurchaseContainerStep from '@/components/organisms/form-steps/PurchaseContainerStep'
+import PurchaseDeliveryStep from '@/components/organisms/form-steps/PurchaseDeliveryStep'
+import ContactInfoStep from '@/components/organisms/form-steps/ContactInfoStep'
+import PurchasePaymentStep from '@/components/organisms/form-steps/PurchasePaymentStep'
+import Button from '@/components/atoms/Button'
 
 interface PurchaseFormData {
   serviceType: 'purchase'
@@ -46,50 +38,16 @@ interface ContainerType {
   image: string
 }
 
-// Map a site-config product into the form's ContainerType shape (purchase price).
-const toContainerType = (product: ReturnType<typeof getProductById>): ContainerType | null => {
-  if (!product) return null
-  return {
-    id: product.id,
-    name: product.name,
-    description: product.description,
-    dimensions: product.dimensions || product.sizes.join(', '),
-    capacity: product.capacity || '—',
-    price: product.purchasePrice || 0,
-    image: product.image,
-  }
-}
-
-// Resolve the initial container: prefer a ?container=<id> URL param (canonical
-// data from siteConfig), then fall back to the passed-in prop.
-const resolveInitialContainer = (
-  initial?: ContainerType | null
-): ContainerType | null => {
-  if (typeof window !== 'undefined') {
-    const id = new URLSearchParams(window.location.search).get('container')
-    if (id) {
-      const resolved = toContainerType(getProductById(id))
-      if (resolved) return resolved
-    }
-  }
-  if (initial) {
-    return toContainerType(getProductById(initial.id)) || initial
-  }
-  return null
-}
-
-const PurchaseBookingForm = ({
-  onSuccess,
-  selectedContainer: initialSelectedContainer
-}: {
+const PurchaseBookingForm = ({ 
+  onSuccess, 
+  selectedContainer: initialSelectedContainer 
+}: { 
   onSuccess: () => void
   selectedContainer?: ContainerType | null
 }) => {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [selectedContainer, setSelectedContainer] = useState<ContainerType | null>(
-    resolveInitialContainer(initialSelectedContainer)
-  )
+  const [selectedContainer, setSelectedContainer] = useState<ContainerType | null>(initialSelectedContainer || null)
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<PurchaseFormData>()
   const watchServiceType = watch('serviceType')
@@ -103,16 +61,36 @@ const PurchaseBookingForm = ({
     }
   }, [selectedContainer, setValue])
 
-  // Purchasable container types, sourced from the central site config.
-  const containerTypes: ContainerType[] = purchaseProducts.map((product) => ({
-    id: product.id,
-    name: product.name,
-    description: product.description,
-    dimensions: product.dimensions || product.sizes.join(', '),
-    capacity: product.capacity || '—',
-    price: product.purchasePrice || 0,
-    image: product.image,
-  }))
+  // Container types for purchase
+  const containerTypes: ContainerType[] = [
+    {
+      id: 'new-container',
+      name: 'New Container',
+      description: 'Brand new container with full warranty',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      price: 25000,
+      image: '/products/storage-6m.webp'
+    },
+    {
+      id: 'used-container',
+      name: 'Used Container',
+      description: 'Quality pre-owned container at competitive price',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      price: 15000,
+      image: '/products/office-uninsulated.png'
+    },
+    {
+      id: 'modified-container',
+      name: 'Modified Container',
+      description: 'Custom-converted container for specific needs',
+      dimensions: '6m × 2.4m × 2.6m',
+      capacity: '37.4 cu m',
+      price: 30000,
+      image: '/products/office-insulated.png'
+    }
+  ]
 
   const onSubmit = async (data: PurchaseFormData) => {
     setIsSubmitting(true)
@@ -189,533 +167,129 @@ const PurchaseBookingForm = ({
 
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 4))
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1))
-
-  const renderStepIndicator = () => (
-    <div className="flex items-center justify-center mb-6 sm:mb-8 overflow-x-auto">
-      {[1, 2, 3, 4].map((step) => (
-        <div key={step} className="flex items-center flex-shrink-0">
-          <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium ${
-            step <= currentStep 
-              ? 'bg-primary-600 text-white' 
-              : 'bg-gray-200 text-gray-600'
-          }`}>
-            {step < currentStep ? (
-              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-            ) : (
-              step
-            )}
-          </div>
-          {step < 4 && (
-            <div className={`w-8 sm:w-16 h-0.5 mx-1 sm:mx-2 ${
-              step < currentStep ? 'bg-primary-600' : 'bg-gray-200'
-            }`} />
-          )}
-        </div>
-      ))}
-    </div>
-  )
-
-  const renderStep1 = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Container Selection</h3>
-        
-        {selectedContainer ? (
-          // Show selected container
-          <div className="p-4 border-2 border-primary-600 bg-primary-50 rounded-lg">
-            <div className="flex items-start space-x-3">
-              <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
-                <img 
-                  src={selectedContainer.image} 
-                  alt={selectedContainer.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    const nextSibling = e.currentTarget.nextElementSibling;
-                    if (nextSibling) {
-                      (nextSibling as HTMLElement).style.display = 'flex';
-                    }
-                  }}
-                />
-                <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-                  <Package className="w-6 h-6 text-gray-400" />
-                </div>
-              </div>
-              <div className="flex-1">
-                <h4 className="font-medium text-gray-900">{selectedContainer.name}</h4>
-                <p className="text-sm text-gray-500 mb-2">{selectedContainer.description}</p>
-                <div className="text-sm text-gray-600">
-                  <div>Dimensions: {selectedContainer.dimensions}</div>
-                  <div>Capacity: {selectedContainer.capacity}</div>
-                  <div className="font-medium text-primary-600">
-                    R{selectedContainer.price.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSelectedContainer(null)}
-              className="mt-3 text-sm text-primary-600 hover:text-primary-800 underline"
-            >
-              Change container
-            </button>
-          </div>
-        ) : (
-          // Show container selection options
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {containerTypes.map((container) => (
-              <div
-                key={container.id}
-                onClick={() => setSelectedContainer(container)}
-                className="p-4 border-2 border-gray-200 hover:border-gray-300 rounded-lg cursor-pointer transition-all duration-200"
-              >
-                <div className="flex items-start space-x-3">
-                  <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img 
-                      src={container.image} 
-                      alt={container.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        const nextSibling = e.currentTarget.nextElementSibling;
-                        if (nextSibling) {
-                          (nextSibling as HTMLElement).style.display = 'flex';
-                        }
-                      }}
-                    />
-                    <div className="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
-                      <Package className="w-6 h-6 text-gray-400" />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{container.name}</h4>
-                    <p className="text-sm text-gray-500 mb-2">{container.description}</p>
-                    <div className="text-sm text-gray-600">
-                      <div>Dimensions: {container.dimensions}</div>
-                      <div>Capacity: {container.capacity}</div>
-                      <div className="font-medium text-primary-600">
-                        R{container.price.toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {selectedContainer && (
-        <div>
-          <label className="form-label">Quantity</label>
-          <input
-            type="number"
-            min="1"
-            {...register('quantity', { 
-              required: 'Quantity is required',
-              min: { value: 1, message: 'Minimum quantity is 1' }
-            })}
-            className="input-field"
-            placeholder="Enter quantity"
-          />
-          {errors.quantity && (
-            <p className="text-error-600 text-sm mt-2">{errors.quantity.message}</p>
-          )}
-        </div>
-      )}
-
-      {selectedContainer && (
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Delivery Option</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            {[
-              { 
-                value: 'delivery', 
-                label: 'Delivery', 
-                icon: Truck, 
-                description: 'We deliver to your location' 
-              },
-              { 
-                value: 'collection', 
-                label: 'Collection', 
-                icon: Store, 
-                description: 'Collect from our depot' 
-              }
-            ].map((option) => (
-              <label key={option.value} className="relative">
-                <input
-                  type="radio"
-                  value={option.value}
-                  {...register('deliveryOption', { required: 'Please select a delivery option' })}
-                  className="sr-only"
-                />
-                <div className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                  watchDeliveryOption === option.value
-                    ? 'border-primary-600 bg-primary-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}>
-                  <div className="flex items-center space-x-3">
-                    <option.icon className={`w-6 h-6 ${
-                      watchDeliveryOption === option.value ? 'text-primary-600' : 'text-gray-400'
-                    }`} />
-                    <div>
-                      <div className="font-medium text-gray-900">{option.label}</div>
-                      <div className="text-sm text-gray-500">{option.description}</div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            ))}
-          </div>
-          {errors.deliveryOption && (
-            <p className="text-error-600 text-sm mt-2 flex items-center">
-              <AlertCircle className="w-4 h-4 mr-1" />
-              {errors.deliveryOption.message}
-            </p>
-          )}
-        </div>
-      )}
-    </div>
-  )
-
-  const renderStep2 = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          {watchDeliveryOption === 'delivery' ? 'Delivery Details' : 'Collection Details'}
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="form-label">
-              {watchDeliveryOption === 'delivery' ? 'Delivery Date' : 'Collection Date'}
-            </label>
-            <input
-              type="date"
-              {...register('deliveryDate', { required: 'Date is required' })}
-              className="input-field"
-              min={new Date().toISOString().split('T')[0]}
-            />
-            {errors.deliveryDate && (
-              <p className="text-error-600 text-sm mt-2">{errors.deliveryDate.message}</p>
-            )}
-          </div>
-          
-          <div>
-            <label className="form-label">Company Name</label>
-            <input
-              type="text"
-              {...register('company')}
-              className="input-field"
-              placeholder="Enter company name"
-            />
-          </div>
-        </div>
-
-        {watchDeliveryOption === 'delivery' && (
-          <>
-            <div className="mt-4">
-              <label className="form-label">Delivery Address</label>
-              <input
-                type="text"
-                {...register('deliveryAddress', { required: 'Delivery address is required' })}
-                className="input-field"
-                placeholder="Street address"
-              />
-              {errors.deliveryAddress && (
-                <p className="text-error-600 text-sm mt-2">{errors.deliveryAddress.message}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <div>
-                <label className="form-label">City</label>
-                <input
-                  type="text"
-                  {...register('city', { required: 'City is required' })}
-                  className="input-field"
-                  placeholder="City"
-                />
-                {errors.city && (
-                  <p className="text-error-600 text-sm mt-2">{errors.city.message}</p>
-                )}
-              </div>
-              
-              <div>
-                <label className="form-label">Province</label>
-                <input
-                  type="text"
-                  {...register('province', { required: 'Province is required' })}
-                  className="input-field"
-                  placeholder="Province"
-                />
-                {errors.province && (
-                  <p className="text-error-600 text-sm mt-2">{errors.province.message}</p>
-                )}
-              </div>
-              
-              <div>
-                <label className="form-label">Postal Code</label>
-                <input
-                  type="text"
-                  {...register('postalCode', { required: 'Postal code is required' })}
-                  className="input-field"
-                  placeholder="Postal code"
-                />
-                {errors.postalCode && (
-                  <p className="text-error-600 text-sm mt-2">{errors.postalCode.message}</p>
-                )}
-              </div>
-            </div>
-          </>
-        )}
-
-        {watchDeliveryOption === 'collection' && (
-          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-start space-x-3">
-              <Store className="w-5 h-5 text-blue-600 mt-0.5" />
-              <div className="text-sm text-blue-800">
-                <p className="font-medium">Collection Information</p>
-                <p className="mt-1">
-                  You can collect your container from our main depot. We'll provide you with the exact address and collection instructions after your order is confirmed.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  )
-
-  const renderStep3 = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="form-label">Contact Name</label>
-            <input
-              type="text"
-              {...register('contactName', { required: 'Contact name is required' })}
-              className="input-field"
-              placeholder="Full name"
-            />
-            {errors.contactName && (
-              <p className="text-error-600 text-sm mt-2">{errors.contactName.message}</p>
-            )}
-          </div>
-          
-          <div>
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              {...register('email', { 
-                required: 'Email is required',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Invalid email address'
-                }
-              })}
-              className="input-field"
-              placeholder="email@example.com"
-            />
-            {errors.email && (
-              <p className="text-error-600 text-sm mt-2">{errors.email.message}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <label className="form-label">Phone Number</label>
-          <input
-            type="tel"
-            {...register('phone', { required: 'Phone number is required' })}
-            className="input-field"
-            placeholder="+27 82 123 4567"
-          />
-          {errors.phone && (
-            <p className="text-error-600 text-sm mt-2">{errors.phone.message}</p>
-          )}
-        </div>
-
-        <div className="mt-4">
-          <label className="form-label">Special Requirements</label>
-          <textarea
-            {...register('specialRequirements')}
-            className="input-field"
-            rows={3}
-            placeholder="Any special requirements or notes..."
-          />
-        </div>
-      </div>
-    </div>
-  )
-
-  const renderStep4 = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment & Review</h3>
-        
-        <div className="bg-gray-50 rounded-lg p-4 mb-6">
-          <h4 className="font-medium text-gray-900 mb-3">Order Summary</h4>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span>Service:</span>
-              <span className="font-medium capitalize">{watchServiceType}</span>
-            </div>
-            {selectedContainer && (
-              <>
-                <div className="flex justify-between">
-                  <span>Container:</span>
-                  <span className="font-medium">{selectedContainer.name}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Quantity:</span>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const currentQty = watch('quantity') || 0
-                        if (currentQty > 1) {
-                          setValue('quantity', currentQty - 1)
-                        }
-                      }}
-                      className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors"
-                    >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      min="1"
-                      max="100"
-                      {...register('quantity', { 
-                        required: 'Quantity is required',
-                        min: { value: 1, message: 'Minimum quantity is 1' },
-                        max: { value: 100, message: 'Maximum quantity is 100' }
-                      })}
-                      className="w-16 text-center border border-gray-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const currentQty = watch('quantity') || 0
-                        if (currentQty < 100) {
-                          setValue('quantity', currentQty + 1)
-                        }
-                      }}
-                      className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-                {errors.quantity && (
-                  <p className="text-error-600 text-xs mt-1">{errors.quantity.message}</p>
-                )}
-                <div className="flex justify-between">
-                  <span>Delivery:</span>
-                  <span className="font-medium capitalize">{watchDeliveryOption}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Price per unit:</span>
-                  <span className="font-medium">R{selectedContainer.price.toLocaleString()}</span>
-                </div>
-                <hr className="my-2" />
-                <div className="flex justify-between font-medium">
-                  <span>Total:</span>
-                  <span>R{((selectedContainer.price * (watch('quantity') || 0))).toLocaleString()}</span>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <label className="form-label">Payment Method</label>
-          <div className="space-y-3">
-            {[
-              { value: 'credit', label: 'Credit Card', icon: CreditCard },
-              { value: 'invoice', label: 'Invoice (Net 30)', icon: FileText },
-              { value: 'quote', label: 'Quote Only', icon: FileText }
-            ].map((option) => (
-              <label key={option.value} className="flex items-center space-x-3">
-                <input
-                  type="radio"
-                  value={option.value}
-                  {...register('paymentMethod', { required: 'Please select a payment method' })}
-                  className="text-primary-600 focus:ring-primary-500"
-                />
-                <option.icon className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-700">{option.label}</span>
-              </label>
-            ))}
-          </div>
-          {errors.paymentMethod && (
-            <p className="text-error-600 text-sm mt-2">{errors.paymentMethod.message}</p>
-          )}
-        </div>
-
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-start space-x-3">
-            <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5" />
-            <div className="text-sm text-blue-800">
-              <p className="font-medium">What happens next?</p>
-              <p className="mt-1">
-                After submitting your purchase request, our team will review your order and contact you within 24 hours 
-                to confirm details and arrange {watchDeliveryOption === 'delivery' ? 'delivery' : 'collection'}. You'll receive email updates throughout the process.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+  
+  const quantity = watch('quantity') || 1
+  const total = selectedContainer ? selectedContainer.price * quantity : 0
 
   const renderCurrentStep = () => {
     switch (currentStep) {
-      case 1: return renderStep1()
-      case 2: return renderStep2()
-      case 3: return renderStep3()
-      case 4: return renderStep4()
-      default: return renderStep1()
+      case 1:
+        return (
+          <PurchaseContainerStep
+            selectedContainer={selectedContainer}
+            containerTypes={containerTypes}
+            quantity={quantity}
+            deliveryOption={watchDeliveryOption || ''}
+            onContainerSelect={setSelectedContainer}
+            onContainerDeselect={() => setSelectedContainer(null)}
+            onQuantityChange={(value) => setValue('quantity', value)}
+            onDeliveryOptionChange={(value) => setValue('deliveryOption', value as any)}
+            quantityRegister={register('quantity', {
+              required: 'Quantity is required',
+              min: { value: 1, message: 'Minimum quantity is 1' },
+            })}
+            deliveryOptionRegister={register('deliveryOption', { required: 'Please select a delivery option' })}
+            quantityError={errors.quantity}
+            deliveryOptionError={errors.deliveryOption}
+          />
+        )
+      case 2:
+        return (
+          <PurchaseDeliveryStep
+            deliveryOption={watchDeliveryOption || ''}
+            deliveryDateRegister={register('deliveryDate', { required: 'Date is required' })}
+            companyRegister={register('company')}
+            deliveryAddressRegister={register('deliveryAddress', { required: 'Delivery address is required' })}
+            cityRegister={register('city', { required: 'City is required' })}
+            provinceRegister={register('province', { required: 'Province is required' })}
+            postalCodeRegister={register('postalCode', { required: 'Postal code is required' })}
+            deliveryDateError={errors.deliveryDate}
+            deliveryAddressError={errors.deliveryAddress}
+            cityError={errors.city}
+            provinceError={errors.province}
+            postalCodeError={errors.postalCode}
+          />
+        )
+      case 3:
+        return (
+          <ContactInfoStep
+            contactNameRegister={register('contactName', { required: 'Contact name is required' })}
+            emailRegister={register('email', {
+              required: 'Email is required',
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: 'Invalid email address',
+              },
+            })}
+            phoneRegister={register('phone', { required: 'Phone number is required' })}
+            specialRequirementsRegister={register('specialRequirements')}
+            contactNameError={errors.contactName}
+            emailError={errors.email}
+            phoneError={errors.phone}
+          />
+        )
+      case 4:
+        return (
+          <PurchasePaymentStep
+            selectedContainer={selectedContainer}
+            quantity={quantity}
+            total={total}
+            deliveryOption={watchDeliveryOption || ''}
+            paymentMethod={watch('paymentMethod') || ''}
+            onPaymentMethodChange={(value) => setValue('paymentMethod', value as any)}
+            onQuantityChange={(value) => setValue('quantity', value)}
+            paymentMethodRegister={register('paymentMethod', { required: 'Please select a payment method' })}
+            quantityRegister={register('quantity', {
+              required: 'Quantity is required',
+              min: { value: 1, message: 'Minimum quantity is 1' },
+              max: { value: 100, message: 'Maximum quantity is 100' },
+            })}
+            paymentMethodError={errors.paymentMethod}
+            quantityError={errors.quantity}
+          />
+        )
+      default:
+        return null
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-2xl mx-auto">
-      {renderStepIndicator()}
+      <StepIndicator currentStep={currentStep} totalSteps={4} />
       
       {renderCurrentStep()}
 
       <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 mt-6 sm:mt-8">
-        <button
+        <Button
           type="button"
           onClick={prevStep}
           disabled={currentStep === 1}
-          className={`btn-secondary w-full sm:w-auto ${currentStep === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+          variant="outline"
+          fullWidth
+          className={currentStep === 1 ? 'opacity-50 cursor-not-allowed' : ''}
         >
           Previous
-        </button>
+        </Button>
         
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           {currentStep < 4 ? (
-            <button
+            <Button
               type="button"
               onClick={nextStep}
-              className="btn-primary w-full sm:w-auto"
+              variant="primary"
+              fullWidth
             >
               Next
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting}
-              className="btn-primary w-full sm:w-auto"
+              variant="primary"
+              fullWidth
             >
               {isSubmitting ? 'Submitting...' : 'Submit Purchase Request'}
-            </button>
+            </Button>
           )}
         </div>
       </div>

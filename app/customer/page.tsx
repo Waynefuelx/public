@@ -1,9 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import L from 'leaflet'
+import { useCustomerOrders } from '@/lib/api/hooks'
+import LeafletMap from '@/components/organisms/LeafletMap'
 import { 
   ShoppingCart, 
   Truck, 
@@ -48,7 +51,6 @@ interface Order {
 const CustomerDashboard = () => {
   const { user, logout } = useAuth()
   const [activeTab, setActiveTab] = useState('overview')
-  const [orders, setOrders] = useState<Order[]>([])
   const [conversionRequest, setConversionRequest] = useState({
     type: 'Office Conversion',
     containerSize: '6m Standard',
@@ -56,72 +58,32 @@ const CustomerDashboard = () => {
     budget: 'Under R50,000',
     timeline: 'ASAP'
   })
-  const [map, setMap] = useState<any>(null)
-  const [markers, setMarkers] = useState<any[]>([])
-  const [isMapLoaded, setIsMapLoaded] = useState(false)
+  const mapRef = useRef<any>(null)
+  const markersRef = useRef<any[]>([])
 
-  // Mock orders data for the customer
-  useEffect(() => {
-    const mockOrders: Order[] = [
-      {
-        id: 'O001',
-        containerType: 'Used Container',
-        category: 'Purchase',
-        status: 'delivered',
-        orderDate: '2024-01-15T10:00:00Z',
-        deliveryDate: '2024-01-20T14:00:00Z',
-        trackingNumber: 'TS20001-2024',
-        totalAmount: 15000,
-        customerName: user?.name || 'John Smith',
-        customerEmail: user?.email || 'customer@topshell.co.za',
-        customerPhone: '+27 82 123 4567',
-        city: 'Cape Town',
-        province: 'Western Cape',
-        deliveryAddress: '123 Main Street, Industrial Area',
-        specialRequirements: 'Deliver to construction site',
-        containerId: '20-001',
-        isNew: false
-      },
-      {
-        id: 'O002',
-        containerType: '6m Office Container',
-        category: 'Rental',
-        status: 'in-transit',
-        orderDate: '2024-01-18T09:30:00Z',
-        deliveryDate: '2024-01-25T10:00:00Z',
-        trackingNumber: 'TS40002-2024',
-        totalAmount: 2500,
-        customerName: user?.name || 'John Smith',
-        customerEmail: user?.email || 'customer@topshell.co.za',
-        customerPhone: '+27 82 123 4567',
-        city: 'Johannesburg',
-        province: 'Gauteng',
-        deliveryAddress: '456 Business Park, Storage Zone',
-        specialRequirements: 'Monthly rental - 6 months',
-        containerId: '40-002',
-        isNew: false
-      },
-      {
-        id: 'O003',
-        containerType: '6m Refrigeration Container',
-        category: 'Purchase',
-        status: 'confirmed',
-        orderDate: '2024-01-20T14:15:00Z',
-        deliveryDate: '2024-01-28T08:00:00Z',
-        totalAmount: 22000,
-        customerName: user?.name || 'John Smith',
-        customerEmail: user?.email || 'customer@topshell.co.za',
-        customerPhone: '+27 82 123 4567',
-        city: 'Durban',
-        province: 'KwaZulu-Natal',
-        deliveryAddress: '789 Food Processing Plant',
-        specialRequirements: 'Refrigerated container for food storage',
-        containerId: '20-003',
-        isNew: true
-      }
-    ]
-    setOrders(mockOrders)
-  }, [user])
+  // Fetch orders from API
+  const { data: ordersData = [], isLoading: ordersLoading } = useCustomerOrders()
+  
+  // Transform API orders to match component interface
+  const orders: Order[] = ordersData.map((order: any) => ({
+    id: order.id,
+    containerType: order.containerType,
+    category: order.orderType === 'purchase' ? 'Purchase' : 'Rental',
+    status: order.status,
+    orderDate: order.createdAt,
+    deliveryDate: order.deliveryDate,
+    trackingNumber: order.trackingNumber || order.id,
+    totalAmount: order.total,
+    customerName: order.customerName,
+    customerEmail: order.customerEmail,
+    customerPhone: order.customerPhone,
+    city: order.city || '',
+    province: order.province || '',
+    deliveryAddress: order.deliveryAddress,
+    specialRequirements: order.specialRequirements,
+    containerId: order.containerId,
+    isNew: order.isNew || false
+  }))
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -183,123 +145,22 @@ const CustomerDashboard = () => {
     })
   }
 
-  // Load Leaflet (OpenStreetMap) script and CSS
-  useEffect(() => {
-    if (activeTab === 'tracking' && !isMapLoaded) {
-      // Check if Leaflet is already loaded
-      if (typeof window !== 'undefined' && (window as any).L) {
-        setIsMapLoaded(true)
-        // Add a small delay to ensure DOM is ready
-        setTimeout(() => initializeMap(), 200)
-        return
-      }
-
-      // Check if scripts are already being loaded
-      const existingScript = document.querySelector('script[src*="leaflet"]')
-      const existingLink = document.querySelector('link[href*="leaflet"]')
-      
-      if (existingScript && existingLink) {
-        // Scripts already loaded, just wait for them to be ready
-        setTimeout(() => {
-          if ((window as any).L) {
-            setIsMapLoaded(true)
-            setTimeout(() => initializeMap(), 200)
-          }
-        }, 100)
-        return
-      }
-
-      // Load Leaflet CSS
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-      link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='
-      link.crossOrigin = ''
-      document.head.appendChild(link)
-
-      // Load Leaflet JS
-      const script = document.createElement('script')
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='
-      script.crossOrigin = ''
-      script.onload = () => {
-        setIsMapLoaded(true)
-        setTimeout(() => initializeMap(), 200)
-      }
-      document.head.appendChild(script)
-    }
-  }, [activeTab, isMapLoaded])
-
-  // Initialize Leaflet Map
-  const initializeMap = () => {
-    if (typeof window !== 'undefined' && (window as any).L) {
-      const mapElement = document.getElementById('customer-tracking-map')
-      if (mapElement && !map) {
-        const L = (window as any).L
-        
-        // Check if there's already a map instance on this container
-        if ((mapElement as any)._leaflet_id) {
-          try {
-            const existingMap = L.map.getContainer(mapElement)
-            if (existingMap) {
-              existingMap.remove()
-            }
-          } catch (error) {
-            console.warn('Existing map cleanup warning:', error)
-          }
-        }
-        
-        // Clear any existing map instance from state
-        if (map && typeof map.remove === 'function') {
-          try {
-            map.remove()
-          } catch (error) {
-            console.warn('Map cleanup warning:', error)
-          }
-        }
-        
-        // Clear the map container content to prevent conflicts
-        mapElement.innerHTML = ''
-        
-        const newMap: any = L.map('customer-tracking-map', {
-          center: [-30.5595, 22.9375], // Center of South Africa
-          zoom: 6,
-          zoomControl: true,
-          scrollWheelZoom: true,
-          doubleClickZoom: true,
-          boxZoom: true,
-          keyboard: true,
-          dragging: true,
-          touchZoom: true,
-          attributionControl: false
-        })
-        
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 18,
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(newMap)
-        
-        // Force map to resize after initialization
-        setTimeout(() => {
-          if (newMap && typeof newMap.invalidateSize === 'function') {
-            newMap.invalidateSize()
-          }
-        }, 200)
-        
-        setMap(newMap)
-        addOrderMarkers(newMap)
-      }
-    }
-  }
-
   // Add order markers to map
   const addOrderMarkers = (mapInstance: any) => {
-    const newMarkers: any[] = []
+    if (!mapInstance) return
+
+    // Clear existing markers
+    markersRef.current.forEach((marker) => {
+      if (marker && marker.remove) {
+        marker.remove()
+      }
+    })
+    markersRef.current = []
+
     
     orders.filter(order => order.trackingNumber).forEach((order) => {
       // Create custom icon based on order status
-      const customIcon = (window as any).L.divIcon({
+      const customIcon = L.divIcon({
         className: 'custom-marker',
         html: `
           <div class="w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs" 
@@ -317,7 +178,7 @@ const CustomerDashboard = () => {
 
       // Use order delivery address coordinates or default to city center
       const coords = getCoordinatesForCity(order.city)
-      const marker = (window as any).L.marker([coords.lat, coords.lng], {
+      const marker = L.marker([coords.lat, coords.lng], {
         icon: customIcon
       }).addTo(mapInstance)
 
@@ -336,11 +197,16 @@ const CustomerDashboard = () => {
       `
 
       marker.bindPopup(popupContent)
-      newMarkers.push(marker)
+      markersRef.current.push(marker)
     })
-    
-    setMarkers(newMarkers)
   }
+
+  // Update markers when orders or tab changes
+  useEffect(() => {
+    if (mapRef.current && activeTab === 'tracking') {
+      addOrderMarkers(mapRef.current)
+    }
+  }, [orders, activeTab])
 
   // Get coordinates for major South African cities
   const getCoordinatesForCity = (city: string) => {
@@ -358,67 +224,6 @@ const CustomerDashboard = () => {
     return cityCoords[city] || { lat: -30.5595, lng: 22.9375 } // Default to South Africa center
   }
 
-  // Cleanup map when component unmounts or tab changes
-  useEffect(() => {
-    return () => {
-      // Remove all markers safely
-      markers.forEach(marker => {
-        if (marker && typeof marker.remove === 'function') {
-          try {
-            marker.remove()
-          } catch (error) {
-            console.warn('Marker cleanup warning:', error)
-          }
-        }
-      })
-      setMarkers([])
-      
-      // Clear map safely
-      if (map && typeof map.remove === 'function') {
-        try {
-          map.remove()
-        } catch (error) {
-          console.warn('Map cleanup warning:', error)
-        }
-      }
-      setMap(null)
-      
-      // Reset map loaded state
-      setIsMapLoaded(false)
-    }
-  }, [activeTab])
-
-  // Add map styles
-  useEffect(() => {
-    const style = document.createElement('style')
-    style.textContent = `
-      .custom-marker {
-        background: transparent !important;
-        border: none !important;
-      }
-      #customer-tracking-map {
-        height: 384px !important;
-        width: 100% !important;
-        position: relative !important;
-        z-index: 1 !important;
-      }
-      .leaflet-popup-content-wrapper {
-        border-radius: 8px !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-      }
-      .leaflet-popup-content {
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-    `
-    document.head.appendChild(style)
-    
-    return () => {
-      if (document.head.contains(style)) {
-        document.head.removeChild(style)
-      }
-    }
-  }, [])
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Package },
@@ -1596,68 +1401,55 @@ const CustomerDashboard = () => {
                 </div>
 
                 {/* Order Tracking Map */}
-                <div className="bg-white rounded-lg shadow">
-                  <div className="relative h-96 rounded-lg overflow-hidden">
-                    {/* Leaflet Map */}
-                    <div 
-                      id="customer-tracking-map" 
-                      className="w-full h-full"
-                      style={{
-                        height: '384px',
-                        width: '100%',
-                        position: 'relative',
-                        zIndex: 1
+                {activeTab === 'tracking' && (
+                  <div className="bg-white rounded-lg shadow">
+                    <LeafletMap
+                      mapId="customer-tracking-map"
+                      height="384px"
+                      onMapReady={(map) => {
+                        mapRef.current = map
+                        addOrderMarkers(map)
                       }}
-                    ></div>
-                    
-                    {/* Map Controls Overlay */}
-                    <div className="absolute top-4 left-4 bg-white bg-opacity-95 rounded-lg px-3 py-2 shadow-lg">
-                      <h3 className="text-sm font-semibold text-gray-900">South Africa</h3>
-                      <p className="text-xs text-gray-600">Your Order Locations</p>
-                    </div>
-                    
-                    {/* Map Legend */}
-                    <div className="absolute bottom-4 left-4 bg-white bg-opacity-95 rounded-lg p-3 shadow-lg max-w-xs">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-2">Order Status</h4>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-green-500 rounded-full flex-shrink-0 shadow-sm"></div>
-                          <span className="text-xs text-gray-700">Delivered</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-blue-500 rounded-full flex-shrink-0 shadow-sm"></div>
-                          <span className="text-xs text-gray-700">In Transit</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-yellow-500 rounded-full flex-shrink-0 shadow-sm"></div>
-                          <span className="text-xs text-gray-700">Confirmed</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0 shadow-sm"></div>
-                          <span className="text-xs text-gray-700">Pending</span>
+                    >
+                      {/* Map Controls Overlay */}
+                      <div className="absolute top-4 left-4 bg-white bg-opacity-95 rounded-lg px-3 py-2 shadow-lg">
+                        <h3 className="text-sm font-semibold text-gray-900">South Africa</h3>
+                        <p className="text-xs text-gray-600">Your Order Locations</p>
+                      </div>
+                      
+                      {/* Map Legend */}
+                      <div className="absolute bottom-4 left-4 bg-white bg-opacity-95 rounded-lg p-3 shadow-lg max-w-xs">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-2">Order Status</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-green-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                            <span className="text-xs text-gray-700">Delivered</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-blue-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                            <span className="text-xs text-gray-700">In Transit</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-yellow-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                            <span className="text-xs text-gray-700">Confirmed</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 bg-red-500 rounded-full flex-shrink-0 shadow-sm"></div>
+                            <span className="text-xs text-gray-700">Pending</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    {/* Order Count */}
-                    <div className="absolute top-4 right-4 bg-white bg-opacity-95 rounded-lg px-3 py-2 shadow-lg">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {orders.filter(order => order.trackingNumber).length}
-                      </div>
-                      <div className="text-xs text-gray-600">Tracked Orders</div>
-                    </div>
-                    
-                    {/* Loading State */}
-                    {!isMapLoaded && (
-                      <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-2"></div>
-                          <p className="text-sm text-gray-600">Loading map...</p>
+                      
+                      {/* Order Count */}
+                      <div className="absolute top-4 right-4 bg-white bg-opacity-95 rounded-lg px-3 py-2 shadow-lg">
+                        <div className="text-sm font-semibold text-gray-900">
+                          {orders.filter(order => order.trackingNumber).length}
                         </div>
+                        <div className="text-xs text-gray-600">Tracked Orders</div>
                       </div>
-                    )}
+                    </LeafletMap>
                   </div>
-                </div>
+                )}
               </div>
             )}
 

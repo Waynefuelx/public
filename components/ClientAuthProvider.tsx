@@ -1,7 +1,19 @@
 'use client'
 
 import { AuthProvider } from '@/contexts/AuthContext'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+})
 
 export default function ClientAuthProvider({
   children,
@@ -23,5 +35,9 @@ export default function ClientAuthProvider({
     )
   }
 
-  return <AuthProvider>{children}</AuthProvider>
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>{children}</AuthProvider>
+    </QueryClientProvider>
+  )
 }

@@ -28,6 +28,37 @@ function BookingPageContent() {
     return numericMatch ? parseInt(numericMatch[0], 10) : 150
   }
   
+  // Helper function to extract pricing unit from query parameter
+  const parsePriceUnit = (priceString: string | null): string => {
+    if (!priceString) return 'month' // default unit
+    
+    // Extract unit from price string (e.g., "R150/day" -> "day", "R150/month" -> "month")
+    const unitMatch = priceString.match(/\/(\w+)/)
+    return unitMatch ? unitMatch[1] : 'month'
+  }
+  
+  // Helper function to get the correct image URL based on container type
+  const getContainerImage = (containerId: string | null): string => {
+    if (!containerId) return '/api/placeholder/300/200'
+    
+    // Map container IDs to their corresponding image URLs from BookingForm
+    const containerImages: { [key: string]: string } = {
+      '6m-storage': '/products/storage-6m.webp',
+      '6m-office': '/products/office-uninsulated.png',
+      '6m-vip-office': '/products/office-insulated.png',
+      '6m-refrigeration': '/products/refrigeration.png',
+      '3m-storage': '/products/storage-3m.webp',
+      '6m-split': '/products/office-uninsulated.png',
+      'elite-mobile-office': '/products/office-split.png',
+      'mobile-site': '/products/office-split.png', // Alternative ID
+      '3m-ablution': '/products/ablution-6m.png',
+      '6m-pavilion': '/products/conference-pod.png',
+      '6m-sleeper': '/products/sleeper.png'
+    }
+    
+    return containerImages[containerId] || '/api/placeholder/300/200'
+  }
+
   // Container data to pass to the form
   const selectedContainerData = containerId && containerType ? {
     id: containerId,
@@ -37,7 +68,8 @@ function BookingPageContent() {
     dimensions: containerDimensions || '6m × 2.4m × 2.6m',
     capacity: containerCapacity || '37.4 cu m',
     price: parsePrice(containerPrice),
-    image: '/api/placeholder/300/200'
+    priceUnit: parsePriceUnit(containerPrice),
+    image: getContainerImage(containerId)
   } : null
 
   const bookingSteps = [
