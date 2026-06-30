@@ -27,6 +27,21 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+// Offline demo accounts — used as a fallback when the backend API is unreachable, so
+// the app is fully demoable without a backend. These match the credentials shown on the
+// login page. When the backend IS available, the real API auth path is used instead.
+const DEMO_SESSION_KEY = 'topshell_demo_session'
+
+const DEMO_USERS: Array<User & { password: string }> = [
+  { id: 'demo-customer', email: 'customer@valley.com', password: 'P@ssword1', name: 'John Smith', type: 'customer', phone: '+27 82 123 4567', company: 'Smith Construction', isActive: true },
+  { id: 'demo-driver', email: 'driver@valley.com', password: 'P@ssword1', name: 'Mike Johnson', type: 'driver', phone: '+27 82 555 1234', driverId: 'DRV001', isActive: true },
+  { id: 'demo-admin', email: 'admin@valley.com', password: 'P@ssword1', name: 'Sarah Wilson', type: 'admin', phone: '+27 82 999 8888', isActive: true },
+]
+
+// A failed fetch (backend down / unreachable) surfaces as a TypeError ("Failed to fetch").
+const isNetworkError = (error: any): boolean =>
+  error instanceof TypeError || /failed to fetch|networkerror|load failed/i.test(error?.message || '')
+
 // Helper function to fetch user info from unified endpoint
 async function fetchUserInfo(): Promise<User | null> {
   const token = getAuthToken()
@@ -68,6 +83,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadUser = async () => {
       try {
+        // Restore an offline demo session (backend unavailable) without calling the API.
+        const storedUser = localStorage.getItem('topshell_user')
+        if (localStorage.getItem(DEMO_SESSION_KEY) === 'true' && storedUser) {
+          setUser(JSON.parse(storedUser))
+          return
+        }
+
         const token = getAuthToken()
         if (token) {
           const userInfo = await fetchUserInfo()
@@ -106,6 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null)
       try {
         localStorage.removeItem('topshell_user')
+        localStorage.removeItem(DEMO_SESSION_KEY)
       } catch (error) {
         console.error('Error removing user from localStorage:', error)
       }
@@ -151,6 +174,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error: any) {
       console.error('Login error:', error)
+      // Offline fallback: if the backend is unreachable, let the demo accounts sign in
+      // client-side so the app is fully demoable without a backend running.
+      if (isNetworkError(error)) {
+        const demo = DEMO_USERS.find((u) => u.email === email && u.password === password)
+        if (demo) {
+          const { password: _password, ...userData } = demo
+          setUser(userData)
+          try {
+            localStorage.setItem('topshell_user', JSON.stringify(userData))
+            localStorage.setItem(DEMO_SESSION_KEY, 'true')
+          } catch (e) {
+            console.error('Error saving demo session:', e)
+          }
+          setIsLoading(false)
+          return true
+        }
+      }
       clearAuthTokens()
       setIsLoading(false)
       return false
@@ -183,6 +223,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearAuthTokens()
     try {
       localStorage.removeItem('topshell_user')
+      localStorage.removeItem(DEMO_SESSION_KEY)
     } catch (error) {
       console.error('Error removing user from localStorage:', error)
     }
